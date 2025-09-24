@@ -1,4 +1,4 @@
-  addItem("broken_armor_piece", Material.IRON_INGOT, "&2Broken Armor Piece", "EXPO", "&7&oCrafting and Quest resource");
+    addItem("broken_armor_piece", Material.IRON_INGOT, "&2Broken Armor Piece", "EXPO", "&7&oCrafting and Quest resource");
     addItem("tousled_priest_robe", Material.SHULKER_SHELL, "&2Tousled Priest Robe", "EXPO", "&7&oCrafting and Quest resource");
     addItem("fur_black", Material.RABBIT_HIDE, "&2Black Fur", "EXPO", "&7&oCrafting and Quest resource");
     addItem("dragon_scale", Material.PHANTOM_MEMBRANE, "&2Dragon Scale", "EXPO", "&7&oCrafting and Quest resource");
