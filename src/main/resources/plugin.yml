@@ -1,0 +1,4 @@
+name: bloodChestPlugin
+version: '1.0-SNAPSHOT'
+main: pl.yourserver.bloodChestPlugin.BloodChestPlugin
+api-version: '1.20'
