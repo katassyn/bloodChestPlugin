@@ -2,3 +2,15 @@ name: bloodChestPlugin
 version: '1.0-SNAPSHOT'
 main: pl.yourserver.bloodChestPlugin.BloodChestPlugin
 api-version: '1.20'
+commands:
+  blood_chest:
+    description: Open the Blood Chest interface.
+    permission: bloodchest.use
+    usage: /blood_chest
+permissions:
+  bloodchest.use:
+    description: Allows a player to start the Blood Chest challenge.
+    default: false
+  bloodchest.admin:
+    description: Administrative access to Blood Chest features.
+    default: op
