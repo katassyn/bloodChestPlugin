@@ -1,283 +1,1683 @@
-    addItem("broken_armor_piece", Material.IRON_INGOT, "&2Broken Armor Piece", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("tousled_priest_robe", Material.SHULKER_SHELL, "&2Tousled Priest Robe", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("fur_black", Material.RABBIT_HIDE, "&2Black Fur", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("dragon_scale", Material.PHANTOM_MEMBRANE, "&2Dragon Scale", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("chain_fragment", Material.CHAIN, "&2Chain Fragment", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("satyrs_horn", Material.POINTED_DRIPSTONE, "&2Satyr`s Horn", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("gorgons_poison", Material.LIGHT_BLUE_DYE, "&2Gorgon`s Poison", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("dragon_gold", Material.GOLD_INGOT, "&2Dragon`s Gold", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("protectors_heart", Material.ORANGE_DYE, "&2Protector`s Heart", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("deaddd_bush", Material.DEAD_BUSH, "&2Dead Bush", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("demon_blood", Material.RED_DYE, "&dDemon Blood", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("sticky_mucus", Material.SLIME_BALL, "&dSticky Mucus", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("soul_of_an_acient_spartan", Material.PITCHER_POD, "&dSoul of an Acient Spartan", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("shadow_rose", Material.WITHER_ROSE, "&dShadow Rose", "EXPO", "&7&oCrafting and Quest resource");
-    addItem("Throphy_of_the_long_forgotten_bone_dragon", Material.DRAGON_HEAD, "&dThrophy of the Long Forgotten Bone Dragon", "EXPO", "&7&oCrafting and Quest resource");
-    
-    // Przedmioty z kategorii MONSTER_FRAGMENTS
-    addItem("mob_soul_I", Material.FLINT, "&9[ I ] Monster Soul Fragment", "MONSTER_FRAGMENTS", "&7&oBasic crafting material");
-    addItem("mob_soul_II", Material.FLINT, "&5[ II ] Monster Soul Fragment", "MONSTER_FRAGMENTS", "&7&oBasic crafting material");
-    addItem("mob_soul_III", Material.FLINT, "&6&6[ III ] Monster Soul Fragment ", "MONSTER_FRAGMENTS", "&7&oBasic crafting material");
-    
-    addItem("elite_heart_I", Material.NETHER_WART, "&9[ I ] Monster Heart Fragment", "MONSTER_FRAGMENTS", "&a&oRare crafting material");
-    addItem("elite_heart_II", Material.NETHER_WART, "&5[ II ] Monster Heart Fragment", "MONSTER_FRAGMENTS", "&a&oRare crafting material");
-    addItem("elite_heart_III", Material.NETHER_WART, "&6[ III ] Monster Heart Fragment", "MONSTER_FRAGMENTS", "&a&oRare crafting material");
-    // Przedmioty z kategorii Q - bossy
-    addItem("grimmag_frag_I", Material.LEATHER, "&9[ I ] Grimmage Burned Cape", "Q", "&c&oLegendary crafting material");
-    addItem("grimmag_frag_II", Material.LEATHER, "&5[ II ] Grimmage Burned Cape", "Q", "&c&oLegendary crafting material");
-    addItem("grimmag_frag_III", Material.LEATHER, "&6[ III ] Grimmage Burned Cape", "Q", "&c&oLegendary crafting material");
-    
-    addItem("arachna_frag_I", Material.PHANTOM_MEMBRANE, "&9[ I ] Arachana Poisonous Skeleton", "Q", "&c&oLegendary crafting material");
-    addItem("arachna_frag_II", Material.PHANTOM_MEMBRANE, "&5[ II ] Arachana Poisonous Skeleton", "Q", "&c&oLegendary crafting material");
-    addItem("arachna_frag_III", Material.PHANTOM_MEMBRANE, "&6[ III ] Arachana Poisonous Skeleton", "Q", "&c&oLegendary crafting material");
-    
-    addItem("heredur_frag_I", Material.PRISMARINE_CRYSTALS, "&9[ I ] Heredur`s Glacial Armor", "Q", "&c&oLegendary crafting material");
-    addItem("heredur_frag_II", Material.PRISMARINE_CRYSTALS, "&5[ II ] Heredur`s Glacial Armor", "Q", "&c&oLegendary crafting material");
-    addItem("heredur_frag_III", Material.PRISMARINE_CRYSTALS, "&6[ III ] Heredur`s Glacial Armor", "Q", "&c&oLegendary crafting material");
-    
-    addItem("bearach_frag_I", Material.HONEYCOMB, "&9[ I ] Bearach Honey Hide", "Q", "&c&oLegendary crafting material");
-    addItem("bearach_frag_II", Material.HONEYCOMB, "&5[ II ] Bearach Honey Hide", "Q", "&c&oLegendary crafting material");
-    addItem("bearach_frag_III", Material.HONEYCOMB, "&6[ III ] Bearach Honey Hide", "Q", "&c&oLegendary crafting material");
-    
-    addItem("khalys_frag_I", Material.BLACK_DYE, "&9[ I ] Khalys Magic Robe", "Q", "&c&oLegendary crafting material");
-    addItem("khalys_frag_II", Material.BLACK_DYE, "&5[ II ] Khalys Magic Robe", "Q", "&c&oLegendary crafting material");
-    addItem("khalys_frag_III", Material.BLACK_DYE, "&6[ III ] Khalys Magic Robe", "Q", "&c&oLegendary crafting material");
-    
-    addItem("heralds_frag_I", Material.NETHERITE_SCRAP, "&9[ I ] Herald`s Dragon Skin", "Q", "&c&oLegendary crafting material");
-    addItem("heralds_frag_II", Material.NETHERITE_SCRAP, "&5[ II ] Herald`s Dragon Skin", "Q", "&c&oLegendary crafting material");
-    addItem("heralds_frag_III", Material.NETHERITE_SCRAP, "&6[ III ] Herald`s Dragon Skin", "Q", "&c&oLegendary crafting material");
-    
-    addItem("sigrismar_frag_I", Material.AMETHYST_SHARD, "&9[ I ] Sigrismarr`s Eternal Ice", "Q", "&c&oLegendary crafting material");
-    addItem("sigrismar_frag_II", Material.AMETHYST_SHARD, "&5[ II ] Sigrismarr`s Eternal Ice", "Q", "&c&oLegendary crafting material");
-    addItem("sigrismar_frag_III", Material.AMETHYST_SHARD, "&6[ III ] Sigrismarr`s Eternal Ice", "Q", "&c&oLegendary crafting material");
-    
-    addItem("medusa_frag_I", Material.SCUTE, "&9[ I ] M`Edusa Stone Scales", "Q", "&c&oLegendary crafting material");
-    addItem("medusa_frag_II", Material.SCUTE, "&5[ II ] M`Edusa Stone Scales", "Q", "&c&oLegendary crafting material");
-    addItem("medusa_frag_III", Material.SCUTE, "&6[ III ] M`Edusa Stone Scales", "Q", "&c&oLegendary crafting material");
-    
-    addItem("gorga_frag_I", Material.LIGHTNING_ROD, "&9[ I ] Gorga`s Broken Tooth", "Q", "&c&oLegendary crafting material");
-    addItem("gorga_frag_II", Material.LIGHTNING_ROD, "&5[ II ] Gorga`s Broken Tooth", "Q", "&c&oLegendary crafting material");
-    addItem("gorga_frag_III", Material.LIGHTNING_ROD, "&6[ III ] Gorga`s Broken Tooth", "Q", "&c&oLegendary crafting material");
-    
-    addItem("mortis_frag_I", Material.BONE, "&9[ I ] Mortis Sacrificial Bones", "Q", "&c&oLegendary crafting material");
-    addItem("mortis_frag_II", Material.BONE, "&5[ II ] Mortis Sacrificial Bones", "Q", "&c&oLegendary crafting material");
-    addItem("mortis_frag_III", Material.BONE, "&6[ III ] Mortis Sacrificial Bones", "Q", "&c&oLegendary crafting material");
-    
-    // Przedmioty z kategorii KOPALNIA
-    addItem("ore_I", Material.COBBLESTONE, "&9[ I ] Ore", "KOPALNIA", "&7&oBasic crafting material");
-    addItem("ore_II", Material.COBBLESTONE, "&5[ II ] Ore", "KOPALNIA", "&7&oBasic crafting material");
-    addItem("ore_III", Material.COBBLESTONE, "&6[ III ] Ore", "KOPALNIA", "&7&oBasic crafting material");
-    
-    addItem("blood_I", Material.REDSTONE, "&9[ I ] Cursed Blood", "KOPALNIA", "&a&oRare crafting material");
-    addItem("blood_II", Material.REDSTONE, "&5[ II ] Cursed Blood", "KOPALNIA", "&a&oRare crafting material");
-    addItem("blood_III", Material.REDSTONE, "&6[ III ] Cursed Blood", "KOPALNIA", "&a&oRare crafting material");
-    
-    addItem("bone_I", Material.BONE, "&9[ I ] Shattered Bone", "KOPALNIA", "&a&oRare crafting material");
-    addItem("bone_II", Material.BONE, "&5[ II ] Shattered Bone", "KOPALNIA", "&a&oRare crafting material");
-    addItem("bone_III", Material.BONE, "&6[ III ] Shattered Bone", "KOPALNIA", "&a&oRare crafting material");
-    
-    addItem("leaf_I", Material.KELP, "&9[ I ] Leaf", "KOPALNIA", "&7&oBasic crafting material");
-    addItem("leaf_II", Material.KELP, "&5[ II ] Leaf", "KOPALNIA", "&7&oBasic crafting material");
-    addItem("leaf_III", Material.KELP, "&6[ III ] Leaf", "KOPALNIA", "&7&oBasic crafting material");
-    
-    // Items from category MINE
-    addItem("hematite", Material.COAL_ORE, "&8Hematite", "MINE",
-    "&7A common black ore with metallic luster and reddish streaks.",
-    "&eCoal-based mineral");
-    addItem("black_spinel", Material.COAL_ORE, "&8Black Spinel", "MINE",
-    "&7An uncommon black crystal with exceptional hardness and luster.",
-    "&eCoal-based gemstone");
-    addItem("black_diamond", Material.COAL_ORE, "&8&lBlack Diamond", "MINE",
-    "&7A rare and precious black diamond formed under extreme pressure.",
-    "&eHighest quality coal gem");
-    
-    addItem("magnetite", Material.IRON_ORE, "&7Magnetite", "MINE",
-    "&7A common metallic ore with magnetic properties.",
-    "&eIron-based mineral");
-    addItem("silver", Material.IRON_ORE, "&f&lSilver", "MINE",
-    "&7An uncommon precious metal with lustrous white appearance.",
-    "&eIron-based metal");
-    addItem("osmium", Material.IRON_ORE, "&7&lOsmium", "MINE",
-    "&7A rare and dense bluish-white metal, one of the heaviest natural elements.",
-    "&ePremium iron metal");
-    
-    addItem("azurite", Material.LAPIS_ORE, "&9Azurite", "MINE",
-    "&7A common deep blue mineral with intense azure color.",
-    "&eLapis-based mineral");
-    addItem("tanzanite", Material.LAPIS_ORE, "&9&lTanzanite", "MINE",
-    "&7An uncommon blue-purple gemstone known for its trichroic properties.",
-    "&eLapis-based gem");
-    addItem("blue_sapphire", Material.LAPIS_ORE, "&1&lBlue Sapphire", "MINE",
-    "&7A rare and precious blue gemstone, second only to diamond in hardness.",
-    "&ePremium lapis gem");
-    
-    addItem("carnelian", Material.REDSTONE_ORE, "&cCarnelian", "MINE",
-    "&7A common reddish-orange mineral with translucent properties.",
-    "&eRedstone-based mineral");
-    addItem("red_spinel", Material.REDSTONE_ORE, "&c&lRed Spinel", "MINE",
-    "&7An uncommon vibrant red gemstone often mistaken for ruby.",
-    "&eRedstone-based gem");
-    addItem("pigeon_blood_ruby", Material.REDSTONE_ORE, "&4&lPigeon Blood Ruby", "MINE",
-    "&7A rare and precious deep red gemstone with the coveted \"pigeon blood\" color.",
-    "&ePremium redstone gem");
-    
-    addItem("pyrite", Material.GOLD_ORE, "&ePyrite", "MINE",
-    "&7A common brassy-yellow mineral often called \"Fool`s Gold\".",
-    "&eGold-based mineral");
-    addItem("yellow_topaz", Material.GOLD_ORE, "&e&lYellow Topaz", "MINE",
-    "&7An uncommon golden-yellow gemstone with excellent clarity.",
-    "&eGold-based gem");
-    addItem("yellow_sapphire", Material.GOLD_ORE, "&6&lYellow Sapphire", "MINE",
-    "&7A rare and precious golden gemstone, prized for its brilliance and hardness.",
-    "&ePremium gold gem");
-    
-    addItem("malachite", Material.EMERALD_ORE, "&aMalachite", "MINE",
-    "&7A common green mineral with distinctive banded patterns.",
-    "&eEmerald-based mineral");
-    addItem("peridot", Material.EMERALD_ORE, "&a&lPeridot", "MINE",
-    "&7An uncommon olive-green gemstone formed in volcanic environments.",
-    "&eEmerald-based gem");
-    addItem("tropiche_emerald", Material.EMERALD_ORE, "&2&lTropiche Emerald", "MINE",
-    "&7A rare and precious deep green gemstone with exceptional clarity and color.",
-    "&ePremium emerald");
-    
-    addItem("danburite", Material.DIAMOND_ORE, "&fDanburite", "MINE",
-    "&7A common colorless crystal with diamond-like brilliance.",
-    "&eDiamond-based mineral");
-    addItem("goshenite", Material.DIAMOND_ORE, "&f&lGoshenite", "MINE",
-    "&7An uncommon colorless beryl with exceptional clarity.",
-    "&eDiamond-based gemstone");
-    addItem("cerussite", Material.DIAMOND_ORE, "&f&l&nCerussite", "MINE",
-    "&7A rare and precious crystal with the highest refractive index.",
-    "&eSupreme diamond gemstone");
-    
-    // Items from category FARMING
-    addItem("farmer_plant_fiber_I", Material.STRING, "&9[ I ] Plant Fiber", "FARMING", "&7&oBasic crafting material");
-    addItem("farmer_plant_fiber_II", Material.STRING, "&5[ II ] Plant Fiber", "FARMING", "&7&oBasic crafting material");
-    addItem("farmer_plant_fiber_III", Material.STRING, "&6[ III ] Plant Fiber", "FARMING", "&7&oBasic crafting material");
-    
-    addItem("farmer_seed_pouch_I", Material.WHEAT_SEEDS, "&9[ I ] Seed Pouch", "FARMING", "&7&oBasic crafting material");
-    addItem("farmer_seed_pouch_II", Material.WHEAT_SEEDS, "&5[ II ] Seed Pouch", "FARMING", "&7&oBasic crafting material");
-    addItem("farmer_seed_pouch_III", Material.WHEAT_SEEDS, "&6[ III ] Seed Pouch", "FARMING", "&7&oBasic crafting material");
-    
-    addItem("farmer_compost_dust_I", Material.BONE_MEAL, "&9[ I ] Compost Dust", "FARMING", "&7&oBasic crafting material");
-    addItem("farmer_compost_dust_II", Material.BONE_MEAL, "&5[ II ] Compost Dust", "FARMING", "&7&oBasic crafting material");
-    addItem("farmer_compost_dust_III", Material.BONE_MEAL, "&6[ III ] Compost Dust", "FARMING", "&7&oBasic crafting material");
-    
-    addItem("farmer_herb_extract_I", Material.SPIDER_EYE, "&9[ I ] Herbal Extract", "FARMING", "&a&oRare crafting material");
-    addItem("farmer_herb_extract_II", Material.SPIDER_EYE, "&5[ II ] Herbal Extract", "FARMING", "&a&oRare crafting material");
-    addItem("farmer_herb_extract_III", Material.SPIDER_EYE, "&6[ III ] Herbal Extract", "FARMING", "&a&oRare crafting material");
-    
-    addItem("farmer_mushroom_spores_I", Material.BROWN_MUSHROOM, "&9[ I ] Mushroom Spores", "FARMING", "&a&oRare crafting material");
-    addItem("farmer_mushroom_spores_II", Material.BROWN_MUSHROOM, "&5[ II ] Mushroom Spores", "FARMING", "&a&oRare crafting material");
-    addItem("farmer_mushroom_spores_III", Material.BROWN_MUSHROOM, "&6[ III ] Mushroom Spores", "FARMING", "&a&oRare crafting material");
-    
-    addItem("farmer_beeswax_chunk_I", Material.BOOK, "&9[ I ] Beeswax Chunk", "FARMING", "&a&oRare crafting material");
-    addItem("farmer_beeswax_chunk_II", Material.BOOK, "&5[ II ] Beeswax Chunk", "FARMING", "&a&oRare crafting material");
-    addItem("farmer_beeswax_chunk_III", Material.BOOK, "&6[ III ] Beeswax Chunk", "FARMING", "&a&oRare crafting material");
-    
-    addItem("farmer_druidic_essence_I", Material.GLOW_INK_SAC, "&9[ I ] Druidic Essence", "FARMING", "&c&oLegendary crafting material");
-    addItem("farmer_druidic_essence_II", Material.GLOW_INK_SAC, "&5[ II ] Druidic Essence", "FARMING", "&c&oLegendary crafting material");
-    addItem("farmer_druidic_essence_III", Material.GLOW_INK_SAC, "&6[ III ] Druidic Essence", "FARMING", "&c&oLegendary crafting material");
-    
-    addItem("farmer_golden_truffle_I", Material.GOLDEN_CARROT, "&9[ I ] Golden Truffle", "FARMING", "&c&oLegendary crafting material");
-    addItem("farmer_golden_truffle_II", Material.GOLDEN_CARROT, "&5[ II ] Golden Truffle", "FARMING", "&c&oLegendary crafting material");
-    addItem("farmer_golden_truffle_III", Material.GOLDEN_CARROT, "&6[ III ] Golden Truffle", "FARMING", "&c&oLegendary crafting material");
-    
-    addItem("farmer_ancient_grain_I", Material.HAY_BLOCK, "&9[ I ] Ancient Grain Sheaf", "FARMING", "&c&oLegendary crafting material");
-    addItem("farmer_ancient_grain_II", Material.HAY_BLOCK, "&5[ II ] Ancient Grain Sheaf", "FARMING", "&c&oLegendary crafting material");
-    addItem("farmer_ancient_grain_III", Material.HAY_BLOCK, "&6[ III ] Ancient Grain Sheaf", "FARMING", "&c&oLegendary crafting material");
-    
-    // Items from category BEES
-    addItem("honey_quality_basic", Material.HONEY_BOTTLE, "&9[ I ] Honey Bottle", "BEES",
-    "&7&oApplies a new &fQuality&7 to an item.",
-    "&7&oRoll range: &f-10% &7to &f+10%.",
-    "&7&oBasic crafting material");
-    addItem("honey_quality_rare", Material.HONEY_BOTTLE, "&5[ II ] Honey Bottle", "BEES",
-    "&7&oApplies a new &fQuality&7 to an item.",
-    "&7&oRoll range: &f0% &7to &f+20%.",
-    "&a&oRare crafting material");
-    addItem("honey_quality_legendary", Material.HONEY_BOTTLE, "&6[ III ] Honey Bottle", "BEES",
-    "&7&oApplies a new &fQuality&7 to an item.",
-    "&7&oRoll range: &f+10% &7to &f+30%.",
-    "&c&oLegendary crafting material");
-    
-    addItem("queen_bee_I", Material.BREAD, "&9[ I ] Queen Bee", "BEES",
-    "&7&oHive multiplier: &f1.0x",
-    "&7&oRarer honey chance: &a+5%");
-    addItem("queen_bee_II", Material.BREAD, "&5[ II ] Queen Bee", "BEES",
-    "&7&oHive multiplier: &f1.2x",
-    "&7&oRarer honey chance: &a+10%");
-    addItem("queen_bee_III", Material.BREAD, "&6[ III ] Queen Bee", "BEES",
-    "&7&oHive multiplier: &f1.5x",
-    "&7&oRarer honey chance: &a+15%");
-    
-    addItem("worker_bee_I", Material.BREAD, "&9[ I ] Worker Bee", "BEES",
-    "&7&oBase honey production: &f0.50");
-    addItem("worker_bee_II", Material.BREAD, "&5[ II ] Worker Bee", "BEES",
-    "&7&oBase honey production: &f0.75");
-    addItem("worker_bee_III", Material.BREAD, "&6[ III ] Worker Bee", "BEES",
-    "&7&oBase honey production: &f1.00");
-    
-    addItem("drone_bee_I", Material.BREAD, "&9[ I ] Drone Bee", "BEES",
-    "&7&oLarvae production: &f0.50",
-    "&7&oReduces base honey production: &f-1.00");
-    addItem("drone_bee_II", Material.BREAD, "&5[ II ] Drone Bee", "BEES",
-    "&7&oLarvae production: &f0.75",
-    "&7&oReduces base honey production: &f-0.75");
-    addItem("drone_bee_III", Material.BREAD, "&6[ III ] Drone Bee", "BEES",
-    "&7&oLarvae production: &f1.00",
-    "&7&oReduces base honey production: &f-0.50");
-    
-    addItem("larva_I", Material.COOKIE, "&9[ I ] Bee Larva", "BEES",
-    "&7&oCan transform into any type of bee.");
-    addItem("larva_II", Material.COOKIE, "&5[ II ] Bee Larva", "BEES",
-    "&7&oCan transform into any type of bee.");
-    addItem("larva_III", Material.COOKIE, "&6[ III ] Bee Larva", "BEES",
-    "&7&oCan transform into any type of bee.");
-    // Przedmioty z kategorii LOWISKO (Łowisko)
-    addItem("alga_I", Material.HORN_CORAL, "&9[ I ] Algal", "LOWISKO", "&7&oBasic crafting material");
-    addItem("alga_II", Material.HORN_CORAL, "&5[ II ] Algal", "LOWISKO", "&7&oBasic crafting material");
-    addItem("alga_III", Material.HORN_CORAL, "&6[ III ] Algal", "LOWISKO", "&7&oBasic crafting material");
-    
-    addItem("pearl_I", Material.TURTLE_EGG, "&9[ I ] Shiny Pearl", "LOWISKO", "&a&oRare crafting material");
-    addItem("pearl_II", Material.TURTLE_EGG, "&5[ II ] Shiny Pearl", "LOWISKO", "&a&oRare crafting material");
-    addItem("pearl_III", Material.TURTLE_EGG, "&6[ III ] Shiny Pearl", "LOWISKO", "&a&oRare crafting material");
-    
-    addItem("ocean_heart_I", Material.HEART_OF_THE_SEA, "&9[ I ] Heart of the Ocean", "LOWISKO", "&c&oLegendary crafting material");
-    addItem("ocean_heart_II", Material.HEART_OF_THE_SEA, "&5[ II ] Heart of the Ocean", "LOWISKO", "&c&oLegendary crafting material");
-    addItem("ocean_heart_III", Material.HEART_OF_THE_SEA, "&6[ III ] Heart of the Ocean", "LOWISKO", "&c&oLegendary crafting material");
-    
-    // Przedmioty z kategorii CURRENCY (Waluty)
-    addItem("draken", Material.GLISTERING_MELON_SLICE, "&e&lDrakenMelon", "CURRENCY", "&7&oEvent currency");
-    addItem("clover", Material.SUNFLOWER, "&6&lGlided Sunflower", "CURRENCY", "&7&oUnique currency");
-    addItem("andermant", Material.SMALL_AMETHYST_BUD, "&5&lAndermant", "CURRENCY", "&7&oPremium currency");
-    addItem("lockpick", Material.GREEN_DYE,"&8&lLockpick", "CURRENCY", "&7&oUsed to unlock mysterious chests");
-    addItem("jewel_dust", Material.INK_SAC, "§9Jewel Dust", "CURRENCY", "&7&oUsed to upgrade jewels");
-    addItem("shiny_dust", Material.GLOW_INK_SAC, "§5Shiny Dust", "CURRENCY", "&7&oUsed to upgrade gems");
-    addItem("rune_dust", Material.CLAY_BALL, "§cRune Dust", "CURRENCY", "&7&oUsed to upgrade runes");
-    addItem("crystal", Material.BRICK, "&d&lCrystal", "CURRENCY", "&7&oMine currency");
-    addItem("pota_biola", Material.BOWL, "&6Biologist Potion", "CURRENCY", "&7&oRight click to reset Biologist Cooldown");
-    addItem("essence_crystal", Material.QUARTZ, "&9Essence Crystal", "CURRENCY", "&7&oBasic crafting material");
-    addItem("power_crystal", Material.RAW_GOLD, "&5Power Crystal", "CURRENCY", "&a&oRare crafting material");
-    addItem("primordial_soul_crystal", Material.ECHO_SHARD, "&6Primordial Soul Crystal", "CURRENCY", "&c&oLegendary crafting material");
-    
-    // Items from category THREAD_WEAVING
-    // Basic Thread Weaving materials
-    addItem("thread_essence", Material.NETHER_BRICK, "&7Thread Essence", "THREAD_WEAVING", "&7&oBasic Thread Weaving material");
-    
-    // Rare Thread Weaving materials
-    addItem("shadow_thread_essence", Material.MAGMA_CREAM, "&5Shadow Thread Essence", "THREAD_WEAVING", "&a&oRare Thread Weaving material");
-    addItem("undead_thread_essence", Material.MAGMA_CREAM, "&8Undead Thread Essence", "THREAD_WEAVING", "&a&oRare Thread Weaving material");
-    addItem("fire_thread_essence", Material.MAGMA_CREAM, "&cFire Thread Essence", "THREAD_WEAVING", "&a&oRare Thread Weaving material");
-    addItem("water_thread_essence", Material.MAGMA_CREAM, "&bWater Thread Essence", "THREAD_WEAVING", "&a&oRare Thread Weaving material");
-    addItem("wild_thread_essence", Material.MAGMA_CREAM, "&aWild Thread Essence", "THREAD_WEAVING", "&a&oRare Thread Weaving material");
-    addItem("poison_thread_essence", Material.MAGMA_CREAM, "&2Poison Thread Essence", "THREAD_WEAVING", "&a&oRare Thread Weaving material");
-    
-    // Legendary Thread Weaving materials
-    addItem("legendary_shadow_thread_essence", Material.RABBIT_FOOT, "&5&lLegendary Shadow Thread Essence", "THREAD_WEAVING", "&c&oLegendary Thread Weaving material");
-    addItem("legendary_undead_thread_essence", Material.RABBIT_FOOT, "&8&lLegendary Undead Thread Essence", "THREAD_WEAVING", "&c&oLegendary Thread Weaving material");
-    addItem("legendary_fire_thread_essence", Material.RABBIT_FOOT, "&c&lLegendary Fire Thread Essence", "THREAD_WEAVING", "&c&oLegendary Thread Weaving material");
-    addItem("legendary_water_thread_essence", Material.RABBIT_FOOT, "&b&lLegendary Water Thread Essence", "THREAD_WEAVING", "&c&oLegendary Thread Weaving material");
-    addItem("legendary_wild_thread_essence", Material.RABBIT_FOOT, "&a&lLegendary Wild Thread Essence", "THREAD_WEAVING", "&c&oLegendary Thread Weaving material");
-    addItem("legendary_poison_thread_essence", Material.RABBIT_FOOT, "&2&lLegendary Poison Thread Essence", "THREAD_WEAVING", "&c&oLegendary Thread Weaving material");
+defaults:
+  min-amount: 1
+  max-amount: 1
+  weight: 1.0
+  rolls: 1
+  pity-weight: 1.0
+
+loot:
+  EXPO:
+    broken_armor_piece:
+      material: IRON_INGOT
+      display-name: "&2Broken Armor Piece"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    tousled_priest_robe:
+      material: SHULKER_SHELL
+      display-name: "&2Tousled Priest Robe"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    fur_black:
+      material: RABBIT_HIDE
+      display-name: "&2Black Fur"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    dragon_scale:
+      material: PHANTOM_MEMBRANE
+      display-name: "&2Dragon Scale"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    chain_fragment:
+      material: CHAIN
+      display-name: "&2Chain Fragment"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    satyrs_horn:
+      material: POINTED_DRIPSTONE
+      display-name: "&2Satyr's Horn"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    gorgons_poison:
+      material: LIGHT_BLUE_DYE
+      display-name: "&2Gorgon's Poison"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    dragon_gold:
+      material: GOLD_INGOT
+      display-name: "&2Dragon's Gold"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    protectors_heart:
+      material: ORANGE_DYE
+      display-name: "&2Protector's Heart"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    deaddd_bush:
+      material: DEAD_BUSH
+      display-name: "&2Dead Bush"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    demon_blood:
+      material: RED_DYE
+      display-name: "&dDemon Blood"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    sticky_mucus:
+      material: SLIME_BALL
+      display-name: "&dSticky Mucus"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    soul_of_an_acient_spartan:
+      material: PITCHER_POD
+      display-name: "&dSoul of an Acient Spartan"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    shadow_rose:
+      material: WITHER_ROSE
+      display-name: "&dShadow Rose"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    Throphy_of_the_long_forgotten_bone_dragon:
+      material: DRAGON_HEAD
+      display-name: "&dThrophy of the Long Forgotten Bone Dragon"
+      lore:
+        - "&7&oCrafting and Quest resource"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+  MONSTER_FRAGMENTS:
+    mob_soul_I:
+      material: FLINT
+      display-name: "&9[ I ] Monster Soul Fragment"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    mob_soul_II:
+      material: FLINT
+      display-name: "&5[ II ] Monster Soul Fragment"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    mob_soul_III:
+      material: FLINT
+      display-name: "&6&6[ III ] Monster Soul Fragment "
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    elite_heart_I:
+      material: NETHER_WART
+      display-name: "&9[ I ] Monster Heart Fragment"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    elite_heart_II:
+      material: NETHER_WART
+      display-name: "&5[ II ] Monster Heart Fragment"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    elite_heart_III:
+      material: NETHER_WART
+      display-name: "&6[ III ] Monster Heart Fragment"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+  Q:
+    grimmag_frag_I:
+      material: LEATHER
+      display-name: "&9[ I ] Grimmor`s Cindered Cape"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    grimmag_frag_II:
+      material: LEATHER
+      display-name: "&5[ II ] Grimmor`s Cindered Cape"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    grimmag_frag_III:
+      material: LEATHER
+      display-name: "&6[ III ] Grimmor`s Cindered Cape"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    arachna_frag_I:
+      material: PHANTOM_MEMBRANE
+      display-name: "&9[ I ] Araksha`s Venom Husk"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    arachna_frag_II:
+      material: PHANTOM_MEMBRANE
+      display-name: "&5[ II ] Araksha`s Venom Husk"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    arachna_frag_III:
+      material: PHANTOM_MEMBRANE
+      display-name: "&6[ III ] Araksha`s Venom Husk"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    heredur_frag_I:
+      material: PRISMARINE_CRYSTALS
+      display-name: "&9[ I ] Heredorn`s Glacial Armor"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    heredur_frag_II:
+      material: PRISMARINE_CRYSTALS
+      display-name: "&5[ II ] Heredorn`s Glacial Armor"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    heredur_frag_III:
+      material: PRISMARINE_CRYSTALS
+      display-name: "&6[ III ] Heredorn`s Glacial Armor"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    bearach_frag_I:
+      material: HONEYCOMB
+      display-name: "&9[ I ] Bearok Honey Hide"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    bearach_frag_II:
+      material: HONEYCOMB
+      display-name: "&5[ II ] Bearok Honey Hide"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    bearach_frag_III:
+      material: HONEYCOMB
+      display-name: "&6[ III ] Bearok Honey Hide"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    khalys_frag_I:
+      material: BLACK_DYE
+      display-name: "&9[ I ] Kalith`s Ritual Robe"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    khalys_frag_II:
+      material: BLACK_DYE
+      display-name: "&5[ II ] Kalith`s Ritual Robe"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    khalys_frag_III:
+      material: BLACK_DYE
+      display-name: "&6[ III ] Kalith`s Ritual Robe"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    heralds_frag_I:
+      material: NETHERITE_SCRAP
+      display-name: "&9[ I ] Harbinger`s Dragon Skin"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    heralds_frag_II:
+      material: NETHERITE_SCRAP
+      display-name: "&5[ II ] Harbinger`s Dragon Skin"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    heralds_frag_III:
+      material: NETHERITE_SCRAP
+      display-name: "&6[ III ] Harbinger`s Dragon Skin"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    sigrismar_frag_I:
+      material: AMETHYST_SHARD
+      display-name: "&9[ I ] Sigrosmar`s Eternal Ice"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    sigrismar_frag_II:
+      material: AMETHYST_SHARD
+      display-name: "&5[ II ] Sigrosmar`s Eternal Ice"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    sigrismar_frag_III:
+      material: AMETHYST_SHARD
+      display-name: "&6[ III ] Sigrosmar`s Eternal Ice"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    medusa_frag_I:
+      material: SCUTE
+      display-name: "&9[ I ] M`Edara Stone Scales"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    medusa_frag_II:
+      material: SCUTE
+      display-name: "&5[ II ] M`Edara Stone Scales"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    medusa_frag_III:
+      material: SCUTE
+      display-name: "&6[ III ] M`Edara Stone Scales"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    gorga_frag_I:
+      material: LIGHTNING_ROD
+      display-name: "&9[ I ] Gorgra`s Broken Tooth"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    gorga_frag_II:
+      material: LIGHTNING_ROD
+      display-name: "&5[ II ] Gorgra`s Broken Tooth"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    gorga_frag_III:
+      material: LIGHTNING_ROD
+      display-name: "&6[ III ] Gorgra`s Broken Tooth"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    mortis_frag_I:
+      material: BONE
+      display-name: "&9[ I ] Mortrix Sacrificial Bones"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    mortis_frag_II:
+      material: BONE
+      display-name: "&5[ II ] Mortrix Sacrificial Bones"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    mortis_frag_III:
+      material: BONE
+      display-name: "&6[ III ] Mortrix Sacrificial Bones"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+  KOPALNIA:
+    ore_I:
+      material: COBBLESTONE
+      display-name: "&9[ I ] Ore"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    ore_II:
+      material: COBBLESTONE
+      display-name: "&5[ II ] Ore"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    ore_III:
+      material: COBBLESTONE
+      display-name: "&6[ III ] Ore"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    blood_I:
+      material: REDSTONE
+      display-name: "&9[ I ] Cursed Blood"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    blood_II:
+      material: REDSTONE
+      display-name: "&5[ II ] Cursed Blood"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    blood_III:
+      material: REDSTONE
+      display-name: "&6[ III ] Cursed Blood"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    bone_I:
+      material: BONE
+      display-name: "&9[ I ] Shattered Bone"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    bone_II:
+      material: BONE
+      display-name: "&5[ II ] Shattered Bone"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    bone_III:
+      material: BONE
+      display-name: "&6[ III ] Shattered Bone"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    leaf_I:
+      material: KELP
+      display-name: "&9[ I ] Leaf"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    leaf_II:
+      material: KELP
+      display-name: "&5[ II ] Leaf"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    leaf_III:
+      material: KELP
+      display-name: "&6[ III ] Leaf"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+  MINE:
+    hematite:
+      material: COAL_ORE
+      display-name: "&8Hematite"
+      lore:
+        - "&7A common black ore with metallic luster and reddish streaks."
+        - "&eCoal-based mineral"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    black_spinel:
+      material: COAL_ORE
+      display-name: "&8Black Spinel"
+      lore:
+        - "&7An uncommon black crystal with exceptional hardness and luster."
+        - "&eCoal-based gemstone"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    black_diamond:
+      material: COAL_ORE
+      display-name: "&8&lBlack Diamond"
+      lore:
+        - "&7A rare and precious black diamond formed under extreme pressure."
+        - "&eHighest quality coal gem"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    magnetite:
+      material: IRON_ORE
+      display-name: "&7Magnetite"
+      lore:
+        - "&7A common metallic ore with magnetic properties."
+        - "&eIron-based mineral"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    silver:
+      material: IRON_ORE
+      display-name: "&f&lSilver"
+      lore:
+        - "&7An uncommon precious metal with lustrous white appearance."
+        - "&eIron-based metal"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    osmium:
+      material: IRON_ORE
+      display-name: "&7&lOsmium"
+      lore:
+        - "&7A rare and dense bluish-white metal, one of the heaviest natural elements."
+        - "&ePremium iron metal"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    azurite:
+      material: LAPIS_ORE
+      display-name: "&9Azurite"
+      lore:
+        - "&7A common deep blue mineral with intense azure color."
+        - "&eLapis-based mineral"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    tanzanite:
+      material: LAPIS_ORE
+      display-name: "&9&lTanzanite"
+      lore:
+        - "&7An uncommon blue-purple gemstone known for its trichroic properties."
+        - "&eLapis-based gem"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    blue_sapphire:
+      material: LAPIS_ORE
+      display-name: "&1&lBlue Sapphire"
+      lore:
+        - "&7A rare and precious blue gemstone, second only to diamond in hardness."
+        - "&ePremium lapis gem"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    carnelian:
+      material: REDSTONE_ORE
+      display-name: "&cCarnelian"
+      lore:
+        - "&7A common reddish-orange mineral with translucent properties."
+        - "&eRedstone-based mineral"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    red_spinel:
+      material: REDSTONE_ORE
+      display-name: "&c&lRed Spinel"
+      lore:
+        - "&7An uncommon vibrant red gemstone often mistaken for ruby."
+        - "&eRedstone-based gem"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    pigeon_blood_ruby:
+      material: REDSTONE_ORE
+      display-name: "&4&lPigeon Blood Ruby"
+      lore:
+        - "&7A rare and precious deep red gemstone with the coveted "pigeon blood" color."
+        - "&ePremium redstone gem"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    pyrite:
+      material: GOLD_ORE
+      display-name: "&ePyrite"
+      lore:
+        - "&7A common brassy-yellow mineral often called "Fool's Gold"."
+        - "&eGold-based mineral"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    yellow_topaz:
+      material: GOLD_ORE
+      display-name: "&e&lYellow Topaz"
+      lore:
+        - "&7An uncommon golden-yellow gemstone with excellent clarity."
+        - "&eGold-based gem"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    yellow_sapphire:
+      material: GOLD_ORE
+      display-name: "&6&lYellow Sapphire"
+      lore:
+        - "&7A rare and precious golden gemstone, prized for its brilliance and hardness."
+        - "&ePremium gold gem"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    malachite:
+      material: EMERALD_ORE
+      display-name: "&aMalachite"
+      lore:
+        - "&7A common green mineral with distinctive banded patterns."
+        - "&eEmerald-based mineral"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    peridot:
+      material: EMERALD_ORE
+      display-name: "&a&lPeridot"
+      lore:
+        - "&7An uncommon olive-green gemstone formed in volcanic environments."
+        - "&eEmerald-based gem"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    tropiche_emerald:
+      material: EMERALD_ORE
+      display-name: "&2&lTropiche Emerald"
+      lore:
+        - "&7A rare and precious deep green gemstone with exceptional clarity and color."
+        - "&ePremium emerald"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    danburite:
+      material: DIAMOND_ORE
+      display-name: "&fDanburite"
+      lore:
+        - "&7A common colorless crystal with diamond-like brilliance."
+        - "&eDiamond-based mineral"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    goshenite:
+      material: DIAMOND_ORE
+      display-name: "&f&lGoshenite"
+      lore:
+        - "&7An uncommon colorless beryl with exceptional clarity."
+        - "&eDiamond-based gemstone"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    cerussite:
+      material: DIAMOND_ORE
+      display-name: "&f&l&nCerussite"
+      lore:
+        - "&7A rare and precious crystal with the highest refractive index."
+        - "&eSupreme diamond gemstone"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+  FARMING:
+    farmer_plant_fiber_I:
+      material: STRING
+      display-name: "&9[ I ] Plant Fiber"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_plant_fiber_II:
+      material: STRING
+      display-name: "&5[ II ] Plant Fiber"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_plant_fiber_III:
+      material: STRING
+      display-name: "&6[ III ] Plant Fiber"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_seed_pouch_I:
+      material: WHEAT_SEEDS
+      display-name: "&9[ I ] Seed Pouch"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_seed_pouch_II:
+      material: WHEAT_SEEDS
+      display-name: "&5[ II ] Seed Pouch"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_seed_pouch_III:
+      material: WHEAT_SEEDS
+      display-name: "&6[ III ] Seed Pouch"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_compost_dust_I:
+      material: BONE_MEAL
+      display-name: "&9[ I ] Compost Dust"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_compost_dust_II:
+      material: BONE_MEAL
+      display-name: "&5[ II ] Compost Dust"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_compost_dust_III:
+      material: BONE_MEAL
+      display-name: "&6[ III ] Compost Dust"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_herb_extract_I:
+      material: SPIDER_EYE
+      display-name: "&9[ I ] Herbal Extract"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_herb_extract_II:
+      material: SPIDER_EYE
+      display-name: "&5[ II ] Herbal Extract"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_herb_extract_III:
+      material: SPIDER_EYE
+      display-name: "&6[ III ] Herbal Extract"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_mushroom_spores_I:
+      material: BROWN_MUSHROOM
+      display-name: "&9[ I ] Mushroom Spores"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_mushroom_spores_II:
+      material: BROWN_MUSHROOM
+      display-name: "&5[ II ] Mushroom Spores"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_mushroom_spores_III:
+      material: BROWN_MUSHROOM
+      display-name: "&6[ III ] Mushroom Spores"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_beeswax_chunk_I:
+      material: BOOK
+      display-name: "&9[ I ] Beeswax Chunk"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_beeswax_chunk_II:
+      material: BOOK
+      display-name: "&5[ II ] Beeswax Chunk"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_beeswax_chunk_III:
+      material: BOOK
+      display-name: "&6[ III ] Beeswax Chunk"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_druidic_essence_I:
+      material: GLOW_INK_SAC
+      display-name: "&9[ I ] Druidic Essence"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_druidic_essence_II:
+      material: GLOW_INK_SAC
+      display-name: "&5[ II ] Druidic Essence"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_druidic_essence_III:
+      material: GLOW_INK_SAC
+      display-name: "&6[ III ] Druidic Essence"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_golden_truffle_I:
+      material: GOLDEN_CARROT
+      display-name: "&9[ I ] Golden Truffle"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_golden_truffle_II:
+      material: GOLDEN_CARROT
+      display-name: "&5[ II ] Golden Truffle"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_golden_truffle_III:
+      material: GOLDEN_CARROT
+      display-name: "&6[ III ] Golden Truffle"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_ancient_grain_I:
+      material: HAY_BLOCK
+      display-name: "&9[ I ] Ancient Grain Sheaf"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_ancient_grain_II:
+      material: HAY_BLOCK
+      display-name: "&5[ II ] Ancient Grain Sheaf"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    farmer_ancient_grain_III:
+      material: HAY_BLOCK
+      display-name: "&6[ III ] Ancient Grain Sheaf"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+  BEES:
+    honey_quality_basic:
+      material: HONEY_BOTTLE
+      display-name: "&9[ I ] Honey Bottle"
+      lore:
+        - "&7&oApplies a new &fQuality&7 to an item."
+        - "&7&oRoll range: &f-10% &7to &f+10%."
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    honey_quality_rare:
+      material: HONEY_BOTTLE
+      display-name: "&5[ II ] Honey Bottle"
+      lore:
+        - "&7&oApplies a new &fQuality&7 to an item."
+        - "&7&oRoll range: &f0% &7to &f+20%."
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    honey_quality_legendary:
+      material: HONEY_BOTTLE
+      display-name: "&6[ III ] Honey Bottle"
+      lore:
+        - "&7&oApplies a new &fQuality&7 to an item."
+        - "&7&oRoll range: &f+10% &7to &f+30%."
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    queen_bee_I:
+      material: BREAD
+      display-name: "&9[ I ] Queen Bee"
+      lore:
+        - "&7&oHive multiplier: &f1.0x"
+        - "&7&oRarer honey chance: &a+5%"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    queen_bee_II:
+      material: BREAD
+      display-name: "&5[ II ] Queen Bee"
+      lore:
+        - "&7&oHive multiplier: &f1.2x"
+        - "&7&oRarer honey chance: &a+10%"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    queen_bee_III:
+      material: BREAD
+      display-name: "&6[ III ] Queen Bee"
+      lore:
+        - "&7&oHive multiplier: &f1.5x"
+        - "&7&oRarer honey chance: &a+15%"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    worker_bee_I:
+      material: BREAD
+      display-name: "&9[ I ] Worker Bee"
+      lore:
+        - "&7&oBase honey production: &f0.50"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    worker_bee_II:
+      material: BREAD
+      display-name: "&5[ II ] Worker Bee"
+      lore:
+        - "&7&oBase honey production: &f0.75"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    worker_bee_III:
+      material: BREAD
+      display-name: "&6[ III ] Worker Bee"
+      lore:
+        - "&7&oBase honey production: &f1.00"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    drone_bee_I:
+      material: BREAD
+      display-name: "&9[ I ] Drone Bee"
+      lore:
+        - "&7&oLarvae production: &f0.50"
+        - "&7&oReduces base honey production: &f-1.00"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    drone_bee_II:
+      material: BREAD
+      display-name: "&5[ II ] Drone Bee"
+      lore:
+        - "&7&oLarvae production: &f0.75"
+        - "&7&oReduces base honey production: &f-0.75"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    drone_bee_III:
+      material: BREAD
+      display-name: "&6[ III ] Drone Bee"
+      lore:
+        - "&7&oLarvae production: &f1.00"
+        - "&7&oReduces base honey production: &f-0.50"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    larva_I:
+      material: COOKIE
+      display-name: "&9[ I ] Bee Larva"
+      lore:
+        - "&7&oCan transform into any type of bee."
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    larva_II:
+      material: COOKIE
+      display-name: "&5[ II ] Bee Larva"
+      lore:
+        - "&7&oCan transform into any type of bee."
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    larva_III:
+      material: COOKIE
+      display-name: "&6[ III ] Bee Larva"
+      lore:
+        - "&7&oCan transform into any type of bee."
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+  LOWISKO:
+    alga_I:
+      material: HORN_CORAL
+      display-name: "&9[ I ] Algal"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    alga_II:
+      material: HORN_CORAL
+      display-name: "&5[ II ] Algal"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    alga_III:
+      material: HORN_CORAL
+      display-name: "&6[ III ] Algal"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    pearl_I:
+      material: TURTLE_EGG
+      display-name: "&9[ I ] Shiny Pearl"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    pearl_II:
+      material: TURTLE_EGG
+      display-name: "&5[ II ] Shiny Pearl"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    pearl_III:
+      material: TURTLE_EGG
+      display-name: "&6[ III ] Shiny Pearl"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    ocean_heart_I:
+      material: HEART_OF_THE_SEA
+      display-name: "&9[ I ] Heart of the Ocean"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    ocean_heart_II:
+      material: HEART_OF_THE_SEA
+      display-name: "&5[ II ] Heart of the Ocean"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    ocean_heart_III:
+      material: HEART_OF_THE_SEA
+      display-name: "&6[ III ] Heart of the Ocean"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+  CURRENCY:
+    draken:
+      material: GLISTERING_MELON_SLICE
+      display-name: "&e&lDrakenMelon"
+      lore:
+        - "&7&oEvent currency"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    clover:
+      material: SUNFLOWER
+      display-name: "&6&lGlided Sunflower"
+      lore:
+        - "&7&oUnique currency"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    andermant:
+      material: SMALL_AMETHYST_BUD
+      display-name: "&5&lAnderium"
+      lore:
+        - "&7&oPremium currency"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    lockpick:
+      material: GREEN_DYE
+      display-name: "&8&lLockpick"
+      lore:
+        - "&7&oUsed to unlock mysterious chests"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    jewel_dust:
+      material: INK_SAC
+      display-name: "§9Jewel Dust"
+      lore:
+        - "&7&oUsed to upgrade jewels"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    shiny_dust:
+      material: GLOW_INK_SAC
+      display-name: "§5Shiny Dust"
+      lore:
+        - "&7&oUsed to upgrade gems"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    rune_dust:
+      material: CLAY_BALL
+      display-name: "§cRune Dust"
+      lore:
+        - "&7&oUsed to upgrade runes"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    crystal:
+      material: BRICK
+      display-name: "&d&lCrystal"
+      lore:
+        - "&7&oMine currency"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    pota_biola:
+      material: BOWL
+      display-name: "&6Biologist Potion"
+      lore:
+        - "&7&oRight click to reset Biologist Cooldown"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    essence_crystal:
+      material: QUARTZ
+      display-name: "&9Essence Crystal"
+      lore:
+        - "&7&oBasic crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    power_crystal:
+      material: RAW_GOLD
+      display-name: "&5Power Crystal"
+      lore:
+        - "&a&oRare crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    primordial_soul_crystal:
+      material: ECHO_SHARD
+      display-name: "&6Primordial Soul Crystal"
+      lore:
+        - "&c&oLegendary crafting material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+  THREAD_WEAVING:
+    thread_essence:
+      material: NETHER_BRICK
+      display-name: "&7Thread Essence"
+      lore:
+        - "&7&oBasic Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    shadow_thread_essence:
+      material: MAGMA_CREAM
+      display-name: "&5Shadow Thread Essence"
+      lore:
+        - "&a&oRare Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    undead_thread_essence:
+      material: MAGMA_CREAM
+      display-name: "&8Undead Thread Essence"
+      lore:
+        - "&a&oRare Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    fire_thread_essence:
+      material: MAGMA_CREAM
+      display-name: "&cFire Thread Essence"
+      lore:
+        - "&a&oRare Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    water_thread_essence:
+      material: MAGMA_CREAM
+      display-name: "&bWater Thread Essence"
+      lore:
+        - "&a&oRare Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    wild_thread_essence:
+      material: MAGMA_CREAM
+      display-name: "&aWild Thread Essence"
+      lore:
+        - "&a&oRare Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    poison_thread_essence:
+      material: MAGMA_CREAM
+      display-name: "&2Poison Thread Essence"
+      lore:
+        - "&a&oRare Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    legendary_shadow_thread_essence:
+      material: RABBIT_FOOT
+      display-name: "&5&lLegendary Shadow Thread Essence"
+      lore:
+        - "&c&oLegendary Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    legendary_undead_thread_essence:
+      material: RABBIT_FOOT
+      display-name: "&8&lLegendary Undead Thread Essence"
+      lore:
+        - "&c&oLegendary Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    legendary_fire_thread_essence:
+      material: RABBIT_FOOT
+      display-name: "&c&lLegendary Fire Thread Essence"
+      lore:
+        - "&c&oLegendary Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    legendary_water_thread_essence:
+      material: RABBIT_FOOT
+      display-name: "&b&lLegendary Water Thread Essence"
+      lore:
+        - "&c&oLegendary Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    legendary_wild_thread_essence:
+      material: RABBIT_FOOT
+      display-name: "&a&lLegendary Wild Thread Essence"
+      lore:
+        - "&c&oLegendary Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+    legendary_poison_thread_essence:
+      material: RABBIT_FOOT
+      display-name: "&2&lLegendary Poison Thread Essence"
+      lore:
+        - "&c&oLegendary Thread Weaving material"
+      min-amount: 1
+      max-amount: 1
+      weight: 1.0
+      rolls: 1
+      pity-weight: 1.0
+
+pity-pool:
+  - grimmag_frag_I
+  - grimmag_frag_II
+  - grimmag_frag_III
+  - arachna_frag_I
+  - arachna_frag_II
+  - arachna_frag_III
+  - heredur_frag_I
+  - heredur_frag_II
+  - heredur_frag_III
+  - bearach_frag_I
+  - bearach_frag_II
+  - bearach_frag_III
+  - khalys_frag_I
+  - khalys_frag_II
+  - khalys_frag_III
+  - heralds_frag_I
+  - heralds_frag_II
+  - heralds_frag_III
+  - sigrismar_frag_I
+  - sigrismar_frag_II
+  - sigrismar_frag_III
+  - medusa_frag_I
+  - medusa_frag_II
+  - medusa_frag_III
+  - gorga_frag_I
+  - gorga_frag_II
+  - gorga_frag_III
+  - mortis_frag_I
+  - mortis_frag_II
+  - mortis_frag_III
