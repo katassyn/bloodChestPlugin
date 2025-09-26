@@ -51,13 +51,13 @@ public class ConfigurationLoader {
         List<String> instructions = section.getStringList("instructions");
 
         MenuButton startButton = readMenuButton(section.getConfigurationSection("start-button"), 13, Material.NETHER_STAR,
-                "&cStart Blood Chest", List.of("&7Zużywa wymagany klucz"));
+                "&cStart Blood Chest", List.of("&7Consumes the required key"));
         MenuButton lootButton = readMenuButton(section.getConfigurationSection("loot-button"), 15, Material.CHEST,
-                "&6Możliwe nagrody", List.of("&7Wyświetl dostępne łupy"));
+                "&6Possible rewards", List.of("&7View the available loot"));
         MenuButton closeButton = readMenuButton(section.getConfigurationSection("close-button"), 26, Material.BARRIER,
-                "&cZamknij", List.of("&7Zamknij menu"));
+                "&cClose", List.of("&7Close the menu"));
         MenuButton backButton = readMenuButton(section.getConfigurationSection("back-button"), 45, Material.ARROW,
-                "&ePowrót", List.of("&7Wróć do poprzedniego widoku"));
+                "&eBack", List.of("&7Return to the previous view"));
 
         return new GuiSettings(title, instructions, startButton, lootButton, closeButton, backButton);
     }
@@ -177,7 +177,7 @@ public class ConfigurationLoader {
     private ChestSettings readChestSettings(ConfigurationSection section) {
         Material material = Material.CHEST;
         String name = "&4Blood Chest";
-        List<String> lore = List.of("&7Otwórz, aby odebrać nagrody");
+        List<String> lore = List.of("&7Open to claim your rewards");
         if (section != null) {
             material = ConfigUtil.readMaterial(section.getString("material"), material);
             name = section.getString("name", name);

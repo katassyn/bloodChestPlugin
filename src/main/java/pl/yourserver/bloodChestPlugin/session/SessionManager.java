@@ -67,7 +67,7 @@ public class SessionManager {
             throw new IllegalStateException("Player already has an active blood chest session");
         }
         ArenaSlotInstance slot = slots.stream().filter(s -> !s.isBusy()).findFirst()
-                .orElseThrow(() -> new IllegalStateException("Brak dostępnych instancji areny. Spróbuj ponownie później."));
+                .orElseThrow(() -> new IllegalStateException("No arena instances are available. Please try again later."));
         slot.setBusy(true);
         BloodChestSession session = new BloodChestSession(plugin, configuration, schematicHandler, lootService, pityManager,
                 slot, returnLocation, schematicFile, this);
