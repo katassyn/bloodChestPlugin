@@ -107,17 +107,23 @@ arena:
   mob:
     spawn-mode: MYTHIC_COMMAND
     mythic-id: blood_sludge
+    primary-count: 5
+    additional-mythic-ids:
+      - blood_leech
+      - blood_sludgeling
     spawn-command: "mm mobs spawn {id} {world} {x} {y} {z}"
     metadata-key: MythicMob
     fallback-entity: HUSK
     y-offset: 1
-  slots:
-    slot-1:
-      origin:
-        world: world
-        x: 0
-        y: 80
-        z: 0
+  slot-area:
+    min:
+      x: 794
+      y: -61
+      z: -2365
+    max:
+      x: 1165
+      y: 33
+      z: -1874
 
 rewards:
   exit-countdown-seconds: 60

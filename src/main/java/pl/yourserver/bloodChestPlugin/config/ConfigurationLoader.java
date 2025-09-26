@@ -129,6 +129,12 @@ public class ConfigurationLoader {
             slots.add(new ArenaSlot(id, origin));
         }
         if (slots.isEmpty()) {
+            ConfigurationSection slotAreaSection = section.getConfigurationSection("slot-area");
+            if (slotAreaSection != null) {
+                slots.addAll(generateSlotsFromArea(slotAreaSection, worldName, regionSize));
+            }
+        }
+        if (slots.isEmpty()) {
             throw new IllegalStateException("No arena slots configured");
         }
 
@@ -155,7 +161,7 @@ public class ConfigurationLoader {
 
     private MobSettings readMobSettings(ConfigurationSection section) {
         if (section == null) {
-            return new MobSettings(SpawnMode.VANILLA, null, null, "MythicMob", EntityType.HUSK, 1);
+            return new MobSettings(SpawnMode.VANILLA, null, null, "MythicMob", EntityType.HUSK, 1, 5, List.of());
         }
         String spawnModeRaw = section.getString("spawn-mode", "VANILLA");
         SpawnMode spawnMode;
@@ -170,8 +176,69 @@ public class ConfigurationLoader {
         String metadataKey = section.getString("metadata-key", "MythicMob");
         EntityType fallbackEntity = ConfigUtil.readEntityType(section.getString("fallback-entity"), EntityType.HUSK);
         int spawnYOffset = section.getInt("y-offset", 1);
+        int primaryCount = Math.max(1, section.getInt("primary-count", 5));
+        List<String> additionalMythicIds = section.contains("additional-mythic-ids")
+                ? List.copyOf(section.getStringList("additional-mythic-ids"))
+                : List.of();
 
-        return new MobSettings(spawnMode, mythicId, command, metadataKey, fallbackEntity, spawnYOffset);
+        return new MobSettings(spawnMode, mythicId, command, metadataKey, fallbackEntity, spawnYOffset,
+                primaryCount, additionalMythicIds);
+    }
+
+    private List<ArenaSlot> generateSlotsFromArea(ConfigurationSection areaSection,
+                                                 String defaultWorld,
+                                                 Vector regionSize) {
+        ConfigurationSection minSection = areaSection.getConfigurationSection("min");
+        ConfigurationSection maxSection = areaSection.getConfigurationSection("max");
+        if (minSection == null || maxSection == null) {
+            throw new IllegalStateException("slot-area requires both min and max sections");
+        }
+
+        SpawnLocation min = readSpawnLocation(minSection, defaultWorld);
+        SpawnLocation max = readSpawnLocation(maxSection, defaultWorld);
+
+        String minWorld = min.getWorld();
+        String maxWorld = max.getWorld();
+        if (!minWorld.equals(maxWorld)) {
+            throw new IllegalStateException("slot-area min and max must be defined in the same world");
+        }
+
+        String world = areaSection.getString("world", minWorld);
+        if (!world.equals(minWorld)) {
+            throw new IllegalStateException("slot-area world must match min/max world definitions");
+        }
+
+        double minX = Math.min(min.getX(), max.getX());
+        double maxX = Math.max(min.getX(), max.getX());
+        double minZ = Math.min(min.getZ(), max.getZ());
+        double maxZ = Math.max(min.getZ(), max.getZ());
+        double minY = Math.min(min.getY(), max.getY());
+
+        int regionWidth = Math.max(1, (int) Math.round(regionSize.getX()));
+        int regionDepth = Math.max(1, (int) Math.round(regionSize.getZ()));
+
+        Vector spacingVector = ConfigUtil.readVector(areaSection.getConfigurationSection("spacing"));
+        double spacingX = spacingVector == null ? 0.0 : spacingVector.getX();
+        double spacingZ = spacingVector == null ? 0.0 : spacingVector.getZ();
+
+        double stepX = Math.max(1.0, regionWidth + spacingX);
+        double stepZ = Math.max(1.0, regionDepth + spacingZ);
+
+        double maxOriginX = maxX - regionWidth + 1;
+        double maxOriginZ = maxZ - regionDepth + 1;
+        if (maxOriginX < minX || maxOriginZ < minZ) {
+            throw new IllegalStateException("slot-area boundaries are smaller than the configured region-size");
+        }
+
+        List<ArenaSlot> generated = new ArrayList<>();
+        int index = 1;
+        for (double x = minX; x <= maxOriginX + 1e-6; x += stepX) {
+            for (double z = minZ; z <= maxOriginZ + 1e-6; z += stepZ) {
+                String id = "slot-" + index++;
+                generated.add(new ArenaSlot(id, new SpawnLocation(world, x, minY, z, 0f, 0f)));
+            }
+        }
+        return generated;
     }
 
     private ChestSettings readChestSettings(ConfigurationSection section) {
