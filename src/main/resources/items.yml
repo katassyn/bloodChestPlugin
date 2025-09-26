@@ -14,7 +14,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     tousled_priest_robe:
@@ -24,7 +24,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     fur_black:
@@ -34,7 +34,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     dragon_scale:
@@ -44,7 +44,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     chain_fragment:
@@ -54,7 +54,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     satyrs_horn:
@@ -64,7 +64,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     gorgons_poison:
@@ -74,7 +74,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     dragon_gold:
@@ -84,7 +84,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     protectors_heart:
@@ -94,7 +94,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     deaddd_bush:
@@ -104,7 +104,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     demon_blood:
@@ -114,7 +114,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.4
       rolls: 1
       pity-weight: 1.0
     sticky_mucus:
@@ -124,7 +124,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.3
       rolls: 1
       pity-weight: 1.0
     soul_of_an_acient_spartan:
@@ -134,7 +134,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.2
       rolls: 1
       pity-weight: 1.0
     shadow_rose:
@@ -144,7 +144,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     Throphy_of_the_long_forgotten_bone_dragon:
@@ -154,7 +154,7 @@ loot:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
   MONSTER_FRAGMENTS:
@@ -165,7 +165,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     mob_soul_II:
@@ -175,7 +175,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     mob_soul_III:
@@ -185,7 +185,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     elite_heart_I:
@@ -195,7 +195,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     elite_heart_II:
@@ -205,7 +205,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     elite_heart_III:
@@ -215,7 +215,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
   Q:
@@ -226,7 +226,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     grimmag_frag_II:
@@ -236,7 +236,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     grimmag_frag_III:
@@ -246,7 +246,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     arachna_frag_I:
@@ -256,7 +256,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     arachna_frag_II:
@@ -266,7 +266,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     arachna_frag_III:
@@ -276,7 +276,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     heredur_frag_I:
@@ -286,7 +286,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     heredur_frag_II:
@@ -296,7 +296,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     heredur_frag_III:
@@ -306,7 +306,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     bearach_frag_I:
@@ -316,7 +316,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     bearach_frag_II:
@@ -326,7 +326,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     bearach_frag_III:
@@ -336,7 +336,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     khalys_frag_I:
@@ -346,7 +346,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     khalys_frag_II:
@@ -356,7 +356,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     khalys_frag_III:
@@ -366,7 +366,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     heralds_frag_I:
@@ -376,7 +376,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     heralds_frag_II:
@@ -386,7 +386,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     heralds_frag_III:
@@ -396,7 +396,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     sigrismar_frag_I:
@@ -406,7 +406,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     sigrismar_frag_II:
@@ -416,7 +416,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     sigrismar_frag_III:
@@ -426,7 +426,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     medusa_frag_I:
@@ -436,7 +436,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     medusa_frag_II:
@@ -446,7 +446,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     medusa_frag_III:
@@ -456,7 +456,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     gorga_frag_I:
@@ -466,7 +466,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     gorga_frag_II:
@@ -476,7 +476,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     gorga_frag_III:
@@ -486,7 +486,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     mortis_frag_I:
@@ -496,7 +496,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     mortis_frag_II:
@@ -506,7 +506,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     mortis_frag_III:
@@ -516,7 +516,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
   KOPALNIA:
@@ -527,7 +527,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     ore_II:
@@ -537,7 +537,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     ore_III:
@@ -547,7 +547,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     blood_I:
@@ -557,7 +557,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     blood_II:
@@ -567,7 +567,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     blood_III:
@@ -577,7 +577,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     bone_I:
@@ -587,7 +587,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     bone_II:
@@ -597,7 +597,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     bone_III:
@@ -607,7 +607,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     leaf_I:
@@ -617,7 +617,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     leaf_II:
@@ -627,7 +627,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     leaf_III:
@@ -637,7 +637,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
   MINE:
@@ -649,7 +649,7 @@ loot:
         - "&eCoal-based mineral"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     black_spinel:
@@ -660,7 +660,7 @@ loot:
         - "&eCoal-based gemstone"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     black_diamond:
@@ -671,7 +671,7 @@ loot:
         - "&eHighest quality coal gem"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.5
       rolls: 1
       pity-weight: 1.0
     magnetite:
@@ -682,7 +682,7 @@ loot:
         - "&eIron-based mineral"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.4
       rolls: 1
       pity-weight: 1.0
     silver:
@@ -693,7 +693,7 @@ loot:
         - "&eIron-based metal"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.4
       rolls: 1
       pity-weight: 1.0
     osmium:
@@ -704,7 +704,7 @@ loot:
         - "&ePremium iron metal"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.4
       rolls: 1
       pity-weight: 1.0
     azurite:
@@ -715,7 +715,7 @@ loot:
         - "&eLapis-based mineral"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.3
       rolls: 1
       pity-weight: 1.0
     tanzanite:
@@ -726,7 +726,7 @@ loot:
         - "&eLapis-based gem"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.3
       rolls: 1
       pity-weight: 1.0
     blue_sapphire:
@@ -737,7 +737,7 @@ loot:
         - "&ePremium lapis gem"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.3
       rolls: 1
       pity-weight: 1.0
     carnelian:
@@ -748,7 +748,7 @@ loot:
         - "&eRedstone-based mineral"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.2
       rolls: 1
       pity-weight: 1.0
     red_spinel:
@@ -759,7 +759,7 @@ loot:
         - "&eRedstone-based gem"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.2
       rolls: 1
       pity-weight: 1.0
     pigeon_blood_ruby:
@@ -770,7 +770,7 @@ loot:
         - "&ePremium redstone gem"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.2
       rolls: 1
       pity-weight: 1.0
     pyrite:
@@ -781,7 +781,7 @@ loot:
         - "&eGold-based mineral"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     yellow_topaz:
@@ -792,7 +792,7 @@ loot:
         - "&eGold-based gem"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     yellow_sapphire:
@@ -803,7 +803,7 @@ loot:
         - "&ePremium gold gem"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     malachite:
@@ -814,7 +814,7 @@ loot:
         - "&eEmerald-based mineral"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     peridot:
@@ -825,7 +825,7 @@ loot:
         - "&eEmerald-based gem"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     tropiche_emerald:
@@ -836,7 +836,7 @@ loot:
         - "&ePremium emerald"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     danburite:
@@ -847,7 +847,7 @@ loot:
         - "&eDiamond-based mineral"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     goshenite:
@@ -858,7 +858,7 @@ loot:
         - "&eDiamond-based gemstone"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     cerussite:
@@ -869,7 +869,7 @@ loot:
         - "&eSupreme diamond gemstone"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
   FARMING:
@@ -880,7 +880,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     farmer_plant_fiber_II:
@@ -890,7 +890,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     farmer_plant_fiber_III:
@@ -900,7 +900,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     farmer_seed_pouch_I:
@@ -910,7 +910,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     farmer_seed_pouch_II:
@@ -920,7 +920,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     farmer_seed_pouch_III:
@@ -930,7 +930,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     farmer_compost_dust_I:
@@ -940,7 +940,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     farmer_compost_dust_II:
@@ -950,7 +950,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     farmer_compost_dust_III:
@@ -960,7 +960,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     farmer_herb_extract_I:
@@ -970,7 +970,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     farmer_herb_extract_II:
@@ -980,7 +980,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     farmer_herb_extract_III:
@@ -990,7 +990,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     farmer_mushroom_spores_I:
@@ -1000,7 +1000,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     farmer_mushroom_spores_II:
@@ -1010,7 +1010,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     farmer_mushroom_spores_III:
@@ -1020,7 +1020,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     farmer_beeswax_chunk_I:
@@ -1030,7 +1030,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     farmer_beeswax_chunk_II:
@@ -1040,7 +1040,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     farmer_beeswax_chunk_III:
@@ -1050,7 +1050,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     farmer_druidic_essence_I:
@@ -1060,7 +1060,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     farmer_druidic_essence_II:
@@ -1070,7 +1070,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     farmer_druidic_essence_III:
@@ -1080,7 +1080,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     farmer_golden_truffle_I:
@@ -1090,7 +1090,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     farmer_golden_truffle_II:
@@ -1100,7 +1100,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     farmer_golden_truffle_III:
@@ -1110,7 +1110,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     farmer_ancient_grain_I:
@@ -1120,7 +1120,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     farmer_ancient_grain_II:
@@ -1130,7 +1130,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
     farmer_ancient_grain_III:
@@ -1140,7 +1140,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.1
       rolls: 1
       pity-weight: 1.0
   BEES:
@@ -1153,7 +1153,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     honey_quality_rare:
@@ -1165,7 +1165,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     honey_quality_legendary:
@@ -1177,7 +1177,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     queen_bee_I:
@@ -1188,7 +1188,7 @@ loot:
         - "&7&oRarer honey chance: &a+5%"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     queen_bee_II:
@@ -1199,7 +1199,7 @@ loot:
         - "&7&oRarer honey chance: &a+10%"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     queen_bee_III:
@@ -1210,7 +1210,7 @@ loot:
         - "&7&oRarer honey chance: &a+15%"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     worker_bee_I:
@@ -1220,7 +1220,7 @@ loot:
         - "&7&oBase honey production: &f0.50"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     worker_bee_II:
@@ -1230,7 +1230,7 @@ loot:
         - "&7&oBase honey production: &f0.75"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     worker_bee_III:
@@ -1240,7 +1240,7 @@ loot:
         - "&7&oBase honey production: &f1.00"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     drone_bee_I:
@@ -1251,7 +1251,7 @@ loot:
         - "&7&oReduces base honey production: &f-1.00"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     drone_bee_II:
@@ -1262,7 +1262,7 @@ loot:
         - "&7&oReduces base honey production: &f-0.75"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     drone_bee_III:
@@ -1273,7 +1273,7 @@ loot:
         - "&7&oReduces base honey production: &f-0.50"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     larva_I:
@@ -1283,7 +1283,7 @@ loot:
         - "&7&oCan transform into any type of bee."
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     larva_II:
@@ -1293,7 +1293,7 @@ loot:
         - "&7&oCan transform into any type of bee."
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     larva_III:
@@ -1303,7 +1303,7 @@ loot:
         - "&7&oCan transform into any type of bee."
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
   LOWISKO:
@@ -1314,7 +1314,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     alga_II:
@@ -1324,7 +1324,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     alga_III:
@@ -1334,7 +1334,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     pearl_I:
@@ -1344,7 +1344,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     pearl_II:
@@ -1354,7 +1354,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     pearl_III:
@@ -1364,7 +1364,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     ocean_heart_I:
@@ -1374,7 +1374,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     ocean_heart_II:
@@ -1384,7 +1384,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     ocean_heart_III:
@@ -1394,7 +1394,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
   CURRENCY:
@@ -1405,7 +1405,7 @@ loot:
         - "&7&oEvent currency"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     clover:
@@ -1415,7 +1415,7 @@ loot:
         - "&7&oUnique currency"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     andermant:
@@ -1425,7 +1425,7 @@ loot:
         - "&7&oPremium currency"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     lockpick:
@@ -1435,7 +1435,7 @@ loot:
         - "&7&oUsed to unlock mysterious chests"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     jewel_dust:
@@ -1445,7 +1445,7 @@ loot:
         - "&7&oUsed to upgrade jewels"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.01
       rolls: 1
       pity-weight: 1.0
     shiny_dust:
@@ -1455,7 +1455,7 @@ loot:
         - "&7&oUsed to upgrade gems"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.01
       rolls: 1
       pity-weight: 1.0
     rune_dust:
@@ -1465,7 +1465,7 @@ loot:
         - "&7&oUsed to upgrade runes"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.01
       rolls: 1
       pity-weight: 1.0
     crystal:
@@ -1475,7 +1475,7 @@ loot:
         - "&7&oMine currency"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     pota_biola:
@@ -1485,7 +1485,7 @@ loot:
         - "&7&oRight click to reset Biologist Cooldown"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.0
       rolls: 1
       pity-weight: 1.0
     essence_crystal:
@@ -1495,7 +1495,7 @@ loot:
         - "&7&oBasic crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     power_crystal:
@@ -1505,7 +1505,7 @@ loot:
         - "&a&oRare crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     primordial_soul_crystal:
@@ -1515,7 +1515,7 @@ loot:
         - "&c&oLegendary crafting material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
   THREAD_WEAVING:
@@ -1526,7 +1526,7 @@ loot:
         - "&7&oBasic Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 3.0
       rolls: 1
       pity-weight: 1.0
     shadow_thread_essence:
@@ -1536,7 +1536,7 @@ loot:
         - "&a&oRare Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     undead_thread_essence:
@@ -1546,7 +1546,7 @@ loot:
         - "&a&oRare Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     fire_thread_essence:
@@ -1556,7 +1556,7 @@ loot:
         - "&a&oRare Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     water_thread_essence:
@@ -1566,7 +1566,7 @@ loot:
         - "&a&oRare Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     wild_thread_essence:
@@ -1576,7 +1576,7 @@ loot:
         - "&a&oRare Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     poison_thread_essence:
@@ -1586,7 +1586,7 @@ loot:
         - "&a&oRare Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.25
       rolls: 1
       pity-weight: 1.0
     legendary_shadow_thread_essence:
@@ -1596,7 +1596,7 @@ loot:
         - "&c&oLegendary Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     legendary_undead_thread_essence:
@@ -1606,7 +1606,7 @@ loot:
         - "&c&oLegendary Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     legendary_fire_thread_essence:
@@ -1616,7 +1616,7 @@ loot:
         - "&c&oLegendary Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     legendary_water_thread_essence:
@@ -1626,7 +1626,7 @@ loot:
         - "&c&oLegendary Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     legendary_wild_thread_essence:
@@ -1636,7 +1636,7 @@ loot:
         - "&c&oLegendary Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
     legendary_poison_thread_essence:
@@ -1646,7 +1646,7 @@ loot:
         - "&c&oLegendary Thread Weaving material"
       min-amount: 1
       max-amount: 1
-      weight: 1.0
+      weight: 0.05
       rolls: 1
       pity-weight: 1.0
 
