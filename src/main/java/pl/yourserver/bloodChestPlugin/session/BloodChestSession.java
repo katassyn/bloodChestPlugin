@@ -2,6 +2,7 @@ package pl.yourserver.bloodChestPlugin.session;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,6 +40,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BloodChestSession {
 
+    private static final String MOB_TAG = "blood_chest_mob";
+    private static final String PRIMARY_MOB_TAG = "blood_chest_primary";
+
     private final Plugin plugin;
     private final PluginConfiguration configuration;
     private final SchematicHandler schematicHandler;
@@ -56,9 +60,11 @@ public class BloodChestSession {
     private final List<Location> mobSpawnLocations = new ArrayList<>();
     private final List<Location> chestLocations = new ArrayList<>();
     private final Map<Location, Boolean> spawnedChests = new HashMap<>();
-    private final Set<UUID> activeMobIds = new HashSet<>();
-    private final Set<UUID> defeatedMobIds = new HashSet<>();
-    private final List<Location> pendingSpawnAssignments = new ArrayList<>();
+    private final Map<UUID, SpawnType> activeMobs = new HashMap<>();
+    private final Set<UUID> processedDeaths = new HashSet<>();
+    private final List<SpawnAssignment> pendingSpawnAssignments = new ArrayList<>();
+    private int defeatedPrimaryCount;
+    private int requiredPrimaryCount;
     private long startTimeMillis;
     private boolean mobsDefeated;
     private boolean finished;
@@ -108,6 +114,11 @@ public class BloodChestSession {
         scanMarkers(world);
         teleportPlayerToArena();
         this.startTimeMillis = System.currentTimeMillis();
+        this.defeatedPrimaryCount = 0;
+        this.requiredPrimaryCount = 0;
+        this.activeMobs.clear();
+        this.processedDeaths.clear();
+        this.pendingSpawnAssignments.clear();
         spawnMobs(world);
         player.sendMessage(color("&7Defeat all &cBlood Sludges &7as quickly as possible!"));
     }
@@ -150,32 +161,56 @@ public class BloodChestSession {
 
     private void spawnMobs(World world) {
         MobSettings mobSettings = arenaSettings.getMobSettings();
-        int required = Math.min(5, mobSpawnLocations.size());
-        if (required <= 0) {
+        requiredPrimaryCount = Math.min(mobSettings.getPrimaryMobCount(), mobSpawnLocations.size());
+        if (requiredPrimaryCount <= 0) {
             plugin.getLogger().warning("No mob spawn markers found for blood chest session");
             return;
         }
-        for (int i = 0; i < required; i++) {
-            Location spawnLocation = mobSpawnLocations.get(i);
-            if (mobSettings.getSpawnMode() == SpawnMode.MYTHIC_COMMAND) {
-                pendingSpawnAssignments.add(spawnLocation);
-                String command = buildSpawnCommand(mobSettings, spawnLocation);
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-            } else {
-                EntityType type = mobSettings.getFallbackEntityType();
-                Entity entity = world.spawnEntity(spawnLocation, type);
-                entity.addScoreboardTag("blood_chest_mob");
-                activeMobIds.add(entity.getUniqueId());
-            }
+        int index = 0;
+        for (; index < requiredPrimaryCount; index++) {
+            Location spawnLocation = mobSpawnLocations.get(index);
+            spawnMob(world, mobSettings, spawnLocation, mobSettings.getMythicMobId(), SpawnType.PRIMARY);
+        }
+
+        List<String> additionalIds = mobSettings.getAdditionalMythicMobIds();
+        if (additionalIds.isEmpty()) {
+            return;
+        }
+        int additionalIndex = 0;
+        for (; index < mobSpawnLocations.size(); index++) {
+            Location spawnLocation = mobSpawnLocations.get(index);
+            String mythicId = additionalIds.get(additionalIndex % additionalIds.size());
+            additionalIndex++;
+            spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
         }
     }
 
-    private String buildSpawnCommand(MobSettings mobSettings, Location location) {
+    private void spawnMob(World world,
+                          MobSettings mobSettings,
+                          Location spawnLocation,
+                          String mythicId,
+                          SpawnType type) {
+        if (mobSettings.getSpawnMode() == SpawnMode.MYTHIC_COMMAND) {
+            pendingSpawnAssignments.add(new SpawnAssignment(spawnLocation.clone(), type));
+            String command = buildSpawnCommand(mythicId, mobSettings, spawnLocation);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        } else {
+            EntityType fallback = mobSettings.getFallbackEntityType();
+            Entity entity = world.spawnEntity(spawnLocation, fallback);
+            entity.addScoreboardTag(MOB_TAG);
+            if (type == SpawnType.PRIMARY) {
+                entity.addScoreboardTag(PRIMARY_MOB_TAG);
+            }
+            activeMobs.put(entity.getUniqueId(), type);
+        }
+    }
+
+    private String buildSpawnCommand(String mobId, MobSettings mobSettings, Location location) {
         String command = mobSettings.getSpawnCommand();
         if (command == null || command.isEmpty()) {
             command = "mm mobs spawn {id} {world} {x} {y} {z}";
         }
-        String id = mobSettings.getMythicMobId() != null ? mobSettings.getMythicMobId() : "";
+        String id = mobId != null ? mobId : "";
         return command
                 .replace("{id}", id)
                 .replace("{world}", location.getWorld().getName())
@@ -192,21 +227,26 @@ public class BloodChestSession {
         if (mobSettings.getSpawnMode() != SpawnMode.MYTHIC_COMMAND) {
             return;
         }
-        if (!pendingSpawnAssignments.isEmpty()) {
-            if (mobSettings.getMetadataKey() != null && !mobSettings.getMetadataKey().isEmpty()) {
-                if (!entity.hasMetadata(mobSettings.getMetadataKey())) {
-                    return;
-                }
+        if (pendingSpawnAssignments.isEmpty()) {
+            return;
+        }
+        if (mobSettings.getMetadataKey() != null && !mobSettings.getMetadataKey().isEmpty()) {
+            if (!entity.hasMetadata(mobSettings.getMetadataKey())) {
+                return;
             }
-            Iterator<Location> iterator = pendingSpawnAssignments.iterator();
-            while (iterator.hasNext()) {
-                Location expected = iterator.next();
-                if (expected.getWorld() == entity.getWorld() && expected.distanceSquared(entity.getLocation()) <= 4.0) {
-                    iterator.remove();
-                    activeMobIds.add(entity.getUniqueId());
-                    entity.addScoreboardTag("blood_chest_mob");
-                    break;
+        }
+        Iterator<SpawnAssignment> iterator = pendingSpawnAssignments.iterator();
+        while (iterator.hasNext()) {
+            SpawnAssignment assignment = iterator.next();
+            Location expected = assignment.location();
+            if (expected.getWorld() == entity.getWorld() && expected.distanceSquared(entity.getLocation()) <= 4.0) {
+                iterator.remove();
+                activeMobs.put(entity.getUniqueId(), assignment.type());
+                entity.addScoreboardTag(MOB_TAG);
+                if (assignment.type() == SpawnType.PRIMARY) {
+                    entity.addScoreboardTag(PRIMARY_MOB_TAG);
                 }
+                break;
             }
         }
     }
@@ -219,8 +259,12 @@ public class BloodChestSession {
             return;
         }
         UUID uuid = entity.getUniqueId();
-        if (activeMobIds.remove(uuid)) {
-            defeatedMobIds.add(uuid);
+        SpawnType type = activeMobs.remove(uuid);
+        if (type != null) {
+            processedDeaths.add(uuid);
+            if (type == SpawnType.PRIMARY) {
+                defeatedPrimaryCount++;
+            }
             checkMobsDefeated();
             return;
         }
@@ -231,8 +275,14 @@ public class BloodChestSession {
                     return;
                 }
             }
+            if (processedDeaths.contains(uuid)) {
+                return;
+            }
             if (isWithinArena(entity.getLocation())) {
-                defeatedMobIds.add(uuid);
+                processedDeaths.add(uuid);
+                if (entity.getScoreboardTags().contains(PRIMARY_MOB_TAG)) {
+                    defeatedPrimaryCount++;
+                }
                 checkMobsDefeated();
             }
         }
@@ -255,8 +305,11 @@ public class BloodChestSession {
         if (mobsDefeated) {
             return;
         }
-        int required = Math.min(5, mobSpawnLocations.size());
-        if (defeatedMobIds.size() >= required && activeMobIds.isEmpty()) {
+        if (requiredPrimaryCount <= 0) {
+            return;
+        }
+        boolean anyPrimaryActive = activeMobs.values().stream().anyMatch(type -> type == SpawnType.PRIMARY);
+        if (defeatedPrimaryCount >= requiredPrimaryCount && !anyPrimaryActive) {
             mobsDefeated = true;
             onMobsDefeated();
         }
@@ -265,6 +318,7 @@ public class BloodChestSession {
     private void onMobsDefeated() {
         long elapsedSeconds = (System.currentTimeMillis() - startTimeMillis) / 1000L;
         int chestCount = determineChestCount((int) elapsedSeconds);
+        removeAdditionalMobs();
         player.sendMessage(color("&7All sludges were defeated in &e" + elapsedSeconds + "s&7!"));
         spawnChests(chestCount);
     }
@@ -318,6 +372,32 @@ public class BloodChestSession {
             startExitCountdown();
         }
         return true;
+    }
+
+    private void removeAdditionalMobs() {
+        Iterator<Map.Entry<UUID, SpawnType>> iterator = activeMobs.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<UUID, SpawnType> entry = iterator.next();
+            if (entry.getValue() == SpawnType.ADDITIONAL) {
+                Entity entity = Bukkit.getEntity(entry.getKey());
+                if (entity != null) {
+                    entity.remove();
+                }
+                iterator.remove();
+            }
+        }
+    }
+
+    private void removeTrackedMobs() {
+        Iterator<UUID> iterator = activeMobs.keySet().iterator();
+        while (iterator.hasNext()) {
+            UUID uuid = iterator.next();
+            Entity entity = Bukkit.getEntity(uuid);
+            if (entity != null) {
+                entity.remove();
+            }
+            iterator.remove();
+        }
     }
 
     private void dropItems(Location location, LootResult result) {
@@ -384,6 +464,7 @@ public class BloodChestSession {
             player.teleport(returnLocation);
             player.sendMessage(color("&7The Blood Chest challenge has ended."));
         }
+        removeTrackedMobs();
         if (pasteOrigin != null && pasteOrigin.getWorld() != null) {
             schematicHandler.clearRegion(pasteOrigin.getWorld(), pasteOrigin, arenaSettings.getRegionSize());
         }
@@ -402,10 +483,19 @@ public class BloodChestSession {
         if (exitCountdownTask != null) {
             exitCountdownTask.cancel();
         }
+        removeTrackedMobs();
         if (pasteOrigin != null && pasteOrigin.getWorld() != null) {
             schematicHandler.clearRegion(pasteOrigin.getWorld(), pasteOrigin, arenaSettings.getRegionSize());
         }
         manager.endSession(this);
+    }
+
+    private enum SpawnType {
+        PRIMARY,
+        ADDITIONAL
+    }
+
+    private record SpawnAssignment(Location location, SpawnType type) {
     }
 
     private String color(String message) {
