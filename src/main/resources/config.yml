@@ -3,34 +3,34 @@ permission: bloodchest.use
 gui:
   title: "&8Blood Chest"
   instructions:
-    - "&7Wejdź solo na arenę i pokonaj &c5 Krwistych Błotniaków&7."
-    - "&7Im szybciej zwyciężysz, tym więcej skrzyń się pojawi."
-    - "&7Każde wejście kosztuje &c25 Fragment of Infernal Passage&7."
+    - "&7Enter the arena solo and defeat &c5 Blood Sludges&7."
+    - "&7The faster you win, the more chests will appear."
+    - "&7Each entry costs &c25 Fragment of Infernal Passage&7."
   start-button:
     slot: 13
     material: NETHER_STAR
-    name: "&cRozpocznij Blood Chest"
+    name: "&cStart Blood Chest"
     lore:
-      - "&7Rozpocznij nowe wyzwanie."
-      - "&7Koszt: &c25 Fragment of Infernal Passage"
+      - "&7Begin a new challenge."
+      - "&7Cost: &c25 Fragment of Infernal Passage"
   loot-button:
     slot: 15
     material: CHEST
-    name: "&6Zobacz nagrody"
+    name: "&6View Rewards"
     lore:
-      - "&7Wyświetl możliwe łupy."
+      - "&7Display the possible loot."
   close-button:
     slot: 26
     material: BARRIER
-    name: "&cZamknij"
+    name: "&cClose"
     lore:
-      - "&7Zamknij to menu."
+      - "&7Close this menu."
   back-button:
     slot: 45
     material: ARROW
-    name: "&ePowrót"
+    name: "&eBack"
     lore:
-      - "&7Wróć do poprzedniego ekranu."
+      - "&7Return to the previous screen."
 
 key:
   material: IRON_NUGGET
@@ -103,7 +103,7 @@ arena:
     material: CHEST
     name: "&4Blood Chest"
     lore:
-      - "&7Otwórz, aby odebrać nagrody."
+      - "&7Open to claim your rewards."
   mob:
     spawn-mode: MYTHIC_COMMAND
     mythic-id: blood_sludge

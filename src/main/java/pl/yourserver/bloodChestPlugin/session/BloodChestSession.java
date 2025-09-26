@@ -109,12 +109,12 @@ public class BloodChestSession {
         teleportPlayerToArena();
         this.startTimeMillis = System.currentTimeMillis();
         spawnMobs(world);
-        player.sendMessage(color("&7Pokonaj wszystkie &cKrwiste Błotniaki &7jak najszybciej!"));
+        player.sendMessage(color("&7Defeat all &cBlood Sludges &7as quickly as possible!"));
     }
 
     private void ensureSchematicExists() throws IOException {
         if (!schematicFile.exists()) {
-            throw new IOException("Nie znaleziono schematu areny: " + schematicFile.getAbsolutePath());
+            throw new IOException("Arena schematic not found: " + schematicFile.getAbsolutePath());
         }
     }
 
@@ -265,7 +265,7 @@ public class BloodChestSession {
     private void onMobsDefeated() {
         long elapsedSeconds = (System.currentTimeMillis() - startTimeMillis) / 1000L;
         int chestCount = determineChestCount((int) elapsedSeconds);
-        player.sendMessage(color("&7Wszystkie błotniaki zostały pokonane w &e" + elapsedSeconds + "s&7!"));
+        player.sendMessage(color("&7All sludges were defeated in &e" + elapsedSeconds + "s&7!"));
         spawnChests(chestCount);
     }
 
@@ -295,7 +295,7 @@ public class BloodChestSession {
             }
             spawnedChests.put(location, Boolean.FALSE);
         }
-        player.sendMessage(color("&cPojawiły się " + available + " Krwawe Skrzynie!"));
+        player.sendMessage(color("&c" + available + " Blood Chests have appeared!"));
     }
 
     public boolean handleChestInteraction(Player clicker, Block block) {
@@ -312,7 +312,7 @@ public class BloodChestSession {
         LootResult result = lootService.generateLoot(player.getUniqueId(), rewardSettings.getRollsPerChest(), pityManager);
         dropItems(location, result);
         if (result.isPityGranted()) {
-            player.sendMessage(color("&6Pity drop został przyznany!"));
+            player.sendMessage(color("&6A pity drop has been granted!"));
         }
         if (spawnedChests.values().stream().allMatch(Boolean::booleanValue)) {
             startExitCountdown();
@@ -360,7 +360,7 @@ public class BloodChestSession {
                     finishSession();
                     return;
                 }
-                Title title = Title.title(Component.text(ChatColor.RED + "Powrót za"),
+                Title title = Title.title(Component.text(ChatColor.RED + "Returning in"),
                         Component.text(ChatColor.GOLD + String.valueOf(remaining) + ChatColor.GRAY + " s"),
                         Title.Times.times(Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO));
                 player.showTitle(title);
@@ -368,7 +368,7 @@ public class BloodChestSession {
             }
         };
         exitCountdownTask.runTaskTimer(plugin, 0L, 20L);
-        player.sendMessage(color("&7Zostaniesz przeniesiony za &e" + exitCountdownSeconds + "s"));
+        player.sendMessage(color("&7You will be teleported in &e" + exitCountdownSeconds + "s"));
     }
 
     private void finishSession() {
@@ -382,7 +382,7 @@ public class BloodChestSession {
         }
         if (player.isOnline()) {
             player.teleport(returnLocation);
-            player.sendMessage(color("&7Zakończono wyzwanie Blood Chest."));
+            player.sendMessage(color("&7The Blood Chest challenge has ended."));
         }
         if (pasteOrigin != null && pasteOrigin.getWorld() != null) {
             schematicHandler.clearRegion(pasteOrigin.getWorld(), pasteOrigin, arenaSettings.getRegionSize());

@@ -31,7 +31,7 @@ public class LootOverviewMenu implements MenuView {
         this.configuration = configuration;
         this.menuManager = menuManager;
         this.lootRegistry = lootRegistry;
-        this.inventory = Bukkit.createInventory(null, 54, LEGACY.deserialize("&8Nagrody Blood Chest"));
+        this.inventory = Bukkit.createInventory(null, 54, LEGACY.deserialize("&8Blood Chest Rewards"));
         build();
     }
 
@@ -52,7 +52,7 @@ public class LootOverviewMenu implements MenuView {
                 lore.add(ChatColor.GRAY + "- " + items.get(i).getDisplayName());
             }
             if (items.size() > 10) {
-                lore.add(ChatColor.DARK_GRAY + "... (" + (items.size() - 10) + " więcej)");
+                lore.add(ChatColor.DARK_GRAY + "... (" + (items.size() - 10) + " more)");
             }
             Material icon = items.isEmpty() ? Material.PAPER : items.get(0).getMaterial();
             ItemStack stack = ItemStackUtil.createMenuItem(icon,

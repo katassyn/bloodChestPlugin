@@ -51,7 +51,7 @@ public class MainMenuView implements MenuView {
         for (int i = 0; i < inventory.getSize(); i++) {
             inventory.setItem(i, filler);
         }
-        ItemStack instructions = ItemStackUtil.createMenuItem(Material.BOOK, "&6Instrukcje", gui.getInstructions());
+        ItemStack instructions = ItemStackUtil.createMenuItem(Material.BOOK, "&6Instructions", gui.getInstructions());
         inventory.setItem(10, instructions);
         inventory.setItem(gui.getStartButton().getSlot(), ItemStackUtil.createMenuItem(
                 gui.getStartButton().getMaterial(), gui.getStartButton().getDisplayName(), gui.getStartButton().getLore()));
@@ -81,12 +81,12 @@ public class MainMenuView implements MenuView {
 
     private void attemptStart() {
         if (sessionManager.getSession(player.getUniqueId()).isPresent()) {
-            player.sendMessage(color("&cJuż znajdujesz się w instancji Blood Chest."));
+            player.sendMessage(color("&cYou are already inside a Blood Chest instance."));
             return;
         }
         KeyRequirement key = configuration.getKeyRequirement();
         if (!consumeKey(player, key)) {
-            player.sendMessage(color("&cPotrzebujesz " + key.getAmount() + "x " + key.getDisplayName() + " aby wejść."));
+            player.sendMessage(color("&cYou need " + key.getAmount() + "x " + key.getDisplayName() + " to enter."));
             return;
         }
         player.closeInventory();
@@ -94,7 +94,7 @@ public class MainMenuView implements MenuView {
             try {
                 sessionManager.startSession(player);
             } catch (Exception ex) {
-                player.sendMessage(color("&cNie udało się rozpocząć instancji: " + ex.getMessage()));
+                player.sendMessage(color("&cFailed to start the instance: " + ex.getMessage()));
                 ex.printStackTrace();
             }
         });

@@ -21,12 +21,12 @@ public class BloodChestCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatColor.RED + "Ta komenda dostępna jest tylko dla graczy.");
+            sender.sendMessage(ChatColor.RED + "This command is only available to players.");
             return true;
         }
         String permission = configuration.getPermission();
         if (permission != null && !permission.isEmpty() && !player.hasPermission(permission)) {
-            player.sendMessage(ChatColor.RED + "Nie masz uprawnień do użycia tej komendy.");
+            player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }
         menuManager.openMainMenu(player);
