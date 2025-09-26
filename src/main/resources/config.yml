@@ -1,1 +1,140 @@
-key: addItem("ips", Material.IRON_NUGGET, "&4Fragment of Infernal Passage", "CURRENCY", "&7&oUsed to unlock the dangerous dungeons");
+permission: bloodchest.use
+
+gui:
+  title: "&8Blood Chest"
+  instructions:
+    - "&7Wejdź solo na arenę i pokonaj &c5 Krwistych Błotniaków&7."
+    - "&7Im szybciej zwyciężysz, tym więcej skrzyń się pojawi."
+    - "&7Każde wejście kosztuje &c25 Fragment of Infernal Passage&7."
+  start-button:
+    slot: 13
+    material: NETHER_STAR
+    name: "&cRozpocznij Blood Chest"
+    lore:
+      - "&7Rozpocznij nowe wyzwanie."
+      - "&7Koszt: &c25 Fragment of Infernal Passage"
+  loot-button:
+    slot: 15
+    material: CHEST
+    name: "&6Zobacz nagrody"
+    lore:
+      - "&7Wyświetl możliwe łupy."
+  close-button:
+    slot: 26
+    material: BARRIER
+    name: "&cZamknij"
+    lore:
+      - "&7Zamknij to menu."
+  back-button:
+    slot: 45
+    material: ARROW
+    name: "&ePowrót"
+    lore:
+      - "&7Wróć do poprzedniego ekranu."
+
+key:
+  material: IRON_NUGGET
+  display-name: "&4Fragment of Infernal Passage"
+  amount: 25
+  pouch-item-id: ips
+
+pity:
+  threshold: 25
+  pool:
+    - grimmag_frag_I
+    - grimmag_frag_II
+    - grimmag_frag_III
+    - arachna_frag_I
+    - arachna_frag_II
+    - arachna_frag_III
+    - heredur_frag_I
+    - heredur_frag_II
+    - heredur_frag_III
+    - bearach_frag_I
+    - bearach_frag_II
+    - bearach_frag_III
+    - khalys_frag_I
+    - khalys_frag_II
+    - khalys_frag_III
+    - heralds_frag_I
+    - heralds_frag_II
+    - heralds_frag_III
+    - sigrismar_frag_I
+    - sigrismar_frag_II
+    - sigrismar_frag_III
+    - medusa_frag_I
+    - medusa_frag_II
+    - medusa_frag_III
+    - gorga_frag_I
+    - gorga_frag_II
+    - gorga_frag_III
+    - mortis_frag_I
+    - mortis_frag_II
+    - mortis_frag_III
+
+arena:
+  world: world
+  return-location:
+    world: world
+    x: 0.5
+    y: 80.0
+    z: 0.5
+    yaw: 0.0
+    pitch: 0.0
+  player-spawn-offset:
+    x: 0.5
+    y: 1.0
+    z: 0.5
+  paste-offset:
+    x: 0
+    y: 0
+    z: 0
+  region-size:
+    x: 64
+    y: 32
+    z: 64
+  markers:
+    mob: OBSIDIAN
+    chest: BARREL
+  schematic:
+    folder: schematics/blood_chest
+    file: arena.schem
+  chest:
+    material: CHEST
+    name: "&4Blood Chest"
+    lore:
+      - "&7Otwórz, aby odebrać nagrody."
+  mob:
+    spawn-mode: MYTHIC_COMMAND
+    mythic-id: blood_sludge
+    spawn-command: "mm mobs spawn {id} {world} {x} {y} {z}"
+    metadata-key: MythicMob
+    fallback-entity: HUSK
+    y-offset: 1
+  slots:
+    slot-1:
+      origin:
+        world: world
+        x: 0
+        y: 80
+        z: 0
+
+rewards:
+  exit-countdown-seconds: 60
+  rolls-per-chest: 3
+  thresholds:
+    tier-5:
+      chest-count: 5
+      max-seconds: 30
+    tier-4:
+      chest-count: 4
+      max-seconds: 60
+    tier-3:
+      chest-count: 3
+      max-seconds: 120
+    tier-2:
+      chest-count: 2
+      max-seconds: 300
+    tier-1:
+      chest-count: 1
+      max-seconds: 2147483647
