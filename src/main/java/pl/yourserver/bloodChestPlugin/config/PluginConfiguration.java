@@ -340,19 +340,25 @@ public class PluginConfiguration {
         private final String metadataKey;
         private final EntityType fallbackEntityType;
         private final int spawnYOffset;
+        private final int primaryMobCount;
+        private final List<String> additionalMythicMobIds;
 
         public MobSettings(SpawnMode spawnMode,
                            String mythicMobId,
                            String spawnCommand,
                            String metadataKey,
                            EntityType fallbackEntityType,
-                           int spawnYOffset) {
+                           int spawnYOffset,
+                           int primaryMobCount,
+                           List<String> additionalMythicMobIds) {
             this.spawnMode = Objects.requireNonNull(spawnMode, "spawnMode");
             this.mythicMobId = mythicMobId;
             this.spawnCommand = spawnCommand;
             this.metadataKey = metadataKey;
             this.fallbackEntityType = fallbackEntityType == null ? EntityType.ZOMBIE : fallbackEntityType;
             this.spawnYOffset = spawnYOffset;
+            this.primaryMobCount = Math.max(1, primaryMobCount);
+            this.additionalMythicMobIds = List.copyOf(additionalMythicMobIds);
         }
 
         public SpawnMode getSpawnMode() {
@@ -377,6 +383,14 @@ public class PluginConfiguration {
 
         public int getSpawnYOffset() {
             return spawnYOffset;
+        }
+
+        public int getPrimaryMobCount() {
+            return primaryMobCount;
+        }
+
+        public List<String> getAdditionalMythicMobIds() {
+            return additionalMythicMobIds;
         }
     }
 
