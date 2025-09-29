@@ -2,7 +2,8 @@ package pl.yourserver.bloodChestPlugin.session;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.edit.SessionLimitExceededException;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
@@ -34,7 +35,7 @@ public class WorldEditSchematicHandler implements SchematicHandler {
             clipboard = reader.read();
         }
         BlockVector3 to = BlockVector3.at(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ());
-        try (com.sk89q.worldedit.EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
             ClipboardHolder holder = new ClipboardHolder(clipboard);
             Operation operation = holder
                     .createPaste(editSession)
@@ -42,7 +43,7 @@ public class WorldEditSchematicHandler implements SchematicHandler {
                     .ignoreAirBlocks(false)
                     .build();
             Operations.complete(operation);
-        } catch (SessionLimitExceededException ex) {
+        } catch (WorldEditException ex) {
             throw new IOException("Failed to paste schematic: " + ex.getMessage(), ex);
         }
     }
@@ -51,9 +52,11 @@ public class WorldEditSchematicHandler implements SchematicHandler {
     public void clearRegion(World world, Location origin, Vector size) {
         BlockVector3 min = BlockVector3.at(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ());
         BlockVector3 max = min.add((int) size.getX() - 1, (int) size.getY() - 1, (int) size.getZ() - 1);
-        try (com.sk89q.worldedit.EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
             CuboidRegion region = new CuboidRegion(min, max);
             editSession.setBlocks(region, BlockTypes.AIR.getDefaultState());
+        } catch (WorldEditException ex) {
+            throw new IllegalStateException("Failed to clear region: " + ex.getMessage(), ex);
         }
     }
 }

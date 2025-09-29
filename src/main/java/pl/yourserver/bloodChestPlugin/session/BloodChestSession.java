@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Nameable;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.TileState;
@@ -38,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class BloodChestSession {
 
@@ -62,6 +64,7 @@ public class BloodChestSession {
     private final List<Location> minorMobSpawnLocations = new ArrayList<>();
     private final List<Location> chestLocations = new ArrayList<>();
     private final Map<Location, Boolean> spawnedChests = new HashMap<>();
+    private final Map<Location, List<Component>> chestLoreByLocation = new HashMap<>();
     private final Map<UUID, SpawnType> activeMobs = new HashMap<>();
     private final Set<UUID> processedDeaths = new HashSet<>();
     private final List<SpawnAssignment> pendingSpawnAssignments = new ArrayList<>();
@@ -395,11 +398,15 @@ public class BloodChestSession {
             Block block = location.getBlock();
             block.setType(chestSettings.getChestMaterial(), false);
             if (block.getState() instanceof TileState tileState) {
-                tileState.customName(Component.text(ChatColor.translateAlternateColorCodes('&', chestSettings.getDisplayName())));
+                if (tileState instanceof Nameable nameable) {
+                    nameable.customName(Component.text(ChatColor.translateAlternateColorCodes('&', chestSettings.getDisplayName())));
+                }
                 List<Component> lore = chestSettings.getLore().stream()
-                        .map(line -> Component.text(ChatColor.translateAlternateColorCodes('&', line)))
-                        .toList();
-                tileState.lore(lore);
+                        .map(line -> (Component) Component.text(ChatColor.translateAlternateColorCodes('&', line)))
+                        .collect(Collectors.toList());
+                if (!lore.isEmpty()) {
+                    chestLoreByLocation.put(location, lore);
+                }
                 tileState.update();
             }
             spawnedChests.put(location, Boolean.FALSE);
@@ -417,6 +424,10 @@ public class BloodChestSession {
             return false;
         }
         spawnedChests.put(location, Boolean.TRUE);
+        List<Component> lore = chestLoreByLocation.remove(location);
+        if (lore != null && !lore.isEmpty()) {
+            lore.forEach(player::sendMessage);
+        }
         block.setType(Material.AIR, false);
         LootResult result = lootService.generateLoot(player.getUniqueId(), rewardSettings.getRollsPerChest(), pityManager);
         dropItems(location, result);
