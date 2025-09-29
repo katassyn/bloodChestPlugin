@@ -39,7 +39,7 @@ key:
   pouch-item-id: ips
 
 pity:
-  threshold: 25
+  threshold: 50
   pool:
     - grimmag_frag_I
     - grimmag_frag_II
@@ -107,7 +107,7 @@ arena:
   mob:
     spawn-mode: MYTHIC_COMMAND
     mythic-id: blood_sludge
-    spawn-command: "mm mobs spawn {id} {world} {x} {y} {z}"
+    spawn-command: "mm mobs spawn {id} {world}, {x}, {y}, {z}"
     metadata-key: MythicMob
     fallback-entity: HUSK
     y-offset: 1
@@ -121,7 +121,7 @@ arena:
 
 rewards:
   exit-countdown-seconds: 60
-  rolls-per-chest: 3
+  rolls-per-chest: 10
   thresholds:
     tier-5:
       chest-count: 5
