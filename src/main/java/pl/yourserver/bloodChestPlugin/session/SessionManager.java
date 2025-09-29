@@ -72,8 +72,14 @@ public class SessionManager {
         BloodChestSession session = new BloodChestSession(plugin, configuration, schematicHandler, lootService, pityManager,
                 slot, returnLocation, schematicFile, this);
         sessions.put(player.getUniqueId(), session);
-        session.start(player);
-        return session;
+        try {
+            session.start(player);
+            return session;
+        } catch (Exception ex) {
+            sessions.remove(player.getUniqueId());
+            slot.setBusy(false);
+            throw ex;
+        }
     }
 
     public synchronized void endSession(BloodChestSession session) {

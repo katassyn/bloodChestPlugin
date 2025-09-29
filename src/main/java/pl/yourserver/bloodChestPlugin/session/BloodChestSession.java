@@ -68,6 +68,7 @@ public class BloodChestSession {
     private final Map<UUID, SpawnType> activeMobs = new HashMap<>();
     private final Set<UUID> processedDeaths = new HashSet<>();
     private final List<SpawnAssignment> pendingSpawnAssignments = new ArrayList<>();
+    private Location playerSpawnLocation;
     private int defeatedPrimaryCount;
     private int requiredPrimaryCount;
     private long startTimeMillis;
@@ -138,11 +139,13 @@ public class BloodChestSession {
         mobSpawnLocations.clear();
         minorMobSpawnLocations.clear();
         chestLocations.clear();
+        playerSpawnLocation = null;
         Vector size = arenaSettings.getRegionSize();
         int baseX = pasteOrigin.getBlockX();
         int baseY = pasteOrigin.getBlockY();
         int baseZ = pasteOrigin.getBlockZ();
         Material minorMobMarker = arenaSettings.getMinorMobMarkerMaterial().orElse(null);
+        Location slotOrigin = slot.getOrigin();
 
         for (int x = 0; x < (int) size.getX(); x++) {
             for (int y = 0; y < (int) size.getY(); y++) {
@@ -160,14 +163,34 @@ public class BloodChestSession {
                                 1 + arenaSettings.getMobSettings().getSpawnYOffset(), 0.5);
                         minorMobSpawnLocations.add(spawnLocation);
                         block.setType(Material.AIR, false);
+                    } else if (block.getType() == Material.GOLD_BLOCK) {
+                        Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
+                        spawnLocation.setYaw(slotOrigin.getYaw());
+                        spawnLocation.setPitch(slotOrigin.getPitch());
+                        if (playerSpawnLocation == null) {
+                            playerSpawnLocation = spawnLocation;
+                        } else {
+                            plugin.getLogger().warning("Multiple player spawn markers found for blood chest session");
+                        }
+                        block.setType(Material.AIR, false);
                     }
                 }
             }
         }
+
+        if (playerSpawnLocation == null) {
+            throw new IllegalStateException("Schematic is missing a gold block player spawn marker");
+        }
+        if (chestLocations.isEmpty()) {
+            throw new IllegalStateException("Schematic has no chest spawn markers");
+        }
     }
 
     private void teleportPlayerToArena() {
-        Location destination = slot.getOrigin().clone().add(arenaSettings.getPlayerSpawnOffset());
+        if (playerSpawnLocation == null) {
+            throw new IllegalStateException("Player spawn location was not initialized");
+        }
+        Location destination = playerSpawnLocation.clone();
         player.teleport(destination);
     }
 

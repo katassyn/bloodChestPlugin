@@ -85,6 +85,7 @@ arena:
     x: 0.5
     y: 1.0
     z: 0.5
+  # Na schemacie złoty blok wyznacza miejsce, w którym ma pojawić się gracz.
   paste-offset:
     x: 0
     y: 0
