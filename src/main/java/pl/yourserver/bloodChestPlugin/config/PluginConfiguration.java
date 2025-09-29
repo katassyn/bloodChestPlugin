@@ -65,22 +65,16 @@ public class PluginConfiguration {
         private final String title;
         private final List<String> instructions;
         private final MenuButton startButton;
-        private final MenuButton lootButton;
         private final MenuButton closeButton;
-        private final MenuButton backButton;
 
         public GuiSettings(String title,
                            List<String> instructions,
                            MenuButton startButton,
-                           MenuButton lootButton,
-                           MenuButton closeButton,
-                           MenuButton backButton) {
+                           MenuButton closeButton) {
             this.title = Objects.requireNonNull(title, "title");
             this.instructions = List.copyOf(instructions);
             this.startButton = Objects.requireNonNull(startButton, "startButton");
-            this.lootButton = Objects.requireNonNull(lootButton, "lootButton");
             this.closeButton = Objects.requireNonNull(closeButton, "closeButton");
-            this.backButton = Objects.requireNonNull(backButton, "backButton");
         }
 
         public String getTitle() {
@@ -95,16 +89,8 @@ public class PluginConfiguration {
             return startButton;
         }
 
-        public MenuButton getLootButton() {
-            return lootButton;
-        }
-
         public MenuButton getCloseButton() {
             return closeButton;
-        }
-
-        public MenuButton getBackButton() {
-            return backButton;
         }
     }
 

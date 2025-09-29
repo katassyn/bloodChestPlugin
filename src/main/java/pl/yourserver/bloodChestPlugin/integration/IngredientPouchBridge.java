@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +21,7 @@ import java.util.logging.Logger;
  */
 public class IngredientPouchBridge {
 
-    private static final String TARGET_PLUGIN = "IngredientPouchPlugin";
+    private static final List<String> TARGET_PLUGINS = List.of("IngredientPouchPlugin", "IngredientPouch", "IPS");
 
     private final Logger logger;
     private final Object apiInstance;
@@ -42,7 +43,7 @@ public class IngredientPouchBridge {
 
         try {
             PluginManager pluginManager = Bukkit.getPluginManager();
-            Plugin pouchPlugin = pluginManager.getPlugin(TARGET_PLUGIN);
+            Plugin pouchPlugin = findPlugin(pluginManager);
             if (pouchPlugin != null && pouchPlugin.isEnabled()) {
                 Method getApiMethod = pouchPlugin.getClass().getMethod("getAPI");
                 api = getApiMethod.invoke(pouchPlugin);
@@ -128,6 +129,16 @@ public class IngredientPouchBridge {
     private void disableOnError(Exception ex) {
         logger.log(Level.WARNING, "[BloodChest] IngredientPouch API became unavailable: " + ex.getMessage(), ex);
         available = false;
+    }
+
+    private Plugin findPlugin(PluginManager pluginManager) {
+        for (String name : TARGET_PLUGINS) {
+            Plugin plugin = pluginManager.getPlugin(name);
+            if (plugin != null) {
+                return plugin;
+            }
+        }
+        return null;
     }
 }
 

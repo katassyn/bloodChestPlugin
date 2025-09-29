@@ -12,7 +12,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.GuiSettings;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.KeyRequirement;
-import pl.yourserver.bloodChestPlugin.gui.MenuManager;
 import pl.yourserver.bloodChestPlugin.integration.IngredientPouchBridge;
 import pl.yourserver.bloodChestPlugin.session.SessionManager;
 import pl.yourserver.bloodChestPlugin.util.ItemStackUtil;
@@ -26,19 +25,16 @@ public class MainMenuView implements MenuView {
 
     private final PluginConfiguration configuration;
     private final SessionManager sessionManager;
-    private final MenuManager menuManager;
     private final IngredientPouchBridge pouchBridge;
     private final Inventory inventory;
     private final Player player;
 
     public MainMenuView(PluginConfiguration configuration,
                         SessionManager sessionManager,
-                        MenuManager menuManager,
                         IngredientPouchBridge pouchBridge,
                         Player player) {
         this.configuration = configuration;
         this.sessionManager = sessionManager;
-        this.menuManager = menuManager;
         this.pouchBridge = pouchBridge;
         this.player = player;
         this.inventory = Bukkit.createInventory(null, 27, LEGACY.deserialize(configuration.getGuiSettings().getTitle()));
@@ -52,11 +48,9 @@ public class MainMenuView implements MenuView {
             inventory.setItem(i, filler);
         }
         ItemStack instructions = ItemStackUtil.createMenuItem(Material.BOOK, "&6Instructions", gui.getInstructions());
-        inventory.setItem(10, instructions);
+        inventory.setItem(11, instructions);
         inventory.setItem(gui.getStartButton().getSlot(), ItemStackUtil.createMenuItem(
                 gui.getStartButton().getMaterial(), gui.getStartButton().getDisplayName(), gui.getStartButton().getLore()));
-        inventory.setItem(gui.getLootButton().getSlot(), ItemStackUtil.createMenuItem(
-                gui.getLootButton().getMaterial(), gui.getLootButton().getDisplayName(), gui.getLootButton().getLore()));
         inventory.setItem(gui.getCloseButton().getSlot(), ItemStackUtil.createMenuItem(
                 gui.getCloseButton().getMaterial(), gui.getCloseButton().getDisplayName(), gui.getCloseButton().getLore()));
     }
@@ -72,8 +66,6 @@ public class MainMenuView implements MenuView {
         int slot = event.getRawSlot();
         if (slot == gui.getStartButton().getSlot()) {
             attemptStart();
-        } else if (slot == gui.getLootButton().getSlot()) {
-            menuManager.openLootMenu(player);
         } else if (slot == gui.getCloseButton().getSlot()) {
             event.getWhoClicked().closeInventory();
         }

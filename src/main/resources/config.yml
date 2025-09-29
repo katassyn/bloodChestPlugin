@@ -13,24 +13,12 @@ gui:
     lore:
       - "&7Begin a new challenge."
       - "&7Cost: &c25 Fragment of Infernal Passage"
-  loot-button:
-    slot: 15
-    material: CHEST
-    name: "&6View Rewards"
-    lore:
-      - "&7Display the possible loot."
   close-button:
-    slot: 26
+    slot: 15
     material: BARRIER
     name: "&cClose"
     lore:
       - "&7Close this menu."
-  back-button:
-    slot: 45
-    material: ARROW
-    name: "&eBack"
-    lore:
-      - "&7Return to the previous screen."
 
 key:
   material: IRON_NUGGET
