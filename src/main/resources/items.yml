@@ -59,7 +59,7 @@ loot:
       pity-weight: 1.0
     satyrs_horn:
       material: POINTED_DRIPSTONE
-      display-name: "&2Satyr's Horn"
+      display-name: "&2Satyr`s Horn"
       lore:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
@@ -69,7 +69,7 @@ loot:
       pity-weight: 1.0
     gorgons_poison:
       material: LIGHT_BLUE_DYE
-      display-name: "&2Gorgon's Poison"
+      display-name: "&2Gorgon`s Poison"
       lore:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
@@ -79,7 +79,7 @@ loot:
       pity-weight: 1.0
     dragon_gold:
       material: GOLD_INGOT
-      display-name: "&2Dragon's Gold"
+      display-name: "&2Dragon`s Gold"
       lore:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
@@ -89,7 +89,7 @@ loot:
       pity-weight: 1.0
     protectors_heart:
       material: ORANGE_DYE
-      display-name: "&2Protector's Heart"
+      display-name: "&2Protector`s Heart"
       lore:
         - "&7&oCrafting and Quest resource"
       min-amount: 1
@@ -777,7 +777,7 @@ loot:
       material: GOLD_ORE
       display-name: "&ePyrite"
       lore:
-        - "&7A common brassy-yellow mineral often called "Fool's Gold"."
+        - "&7A common brassy-yellow mineral often called "Fool`s Gold"."
         - "&eGold-based mineral"
       min-amount: 1
       max-amount: 1
