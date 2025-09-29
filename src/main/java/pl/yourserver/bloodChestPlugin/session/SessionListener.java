@@ -9,7 +9,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class SessionListener implements Listener {
 
@@ -48,5 +50,16 @@ public class SessionListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         sessionManager.handlePlayerQuit(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        sessionManager.handlePlayerDeath(event.getEntity());
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        sessionManager.consumePendingReturn(event.getPlayer().getUniqueId())
+                .ifPresent(event::setRespawnLocation);
     }
 }

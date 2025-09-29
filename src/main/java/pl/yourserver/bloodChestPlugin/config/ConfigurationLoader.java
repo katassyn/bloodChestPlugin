@@ -54,14 +54,10 @@ public class ConfigurationLoader {
 
         MenuButton startButton = readMenuButton(section.getConfigurationSection("start-button"), 13, Material.NETHER_STAR,
                 "&cStart Blood Chest", List.of("&7Consumes the required key"));
-        MenuButton lootButton = readMenuButton(section.getConfigurationSection("loot-button"), 15, Material.CHEST,
-                "&6Possible rewards", List.of("&7View the available loot"));
-        MenuButton closeButton = readMenuButton(section.getConfigurationSection("close-button"), 26, Material.BARRIER,
+        MenuButton closeButton = readMenuButton(section.getConfigurationSection("close-button"), 15, Material.BARRIER,
                 "&cClose", List.of("&7Close the menu"));
-        MenuButton backButton = readMenuButton(section.getConfigurationSection("back-button"), 45, Material.ARROW,
-                "&eBack", List.of("&7Return to the previous view"));
 
-        return new GuiSettings(title, instructions, startButton, lootButton, closeButton, backButton);
+        return new GuiSettings(title, instructions, startButton, closeButton);
     }
 
     private MenuButton readMenuButton(ConfigurationSection section, int defaultSlot, Material defaultMaterial,

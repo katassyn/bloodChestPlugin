@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -116,17 +117,33 @@ public class BloodChestSession {
             throw new IllegalStateException("World is not loaded for arena slot " + slot.getId());
         }
 
-        schematicHandler.pasteSchematic(schematicFile, world, pasteOrigin);
-        scanMarkers(world);
-        teleportPlayerToArena();
-        this.startTimeMillis = System.currentTimeMillis();
-        this.defeatedPrimaryCount = 0;
-        this.requiredPrimaryCount = 0;
-        this.activeMobs.clear();
-        this.processedDeaths.clear();
-        this.pendingSpawnAssignments.clear();
-        spawnMobs(world);
-        player.sendMessage(color("&7Defeat all &cBlood Sludges &7as quickly as possible!"));
+        boolean setupComplete = false;
+        try {
+            schematicHandler.pasteSchematic(schematicFile, world, pasteOrigin);
+            scanMarkers(world);
+            teleportPlayerToArena();
+            this.startTimeMillis = System.currentTimeMillis();
+            this.defeatedPrimaryCount = 0;
+            this.requiredPrimaryCount = 0;
+            this.activeMobs.clear();
+            this.processedDeaths.clear();
+            this.pendingSpawnAssignments.clear();
+            spawnMobs(world);
+            player.sendMessage(color("&7Defeat all &cBlood Sludges &7as quickly as possible!"));
+            setupComplete = true;
+        } finally {
+            if (!setupComplete) {
+                clearArenaRegion();
+                mobSpawnLocations.clear();
+                minorMobSpawnLocations.clear();
+                chestLocations.clear();
+                spawnedChests.clear();
+                chestLoreByLocation.clear();
+                activeMobs.clear();
+                pendingSpawnAssignments.clear();
+                playerSpawnLocation = null;
+            }
+        }
     }
 
     private void ensureSchematicExists() throws IOException {
@@ -139,14 +156,16 @@ public class BloodChestSession {
         mobSpawnLocations.clear();
         minorMobSpawnLocations.clear();
         chestLocations.clear();
-        playerSpawnLocation = null;
+        Location slotOrigin = slot.getOrigin();
+        playerSpawnLocation = slotOrigin.clone().add(arenaSettings.getPlayerSpawnOffset());
+        playerSpawnLocation.setYaw(slotOrigin.getYaw());
+        playerSpawnLocation.setPitch(slotOrigin.getPitch());
+        boolean spawnMarkerFound = false;
         Vector size = arenaSettings.getRegionSize();
         int baseX = pasteOrigin.getBlockX();
         int baseY = pasteOrigin.getBlockY();
         int baseZ = pasteOrigin.getBlockZ();
         Material minorMobMarker = arenaSettings.getMinorMobMarkerMaterial().orElse(null);
-        Location slotOrigin = slot.getOrigin();
-
         for (int x = 0; x < (int) size.getX(); x++) {
             for (int y = 0; y < (int) size.getY(); y++) {
                 for (int z = 0; z < (int) size.getZ(); z++) {
@@ -167,19 +186,19 @@ public class BloodChestSession {
                         Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
                         spawnLocation.setYaw(slotOrigin.getYaw());
                         spawnLocation.setPitch(slotOrigin.getPitch());
-                        if (playerSpawnLocation == null) {
-                            playerSpawnLocation = spawnLocation;
-                        } else {
+                        if (spawnMarkerFound) {
                             plugin.getLogger().warning("Multiple player spawn markers found for blood chest session");
                         }
+                        spawnMarkerFound = true;
+                        playerSpawnLocation = spawnLocation;
                         block.setType(Material.AIR, false);
                     }
                 }
             }
         }
 
-        if (playerSpawnLocation == null) {
-            throw new IllegalStateException("Schematic is missing a gold block player spawn marker");
+        if (!spawnMarkerFound) {
+            plugin.getLogger().warning("Schematic is missing a gold block player spawn marker. Using configured offset instead.");
         }
         if (chestLocations.isEmpty()) {
             throw new IllegalStateException("Schematic has no chest spawn markers");
@@ -544,20 +563,10 @@ public class BloodChestSession {
         if (finished) {
             return;
         }
-        finished = true;
-        if (exitCountdownTask != null) {
-            exitCountdownTask.cancel();
-            exitCountdownTask = null;
-        }
-        if (player.isOnline()) {
-            player.teleport(returnLocation);
+        if (player.isOnline() && !player.isDead()) {
             player.sendMessage(color("&7The Blood Chest challenge has ended."));
         }
-        removeTrackedMobs();
-        if (pasteOrigin != null && pasteOrigin.getWorld() != null) {
-            schematicHandler.clearRegion(pasteOrigin.getWorld(), pasteOrigin, arenaSettings.getRegionSize());
-        }
-        manager.endSession(this);
+        stopSession(true, false);
     }
 
     public void handlePlayerQuit() {
@@ -565,18 +574,15 @@ public class BloodChestSession {
     }
 
     public void forceStop() {
+        stopSession(true, false);
+    }
+
+    public void handlePlayerDeath() {
         if (finished) {
             return;
         }
-        finished = true;
-        if (exitCountdownTask != null) {
-            exitCountdownTask.cancel();
-        }
-        removeTrackedMobs();
-        if (pasteOrigin != null && pasteOrigin.getWorld() != null) {
-            schematicHandler.clearRegion(pasteOrigin.getWorld(), pasteOrigin, arenaSettings.getRegionSize());
-        }
-        manager.endSession(this);
+        player.sendMessage(color("&cYou died! The arena has been closed."));
+        stopSession(false, true);
     }
 
     private enum SpawnType {
@@ -589,5 +595,49 @@ public class BloodChestSession {
 
     private String color(String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
+    private void cancelExitCountdown() {
+        if (exitCountdownTask != null) {
+            exitCountdownTask.cancel();
+            exitCountdownTask = null;
+        }
+    }
+
+    private void clearArenaRegion() {
+        if (pasteOrigin == null) {
+            return;
+        }
+        World world = pasteOrigin.getWorld();
+        if (world == null) {
+            return;
+        }
+        try {
+            schematicHandler.clearRegion(world, pasteOrigin, arenaSettings.getRegionSize());
+        } catch (Exception ex) {
+            plugin.getLogger().log(Level.WARNING,
+                    "[BloodChest] Failed to clear arena region: " + ex.getMessage(), ex);
+        }
+    }
+
+    private void stopSession(boolean teleportNow, boolean teleportOnRespawn) {
+        if (finished) {
+            return;
+        }
+        finished = true;
+        cancelExitCountdown();
+        removeTrackedMobs();
+        boolean canTeleportNow = teleportNow && player.isOnline() && !player.isDead();
+        if (!teleportOnRespawn && canTeleportNow) {
+            player.teleport(returnLocation);
+        }
+        clearArenaRegion();
+        UUID playerId = player.getUniqueId();
+        if (teleportOnRespawn) {
+            manager.markPendingReturn(playerId);
+        } else {
+            manager.clearPendingReturn(playerId);
+        }
+        manager.endSession(this);
     }
 }

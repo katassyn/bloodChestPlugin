@@ -29,6 +29,7 @@ public class SessionManager {
     private final PityManager pityManager;
     private final List<ArenaSlotInstance> slots = new ArrayList<>();
     private final Map<UUID, BloodChestSession> sessions = new HashMap<>();
+    private final Map<UUID, Location> pendingReturns = new HashMap<>();
     private final Location returnLocation;
     private final File schematicFile;
 
@@ -118,12 +119,33 @@ public class SessionManager {
         }
     }
 
+    public void handlePlayerDeath(Player player) {
+        BloodChestSession session = sessions.get(player.getUniqueId());
+        if (session != null) {
+            session.handlePlayerDeath();
+        }
+    }
+
+    public void markPendingReturn(UUID playerId) {
+        pendingReturns.put(playerId, returnLocation.clone());
+    }
+
+    public Optional<Location> consumePendingReturn(UUID playerId) {
+        Location location = pendingReturns.remove(playerId);
+        return Optional.ofNullable(location);
+    }
+
+    public void clearPendingReturn(UUID playerId) {
+        pendingReturns.remove(playerId);
+    }
+
     public void shutdown() {
         Collection<BloodChestSession> copy = new ArrayList<>(sessions.values());
         for (BloodChestSession session : copy) {
             session.forceStop();
         }
         sessions.clear();
+        pendingReturns.clear();
     }
 
     public Plugin getPlugin() {

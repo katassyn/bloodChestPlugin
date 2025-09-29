@@ -9,7 +9,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration;
 import pl.yourserver.bloodChestPlugin.integration.IngredientPouchBridge;
-import pl.yourserver.bloodChestPlugin.loot.LootRegistry;
 import pl.yourserver.bloodChestPlugin.session.SessionManager;
 
 import java.util.HashMap;
@@ -22,29 +21,21 @@ public class MenuManager implements Listener {
     private final Plugin plugin;
     private final PluginConfiguration configuration;
     private final SessionManager sessionManager;
-    private final LootRegistry lootRegistry;
     private final IngredientPouchBridge pouchBridge;
     private final Map<UUID, MenuView> menus = new HashMap<>();
 
     public MenuManager(Plugin plugin,
                        PluginConfiguration configuration,
                        SessionManager sessionManager,
-                       LootRegistry lootRegistry,
                        IngredientPouchBridge pouchBridge) {
         this.plugin = plugin;
         this.configuration = configuration;
         this.sessionManager = sessionManager;
-        this.lootRegistry = lootRegistry;
         this.pouchBridge = pouchBridge;
     }
 
     public void openMainMenu(Player player) {
-        MenuView menu = new MainMenuView(configuration, sessionManager, this, pouchBridge, player);
-        openMenu(player, menu);
-    }
-
-    public void openLootMenu(Player player) {
-        MenuView menu = new LootOverviewMenu(configuration, this, lootRegistry);
+        MenuView menu = new MainMenuView(configuration, sessionManager, pouchBridge, player);
         openMenu(player, menu);
     }
 
