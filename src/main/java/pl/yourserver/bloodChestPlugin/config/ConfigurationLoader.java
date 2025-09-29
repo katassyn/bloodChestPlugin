@@ -12,6 +12,7 @@ import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.GuiSettings;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.KeyRequirement;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.MenuButton;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.MobSettings;
+import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.MobSettings.MinorMobSpawn;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.MobSettings.SpawnMode;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.PitySettings;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.RewardSettings;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class ConfigurationLoader {
@@ -117,6 +119,10 @@ public class ConfigurationLoader {
                 ConfigUtil.readMaterial(markersSection.getString("mob"), Material.OBSIDIAN);
         Material chestMarker = markersSection == null ? Material.BARREL :
                 ConfigUtil.readMaterial(markersSection.getString("chest"), Material.BARREL);
+        Material minorMobMarker = null;
+        if (markersSection != null && markersSection.contains("minor-mob")) {
+            minorMobMarker = ConfigUtil.readMaterial(markersSection.getString("minor-mob"), Material.DIRT);
+        }
 
         List<ArenaSlot> slots = new ArrayList<>();
         for (ConfigurationSection slotSection : ConfigUtil.children(section.getConfigurationSection("slots"))) {
@@ -143,7 +149,7 @@ public class ConfigurationLoader {
         SchematicSettings schematicSettings = readSchematicSettings(section.getConfigurationSection("schematic"));
 
         return new ArenaSettings(worldName, returnLocation, playerSpawnOffset, pasteOffset, regionSize,
-                mobMarker, chestMarker, slots, mobSettings, chestSettings, schematicSettings);
+                mobMarker, chestMarker, minorMobMarker, slots, mobSettings, chestSettings, schematicSettings);
     }
 
     private SpawnLocation readSpawnLocation(ConfigurationSection section, String defaultWorld) {
@@ -161,7 +167,8 @@ public class ConfigurationLoader {
 
     private MobSettings readMobSettings(ConfigurationSection section) {
         if (section == null) {
-            return new MobSettings(SpawnMode.VANILLA, null, null, "MythicMob", EntityType.HUSK, 1, 5, List.of());
+            return new MobSettings(SpawnMode.VANILLA, null, null, "MythicMob", EntityType.HUSK, 1, 5,
+                    Collections.emptyList(), Collections.emptyList());
         }
         String spawnModeRaw = section.getString("spawn-mode", "VANILLA");
         SpawnMode spawnMode;
@@ -180,9 +187,44 @@ public class ConfigurationLoader {
         List<String> additionalMythicIds = section.contains("additional-mythic-ids")
                 ? List.copyOf(section.getStringList("additional-mythic-ids"))
                 : List.of();
+        List<MinorMobSpawn> minorMobSpawns = readMinorMobSpawns(section);
 
         return new MobSettings(spawnMode, mythicId, command, metadataKey, fallbackEntity, spawnYOffset,
-                primaryCount, additionalMythicIds);
+                primaryCount, additionalMythicIds, minorMobSpawns);
+    }
+
+    private List<MinorMobSpawn> readMinorMobSpawns(ConfigurationSection section) {
+        if (section == null) {
+            return List.of();
+        }
+        List<MinorMobSpawn> result = new ArrayList<>();
+        if (section.contains("minor-mythic-spawns")) {
+            for (Map<?, ?> entry : section.getMapList("minor-mythic-spawns")) {
+                Object rawId = entry.get("id");
+                if (!(rawId instanceof String id) || id.isBlank()) {
+                    continue;
+                }
+                int count = 1;
+                Object rawCount = entry.get("count");
+                if (rawCount instanceof Number number) {
+                    count = number.intValue();
+                } else if (rawCount instanceof String countString) {
+                    try {
+                        count = Integer.parseInt(countString.trim());
+                    } catch (NumberFormatException ignored) {
+                        count = 1;
+                    }
+                }
+                result.add(new MinorMobSpawn(id, count));
+            }
+        } else if (section.contains("minor-mythic-ids")) {
+            for (String id : section.getStringList("minor-mythic-ids")) {
+                if (id != null && !id.isBlank()) {
+                    result.add(new MinorMobSpawn(id, 1));
+                }
+            }
+        }
+        return result;
     }
 
     private List<ArenaSlot> generateSlotsFromArea(ConfigurationSection areaSection,
@@ -214,20 +256,24 @@ public class ConfigurationLoader {
         double maxZ = Math.max(min.getZ(), max.getZ());
         double minY = Math.min(min.getY(), max.getY());
 
-        int regionWidth = Math.max(1, (int) Math.round(regionSize.getX()));
-        int regionDepth = Math.max(1, (int) Math.round(regionSize.getZ()));
+        double regionWidth = Math.max(1.0, regionSize.getX());
+        double regionDepth = Math.max(1.0, regionSize.getZ());
+
+        Vector structureSizeVector = ConfigUtil.readVector(areaSection.getConfigurationSection("structure-size"));
+        double structureWidth = structureSizeVector == null ? regionWidth : Math.max(1.0, structureSizeVector.getX());
+        double structureDepth = structureSizeVector == null ? regionDepth : Math.max(1.0, structureSizeVector.getZ());
 
         Vector spacingVector = ConfigUtil.readVector(areaSection.getConfigurationSection("spacing"));
         double spacingX = spacingVector == null ? 0.0 : spacingVector.getX();
         double spacingZ = spacingVector == null ? 0.0 : spacingVector.getZ();
 
-        double stepX = Math.max(1.0, regionWidth + spacingX);
-        double stepZ = Math.max(1.0, regionDepth + spacingZ);
+        double stepX = Math.max(1.0, structureWidth + spacingX);
+        double stepZ = Math.max(1.0, structureDepth + spacingZ);
 
-        double maxOriginX = maxX - regionWidth + 1;
-        double maxOriginZ = maxZ - regionDepth + 1;
+        double maxOriginX = maxX - structureWidth;
+        double maxOriginZ = maxZ - structureDepth;
         if (maxOriginX < minX || maxOriginZ < minZ) {
-            throw new IllegalStateException("slot-area boundaries are smaller than the configured region-size");
+            throw new IllegalStateException("slot-area boundaries are smaller than the configured structure-size");
         }
 
         List<ArenaSlot> generated = new ArrayList<>();
