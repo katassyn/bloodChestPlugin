@@ -194,6 +194,7 @@ public class PluginConfiguration {
         private final Vector regionSize;
         private final Material mobMarkerMaterial;
         private final Material chestMarkerMaterial;
+        private final Material minorMobMarkerMaterial;
         private final List<ArenaSlot> slots;
         private final MobSettings mobSettings;
         private final ChestSettings chestSettings;
@@ -206,6 +207,7 @@ public class PluginConfiguration {
                              Vector regionSize,
                              Material mobMarkerMaterial,
                              Material chestMarkerMaterial,
+                             Material minorMobMarkerMaterial,
                              List<ArenaSlot> slots,
                              MobSettings mobSettings,
                              ChestSettings chestSettings,
@@ -217,6 +219,7 @@ public class PluginConfiguration {
             this.regionSize = Objects.requireNonNull(regionSize, "regionSize").clone();
             this.mobMarkerMaterial = Objects.requireNonNull(mobMarkerMaterial, "mobMarkerMaterial");
             this.chestMarkerMaterial = Objects.requireNonNull(chestMarkerMaterial, "chestMarkerMaterial");
+            this.minorMobMarkerMaterial = minorMobMarkerMaterial;
             this.slots = List.copyOf(slots);
             this.mobSettings = Objects.requireNonNull(mobSettings, "mobSettings");
             this.chestSettings = Objects.requireNonNull(chestSettings, "chestSettings");
@@ -249,6 +252,10 @@ public class PluginConfiguration {
 
         public Material getChestMarkerMaterial() {
             return chestMarkerMaterial;
+        }
+
+        public Optional<Material> getMinorMobMarkerMaterial() {
+            return Optional.ofNullable(minorMobMarkerMaterial);
         }
 
         public List<ArenaSlot> getSlots() {
@@ -342,6 +349,7 @@ public class PluginConfiguration {
         private final int spawnYOffset;
         private final int primaryMobCount;
         private final List<String> additionalMythicMobIds;
+        private final List<MinorMobSpawn> minorMobSpawns;
 
         public MobSettings(SpawnMode spawnMode,
                            String mythicMobId,
@@ -350,7 +358,8 @@ public class PluginConfiguration {
                            EntityType fallbackEntityType,
                            int spawnYOffset,
                            int primaryMobCount,
-                           List<String> additionalMythicMobIds) {
+                           List<String> additionalMythicMobIds,
+                           List<MinorMobSpawn> minorMobSpawns) {
             this.spawnMode = Objects.requireNonNull(spawnMode, "spawnMode");
             this.mythicMobId = mythicMobId;
             this.spawnCommand = spawnCommand;
@@ -359,6 +368,7 @@ public class PluginConfiguration {
             this.spawnYOffset = spawnYOffset;
             this.primaryMobCount = Math.max(1, primaryMobCount);
             this.additionalMythicMobIds = List.copyOf(additionalMythicMobIds);
+            this.minorMobSpawns = List.copyOf(minorMobSpawns);
         }
 
         public SpawnMode getSpawnMode() {
@@ -391,6 +401,28 @@ public class PluginConfiguration {
 
         public List<String> getAdditionalMythicMobIds() {
             return additionalMythicMobIds;
+        }
+
+        public List<MinorMobSpawn> getMinorMobSpawns() {
+            return minorMobSpawns;
+        }
+
+        public static final class MinorMobSpawn {
+            private final String mythicMobId;
+            private final int count;
+
+            public MinorMobSpawn(String mythicMobId, int count) {
+                this.mythicMobId = Objects.requireNonNull(mythicMobId, "mythicMobId");
+                this.count = Math.max(1, count);
+            }
+
+            public String getMythicMobId() {
+                return mythicMobId;
+            }
+
+            public int getCount() {
+                return count;
+            }
         }
     }
 

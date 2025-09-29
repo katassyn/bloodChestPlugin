@@ -96,6 +96,7 @@ arena:
   markers:
     mob: OBSIDIAN
     chest: BARREL
+    minor-mob: DIRT
   schematic:
     folder: schematics/blood_chest
     file: arena.schem
@@ -111,13 +112,29 @@ arena:
     metadata-key: MythicMob
     fallback-entity: HUSK
     y-offset: 1
-  slots:
-    slot-1:
-      origin:
-        world: world
-        x: 0
-        y: 80
-        z: 0
+    minor-mythic-spawns:
+      - id: blood_sludgeling
+        count: 4
+      - id: blood_leech
+        count: 2
+  slot-area:
+    world: world
+    min:
+      x: -96
+      y: 80
+      z: -96
+    max:
+      x: 96
+      y: 80
+      z: 96
+    structure-size:
+      x: 32
+      y: 0
+      z: 32
+    spacing:
+      x: 8
+      y: 0
+      z: 8
 
 rewards:
   exit-countdown-seconds: 60
