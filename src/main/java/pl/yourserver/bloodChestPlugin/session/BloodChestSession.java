@@ -19,6 +19,7 @@ import pl.yourserver.bloodChestPlugin.config.PluginConfiguration;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.ArenaSettings;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.ChestSettings;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.MobSettings;
+import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.MobSettings.MinorMobSpawn;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.MobSettings.SpawnMode;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.RewardSettings;
 import pl.yourserver.bloodChestPlugin.loot.LootResult;
@@ -58,6 +59,7 @@ public class BloodChestSession {
     private Player player;
     private Location pasteOrigin;
     private final List<Location> mobSpawnLocations = new ArrayList<>();
+    private final List<Location> minorMobSpawnLocations = new ArrayList<>();
     private final List<Location> chestLocations = new ArrayList<>();
     private final Map<Location, Boolean> spawnedChests = new HashMap<>();
     private final Map<UUID, SpawnType> activeMobs = new HashMap<>();
@@ -131,11 +133,13 @@ public class BloodChestSession {
 
     private void scanMarkers(World world) {
         mobSpawnLocations.clear();
+        minorMobSpawnLocations.clear();
         chestLocations.clear();
         Vector size = arenaSettings.getRegionSize();
         int baseX = pasteOrigin.getBlockX();
         int baseY = pasteOrigin.getBlockY();
         int baseZ = pasteOrigin.getBlockZ();
+        Material minorMobMarker = arenaSettings.getMinorMobMarkerMaterial().orElse(null);
 
         for (int x = 0; x < (int) size.getX(); x++) {
             for (int y = 0; y < (int) size.getY(); y++) {
@@ -147,6 +151,11 @@ public class BloodChestSession {
                         block.setType(Material.AIR, false);
                     } else if (block.getType() == arenaSettings.getChestMarkerMaterial()) {
                         chestLocations.add(block.getLocation());
+                        block.setType(Material.AIR, false);
+                    } else if (minorMobMarker != null && block.getType() == minorMobMarker) {
+                        Location spawnLocation = block.getLocation().add(0.5,
+                                1 + arenaSettings.getMobSettings().getSpawnYOffset(), 0.5);
+                        minorMobSpawnLocations.add(spawnLocation);
                         block.setType(Material.AIR, false);
                     }
                 }
@@ -183,6 +192,52 @@ public class BloodChestSession {
             additionalIndex++;
             spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
         }
+
+        List<MinorMobSpawn> minorMobSpawns = mobSettings.getMinorMobSpawns();
+        if (!minorMobSpawns.isEmpty() && !minorMobSpawnLocations.isEmpty()) {
+            for (Location spawnLocation : minorMobSpawnLocations) {
+                spawnMinorMobGroup(world, mobSettings, spawnLocation, minorMobSpawns);
+            }
+        }
+    }
+
+    private void spawnMinorMobGroup(World world,
+                                    MobSettings mobSettings,
+                                    Location markerLocation,
+                                    List<MinorMobSpawn> groupDefinitions) {
+        int totalCount = groupDefinitions.stream()
+                .mapToInt(MinorMobSpawn::getCount)
+                .sum();
+        if (totalCount <= 0) {
+            return;
+        }
+        int index = 0;
+        for (MinorMobSpawn spawn : groupDefinitions) {
+            for (int i = 0; i < spawn.getCount(); i++) {
+                Location spreadLocation = computeSpreadLocation(markerLocation, index, totalCount);
+                spawnMob(world, mobSettings, spreadLocation, spawn.getMythicMobId(), SpawnType.ADDITIONAL);
+                index++;
+            }
+        }
+    }
+
+    private Location computeSpreadLocation(Location center, int index, int total) {
+        if (total <= 1) {
+            return center.clone();
+        }
+        int ringCapacity = 8;
+        int ring = index / ringCapacity;
+        int remaining = Math.max(1, total - (ring * ringCapacity));
+        int slotsInRing = Math.min(ringCapacity, remaining);
+        int positionInRing = index - (ring * ringCapacity);
+        if (positionInRing >= slotsInRing) {
+            positionInRing %= slotsInRing;
+        }
+        double angle = (Math.PI * 2.0 / slotsInRing) * positionInRing;
+        double radius = 1.25 + (ring * 1.5);
+        double x = center.getX() + Math.cos(angle) * radius;
+        double z = center.getZ() + Math.sin(angle) * radius;
+        return new Location(center.getWorld(), x, center.getY(), z);
     }
 
     private void spawnMob(World world,
