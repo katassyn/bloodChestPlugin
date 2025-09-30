@@ -2,13 +2,18 @@ package pl.yourserver.bloodChestPlugin.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.format.TextDecoration.State;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import pl.yourserver.bloodChestPlugin.loot.LootItemDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public final class ItemStackUtil {
 
@@ -47,6 +52,19 @@ public final class ItemStackUtil {
                 }
                 meta.lore(loreComponents);
             }
+            Map<Enchantment, Integer> enchantments = definition.getEnchantments();
+            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                meta.addEnchant(entry.getKey(), entry.getValue(), true);
+            }
+            if (definition.isUnbreakable()) {
+                meta.setUnbreakable(true);
+            }
+            if (definition.isHideFlags()) {
+                meta.addItemFlags(ItemFlag.values());
+            }
+            if (definition.isHideAttributes()) {
+                meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            }
             stack.setItemMeta(meta);
         }
         return stack;
@@ -56,6 +74,7 @@ public final class ItemStackUtil {
         if (input == null) {
             return Component.empty();
         }
-        return SERIALIZER.deserialize(input.replace("§", "&"));
+        Component component = SERIALIZER.deserialize(input.replace("§", "&"));
+        return component.decorationIfAbsent(TextDecoration.ITALIC, State.FALSE);
     }
 }
