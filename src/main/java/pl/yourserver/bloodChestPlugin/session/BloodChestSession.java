@@ -42,11 +42,14 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 public class BloodChestSession {
 
     private static final String MOB_TAG = "blood_chest_mob";
     private static final String PRIMARY_MOB_TAG = "blood_chest_primary";
+    private static final Pattern LEGACY_LOCATION_PATTERN =
+            Pattern.compile("\\{world\\}\\s*,\\s*\\{x\\}\\s*,\\s*\\{y\\}\\s*,\\s*\\{z\\}");
 
     private final Plugin plugin;
     private final PluginConfiguration configuration;
@@ -130,6 +133,10 @@ public class BloodChestSession {
                             arenaSettings.getMobMarkerMaterial(),
                             arenaSettings.getChestMarkerMaterial(),
                             arenaSettings.getMinorMobMarkerMaterial()));
+            Vector appliedOffset = pasteResult.appliedOffset();
+            if (appliedOffset != null) {
+                pasteOrigin.add(appliedOffset);
+            }
             this.arenaBounds = resolveArenaBounds(pasteOrigin, arenaSettings.getRegionSize(), pasteResult);
             scanMarkers(world, arenaBounds, pasteResult);
             teleportPlayerToArena();
@@ -448,16 +455,35 @@ public class BloodChestSession {
 
     private String buildSpawnCommand(String mobId, MobSettings mobSettings, Location location) {
         String command = mobSettings.getSpawnCommand();
-        if (command == null || command.isEmpty()) {
-            command = "mm mobs spawn {id} {world} {x} {y} {z}";
+        if (command == null || command.isBlank()) {
+            command = "mm mobs spawn {id} {location}";
+        }
+        World world = location.getWorld();
+        if (world == null) {
+            throw new IllegalStateException("Spawn location world is not available");
         }
         String id = mobId != null ? mobId : "";
+        String worldName = world.getName();
+        String x = formatCoordinate(location.getX());
+        String y = formatCoordinate(location.getY());
+        String z = formatCoordinate(location.getZ());
+        String yaw = formatCoordinate(location.getYaw());
+        String pitch = formatCoordinate(location.getPitch());
+        String locationToken = String.join(",", worldName, x, y, z, yaw, pitch);
+        command = LEGACY_LOCATION_PATTERN.matcher(command).replaceAll("{location}");
         return command
+                .replace("{location}", locationToken)
                 .replace("{id}", id)
-                .replace("{world}", location.getWorld().getName())
-                .replace("{x}", String.format(java.util.Locale.ROOT, "%.2f", location.getX()))
-                .replace("{y}", String.format(java.util.Locale.ROOT, "%.2f", location.getY()))
-                .replace("{z}", String.format(java.util.Locale.ROOT, "%.2f", location.getZ()));
+                .replace("{world}", worldName)
+                .replace("{x}", x)
+                .replace("{y}", y)
+                .replace("{z}", z)
+                .replace("{yaw}", yaw)
+                .replace("{pitch}", pitch);
+    }
+
+    private String formatCoordinate(double value) {
+        return String.format(Locale.ROOT, "%.2f", value);
     }
 
     public void handleEntitySpawn(Entity entity) {
