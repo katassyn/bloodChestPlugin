@@ -54,8 +54,8 @@ import java.util.regex.Pattern;
 
 public class BloodChestSession {
 
-    private static final String MOB_TAG = "blood_chest_mob";
-    private static final String PRIMARY_MOB_TAG = "blood_chest_primary";
+    public static final String MOB_TAG = "blood_chest_mob";
+    public static final String PRIMARY_MOB_TAG = "blood_chest_primary";
     private static final Pattern LEGACY_LOCATION_PATTERN =
             Pattern.compile("\\{world\\}\\s*,\\s*\\{x\\}\\s*,\\s*\\{y\\}\\s*,\\s*\\{z\\}");
 
@@ -536,10 +536,20 @@ public class BloodChestSession {
     }
 
     private SpawnType resolveSpawnType(LivingEntity entity, String normalizedMobName) {
-        if (entity.getScoreboardTags().contains(PRIMARY_MOB_TAG) || isPrimaryMythicMob(normalizedMobName)) {
+        if (entity.getScoreboardTags().contains(PRIMARY_MOB_TAG)) {
             return SpawnType.PRIMARY;
         }
-        if (entity.getScoreboardTags().contains(MOB_TAG) || isAdditionalMythicMob(normalizedMobName)) {
+        if (entity.getScoreboardTags().contains(MOB_TAG)) {
+            return SpawnType.ADDITIONAL;
+        }
+        return resolveSpawnTypeFromName(normalizedMobName);
+    }
+
+    private SpawnType resolveSpawnTypeFromName(String normalizedMobName) {
+        if (isPrimaryMythicMob(normalizedMobName)) {
+            return SpawnType.PRIMARY;
+        }
+        if (isAdditionalMythicMob(normalizedMobName)) {
             return SpawnType.ADDITIONAL;
         }
         return null;
@@ -606,22 +616,30 @@ public class BloodChestSession {
         if (mobSettings.getSpawnMode() != SpawnMode.MYTHIC_COMMAND) {
             return;
         }
-        if (pendingSpawnAssignments.isEmpty()) {
-            return;
-        }
-        if (!hasRequiredMetadata(entity, mobSettings)) {
-            return;
-        }
         String normalizedName = resolveMythicMobName(entity, mobSettings, mythicMobName);
+        if (normalizedName == null && !hasRequiredMetadata(entity, mobSettings)) {
+            return;
+        }
         Location actualLocation = entity.getLocation();
+        if (!isWithinArena(actualLocation)) {
+            return;
+        }
+        SpawnType expectedType = resolveSpawnTypeFromName(normalizedName);
         Iterator<SpawnAssignment> iterator = pendingSpawnAssignments.iterator();
         while (iterator.hasNext()) {
             SpawnAssignment assignment = iterator.next();
-            if (assignment.matches(actualLocation, normalizedName)) {
+            boolean nameMatches = normalizedName != null
+                    && assignment.mythicMobName() != null
+                    && assignment.mythicMobName().equals(normalizedName)
+                    && expectedType == assignment.type();
+            if (assignment.matches(actualLocation, normalizedName) || nameMatches) {
                 iterator.remove();
                 trackSpawnedEntity(entity, assignment.type());
-                break;
+                return;
             }
+        }
+        if (normalizedName != null && expectedType != null) {
+            trackSpawnedEntity(entity, expectedType);
         }
     }
 
@@ -647,7 +665,8 @@ public class BloodChestSession {
         if (mobSettings.getSpawnMode() != SpawnMode.MYTHIC_COMMAND) {
             return;
         }
-        if (!hasRequiredMetadata(entity, mobSettings)) {
+        String normalizedName = resolveMythicMobName(entity, mobSettings, mythicMobName);
+        if (normalizedName == null && !hasRequiredMetadata(entity, mobSettings)) {
             return;
         }
         if (processedDeaths.contains(uuid)) {
@@ -657,7 +676,6 @@ public class BloodChestSession {
             return;
         }
         processedDeaths.add(uuid);
-        String normalizedName = resolveMythicMobName(entity, mobSettings, mythicMobName);
         SpawnType resolvedType = resolveSpawnType(entity, normalizedName);
         if (resolvedType == SpawnType.PRIMARY) {
             defeatedPrimaryCount++;
