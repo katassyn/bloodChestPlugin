@@ -22,6 +22,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.bukkit.metadata.MetadataValue;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration;
@@ -78,6 +79,7 @@ public class BloodChestSession {
     private final List<Location> chestLocations = new ArrayList<>();
     private final Map<Location, Boolean> spawnedChests = new HashMap<>();
     private final Map<Location, List<Component>> chestLoreByLocation = new HashMap<>();
+    private final Map<Location, BukkitTask> chestOpenTasks = new HashMap<>();
     private final Map<UUID, SpawnType> activeMobs = new HashMap<>();
     private final Set<UUID> processedDeaths = new HashSet<>();
     private final List<SpawnAssignment> pendingSpawnAssignments = new ArrayList<>();
@@ -174,6 +176,7 @@ public class BloodChestSession {
                 minorMobSpawnLocations.clear();
                 chestLocations.clear();
                 spawnedChests.clear();
+                stopChestOpenTasks();
                 chestLoreByLocation.clear();
                 activeMobs.clear();
                 pendingSpawnAssignments.clear();
@@ -238,7 +241,7 @@ public class BloodChestSession {
             mobSpawnLocations.add(spawnLocation);
         }
         for (SchematicHandler.BlockOffset offset : pasteResult.chestMarkerOffsets()) {
-            Location blockLocation = toWorldBlockLocation(offset);
+            Location blockLocation = toWorldBlockLocation(offset).toBlockLocation();
             chestLocations.add(blockLocation.clone());
             clearMarkerBlock(blockLocation);
         }
@@ -288,7 +291,8 @@ public class BloodChestSession {
                         Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
                         mobSpawnLocations.add(spawnLocation);
                     } else if (scanChestMarkers && block.getType() == arenaSettings.getChestMarkerMaterial()) {
-                        Location markerLocation = block.getLocation();
+                        Location markerLocation = block.getLocation().toBlockLocation();
+
                         chestLocations.add(markerLocation.clone());
                         clearMarkerBlock(markerLocation);
                     } else if (scanMinorMarkers && minorMobMarker != null && block.getType() == minorMobMarker) {
@@ -336,6 +340,67 @@ public class BloodChestSession {
         } else if (opened) {
             state.update(true, false);
         }
+    }
+
+    private void keepChestOpen(Block block) {
+        if (block == null) {
+            return;
+        }
+        BlockState state = block.getState();
+        if (!(state instanceof Lidded)) {
+            return;
+        }
+        Location key = block.getLocation().toBlockLocation();
+        if (chestOpenTasks.containsKey(key)) {
+            return;
+        }
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                BukkitTask currentTask = chestOpenTasks.get(key);
+                if (currentTask == null || currentTask.getTaskId() != getTaskId()) {
+                    cancel();
+                    return;
+                }
+                if (finished) {
+                    cancelChestTask(key, getTaskId());
+                    return;
+                }
+                Boolean opened = spawnedChests.get(key);
+                if (opened == null || !opened) {
+                    cancelChestTask(key, getTaskId());
+                    return;
+                }
+                Block chestBlock = key.getBlock();
+                if (!(chestBlock.getState() instanceof Lidded)) {
+                    cancelChestTask(key, getTaskId());
+                    return;
+                }
+                openChest(chestBlock);
+            }
+        };
+        BukkitTask task = runnable.runTaskTimer(plugin, 0L, 40L);
+        chestOpenTasks.put(key, task);
+    }
+
+    private void cancelChestTask(Location key, int taskId) {
+        BukkitTask task = chestOpenTasks.get(key);
+        if (task != null && task.getTaskId() == taskId) {
+            chestOpenTasks.remove(key);
+            task.cancel();
+        }
+    }
+
+    private void stopChestOpenTasks() {
+        if (chestOpenTasks.isEmpty()) {
+            return;
+        }
+        for (BukkitTask task : chestOpenTasks.values()) {
+            if (task != null) {
+                task.cancel();
+            }
+        }
+        chestOpenTasks.clear();
     }
 
     private Location toWorldBlockLocation(SchematicHandler.BlockOffset offset) {
@@ -614,7 +679,6 @@ public class BloodChestSession {
                                      String mythicId,
                                      SpawnType type,
                                      boolean applyOffset) {
-
         Location adjustedLocation = applyOffset ? applySpawnOffset(spawnLocation, mobSettings) : spawnLocation.clone();
         if (mobSettings.getSpawnMode() == SpawnMode.MYTHIC_COMMAND) {
             String normalizedId = normalizeMythicName(mythicId);
@@ -745,14 +809,17 @@ public class BloodChestSession {
         String yaw = formatCoordinate(location.getYaw());
         String pitch = formatCoordinate(location.getPitch());
         String amount = "1";
-        String locationToken = String.join(",", worldName, x, y, z);
         String locationSpaceToken = String.join(" ", worldName, x, y, z);
+        String locationCommaToken = String.join(",", worldName, x, y, z);
         String locationWithAnglesToken = String.join(" ", worldName, x, y, z, yaw, pitch);
         command = LEGACY_LOCATION_PATTERN.matcher(command).replaceAll("{location}");
         return command
                 .replace("{location_with_yaw_pitch}", locationWithAnglesToken)
                 .replace("{location_space}", locationSpaceToken)
-                .replace("{location}", locationToken)
+                .replace("{location_commas}", locationCommaToken)
+                .replace("{location_comma}", locationCommaToken)
+                .replace("{location_csv}", locationCommaToken)
+                .replace("{location}", locationSpaceToken)
                 .replace("{amount}", amount)
                 .replace("{id}", id)
                 .replace("{world}", worldName)
@@ -887,10 +954,12 @@ public class BloodChestSession {
     private void spawnChests(int chestCount) {
         ChestSettings chestSettings = arenaSettings.getChestSettings();
         int available = Math.min(chestCount, chestLocations.size());
+        stopChestOpenTasks();
         spawnedChests.clear();
         for (int i = 0; i < available; i++) {
             Location location = chestLocations.get(i);
-            Block block = location.getBlock();
+            Location blockLocation = location.toBlockLocation();
+            Block block = blockLocation.getBlock();
             block.setType(chestSettings.getChestMaterial(), false);
             if (block.getState() instanceof TileState tileState) {
                 if (tileState instanceof Nameable nameable) {
@@ -900,11 +969,11 @@ public class BloodChestSession {
                         .map(line -> (Component) Component.text(ChatColor.translateAlternateColorCodes('&', line)))
                         .collect(Collectors.toList());
                 if (!lore.isEmpty()) {
-                    chestLoreByLocation.put(location, lore);
+                    chestLoreByLocation.put(blockLocation, lore);
                 }
                 tileState.update();
             }
-            spawnedChests.put(location, Boolean.FALSE);
+            spawnedChests.put(blockLocation, Boolean.FALSE);
         }
         player.sendMessage(color("&c" + available + " Blood Chests have appeared!"));
     }
@@ -913,7 +982,7 @@ public class BloodChestSession {
         if (finished || !clicker.getUniqueId().equals(player.getUniqueId())) {
             return false;
         }
-        Location location = block.getLocation();
+        Location location = block.getLocation().toBlockLocation();
         Boolean opened = spawnedChests.get(location);
         if (opened == null) {
             return false;
@@ -927,6 +996,7 @@ public class BloodChestSession {
             lore.forEach(player::sendMessage);
         }
         openChest(block);
+        keepChestOpen(block);
         LootResult result = lootService.generateLoot(player.getUniqueId(), rewardSettings.getRollsPerChest(), pityManager);
         dropItems(location, result);
         if (result.isPityGranted()) {
@@ -1001,22 +1071,18 @@ public class BloodChestSession {
         if (items.isEmpty()) {
             return;
         }
-        new BukkitRunnable() {
-            int index = 0;
-
-            @Override
-            public void run() {
-                if (index >= items.size()) {
-                    cancel();
-                    return;
-                }
-                org.bukkit.inventory.ItemStack item = items.get(index++);
-                org.bukkit.entity.Item dropped = dropLocation.getWorld().dropItem(dropLocation, item);
-                Vector velocity = new Vector(ThreadLocalRandom.current().nextGaussian() * 0.05,
-                        0.35, ThreadLocalRandom.current().nextGaussian() * 0.05);
-                dropped.setVelocity(velocity);
-            }
-        }.runTaskTimer(plugin, 0L, 10L);
+        World world = dropLocation.getWorld();
+        if (world == null) {
+            return;
+        }
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (org.bukkit.inventory.ItemStack item : items) {
+            org.bukkit.entity.Item dropped = world.dropItem(dropLocation, item);
+            Vector velocity = new Vector(random.nextGaussian() * 0.08,
+                    0.35 + random.nextDouble(0.05),
+                    random.nextGaussian() * 0.08);
+            dropped.setVelocity(velocity);
+        }
     }
 
     private void startExitCountdown() {
@@ -1329,6 +1395,7 @@ public class BloodChestSession {
         finished = true;
         cancelExitCountdown();
         clearBossBar();
+        stopChestOpenTasks();
         removeTrackedMobs();
         boolean canTeleportNow = teleportNow && player.isOnline() && !player.isDead();
         if (!teleportOnRespawn && canTeleportNow) {
