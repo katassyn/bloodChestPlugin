@@ -122,9 +122,16 @@ public class BloodChestSession {
         boolean setupComplete = false;
         this.arenaBounds = null;
         try {
-            SchematicHandler.PasteResult pasteResult = schematicHandler.pasteSchematic(schematicFile, world, pasteOrigin);
+            SchematicHandler.PasteResult pasteResult = schematicHandler.pasteSchematic(
+                    schematicFile,
+                    world,
+                    pasteOrigin,
+                    new SchematicHandler.MarkerConfiguration(
+                            arenaSettings.getMobMarkerMaterial(),
+                            arenaSettings.getChestMarkerMaterial(),
+                            arenaSettings.getMinorMobMarkerMaterial()));
             this.arenaBounds = resolveArenaBounds(pasteOrigin, arenaSettings.getRegionSize(), pasteResult);
-            scanMarkers(world, arenaBounds);
+            scanMarkers(world, arenaBounds, pasteResult);
             teleportPlayerToArena();
             this.startTimeMillis = System.currentTimeMillis();
             this.defeatedPrimaryCount = 0;
@@ -157,47 +164,32 @@ public class BloodChestSession {
         }
     }
 
-    private void scanMarkers(World world, ArenaBounds bounds) {
+    private void scanMarkers(World world, ArenaBounds bounds, SchematicHandler.PasteResult pasteResult) {
         mobSpawnLocations.clear();
         minorMobSpawnLocations.clear();
         chestLocations.clear();
+
         Location slotOrigin = slot.getOrigin();
         playerSpawnLocation = slotOrigin.clone().add(arenaSettings.getPlayerSpawnOffset());
         playerSpawnLocation.setYaw(slotOrigin.getYaw());
         playerSpawnLocation.setPitch(slotOrigin.getPitch());
-        boolean spawnMarkerFound = false;
-        int minX = bounds.minX();
-        int minY = bounds.minY();
-        int minZ = bounds.minZ();
-        int maxX = bounds.maxX();
-        int maxY = bounds.maxY();
-        int maxZ = bounds.maxZ();
-        Material minorMobMarker = arenaSettings.getMinorMobMarkerMaterial().orElse(null);
-        for (int x = minX; x <= maxX; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    if (block.getType() == arenaSettings.getMobMarkerMaterial()) {
-                        Location spawnLocation = block.getLocation().add(0.5, 1 + arenaSettings.getMobSettings().getSpawnYOffset(), 0.5);
-                        mobSpawnLocations.add(spawnLocation);
-                    } else if (block.getType() == arenaSettings.getChestMarkerMaterial()) {
-                        chestLocations.add(block.getLocation());
-                    } else if (minorMobMarker != null && block.getType() == minorMobMarker) {
-                        Location spawnLocation = block.getLocation().add(0.5,
-                                1 + arenaSettings.getMobSettings().getSpawnYOffset(), 0.5);
-                        minorMobSpawnLocations.add(spawnLocation);
-                    } else if (block.getType() == Material.GOLD_BLOCK) {
-                        Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
-                        spawnLocation.setYaw(slotOrigin.getYaw());
-                        spawnLocation.setPitch(slotOrigin.getPitch());
-                        if (spawnMarkerFound) {
-                            plugin.getLogger().warning("Multiple player spawn markers found for blood chest session");
-                        }
-                        spawnMarkerFound = true;
-                        playerSpawnLocation = spawnLocation;
-                    }
-                }
-            }
+
+        boolean spawnMarkerFound = applyMarkersFromPasteResult(pasteResult, slotOrigin);
+
+        boolean needMobMarkers = mobSpawnLocations.isEmpty();
+        boolean needChestMarkers = chestLocations.isEmpty();
+        boolean needMinorMarkers = arenaSettings.getMinorMobMarkerMaterial()
+                .map(material -> minorMobSpawnLocations.isEmpty())
+                .orElse(false);
+        boolean needPlayerMarker = !spawnMarkerFound;
+
+        if (needMobMarkers || needChestMarkers || needMinorMarkers || needPlayerMarker) {
+            spawnMarkerFound = scanMarkersInWorld(world, bounds, slotOrigin,
+                    needMobMarkers,
+                    needChestMarkers,
+                    needMinorMarkers,
+                    needPlayerMarker,
+                    spawnMarkerFound);
         }
 
         if (!spawnMarkerFound) {
@@ -206,6 +198,102 @@ public class BloodChestSession {
         if (chestLocations.isEmpty()) {
             throw new IllegalStateException("Schematic has no chest spawn markers");
         }
+    }
+
+    private boolean applyMarkersFromPasteResult(SchematicHandler.PasteResult pasteResult, Location slotOrigin) {
+        if (pasteResult == null) {
+            return false;
+        }
+        MobSettings mobSettings = arenaSettings.getMobSettings();
+        for (SchematicHandler.BlockOffset offset : pasteResult.mobMarkerOffsets()) {
+            Location blockLocation = toWorldBlockLocation(offset);
+            Location spawnLocation = blockLocation.add(0.5, 1 + mobSettings.getSpawnYOffset(), 0.5);
+            mobSpawnLocations.add(spawnLocation);
+        }
+        for (SchematicHandler.BlockOffset offset : pasteResult.chestMarkerOffsets()) {
+            chestLocations.add(toWorldBlockLocation(offset));
+        }
+        for (SchematicHandler.BlockOffset offset : pasteResult.minorMobMarkerOffsets()) {
+            Location blockLocation = toWorldBlockLocation(offset);
+            Location spawnLocation = blockLocation.add(0.5, 1 + mobSettings.getSpawnYOffset(), 0.5);
+            minorMobSpawnLocations.add(spawnLocation);
+        }
+
+        boolean spawnMarkerFound = false;
+        if (!pasteResult.playerSpawnMarkerOffsets().isEmpty()) {
+            for (SchematicHandler.BlockOffset offset : pasteResult.playerSpawnMarkerOffsets()) {
+                Location spawnLocation = toWorldBlockLocation(offset).add(0.5, 1.0, 0.5);
+                spawnLocation.setYaw(slotOrigin.getYaw());
+                spawnLocation.setPitch(slotOrigin.getPitch());
+                if (spawnMarkerFound) {
+                    plugin.getLogger().warning("Multiple player spawn markers found for blood chest session");
+                    continue;
+                }
+                playerSpawnLocation = spawnLocation;
+                spawnMarkerFound = true;
+            }
+        }
+        return spawnMarkerFound;
+    }
+
+    private boolean scanMarkersInWorld(World world,
+                                       ArenaBounds bounds,
+                                       Location slotOrigin,
+                                       boolean scanMobMarkers,
+                                       boolean scanChestMarkers,
+                                       boolean scanMinorMarkers,
+                                       boolean scanPlayerMarker,
+                                       boolean spawnMarkerFound) {
+        MobSettings mobSettings = arenaSettings.getMobSettings();
+        Material minorMobMarker = arenaSettings.getMinorMobMarkerMaterial().orElse(null);
+        int minX = bounds.minX();
+        int minY = bounds.minY();
+        int minZ = bounds.minZ();
+        int maxX = bounds.maxX();
+        int maxY = bounds.maxY();
+        int maxZ = bounds.maxZ();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    Block block = world.getBlockAt(x, y, z);
+                    if (scanMobMarkers && block.getType() == arenaSettings.getMobMarkerMaterial()) {
+                        Location spawnLocation = block.getLocation().add(0.5, 1 + mobSettings.getSpawnYOffset(), 0.5);
+                        mobSpawnLocations.add(spawnLocation);
+                    } else if (scanChestMarkers && block.getType() == arenaSettings.getChestMarkerMaterial()) {
+                        chestLocations.add(block.getLocation());
+                    } else if (scanMinorMarkers && minorMobMarker != null && block.getType() == minorMobMarker) {
+                        Location spawnLocation = block.getLocation().add(0.5, 1 + mobSettings.getSpawnYOffset(), 0.5);
+                        minorMobSpawnLocations.add(spawnLocation);
+                    } else if (scanPlayerMarker && block.getType() == Material.GOLD_BLOCK) {
+                        Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
+                        spawnLocation.setYaw(slotOrigin.getYaw());
+                        spawnLocation.setPitch(slotOrigin.getPitch());
+                        if (spawnMarkerFound) {
+                            plugin.getLogger().warning("Multiple player spawn markers found for blood chest session");
+                        }
+                        playerSpawnLocation = spawnLocation;
+                        spawnMarkerFound = true;
+                        scanPlayerMarker = false;
+                    }
+                }
+            }
+        }
+        return spawnMarkerFound;
+    }
+
+    private Location toWorldBlockLocation(SchematicHandler.BlockOffset offset) {
+        if (pasteOrigin == null) {
+            throw new IllegalStateException("Paste origin was not initialized");
+        }
+        World world = pasteOrigin.getWorld();
+        if (world == null) {
+            throw new IllegalStateException("World is not available for paste origin");
+        }
+        int x = pasteOrigin.getBlockX() + offset.x();
+        int y = pasteOrigin.getBlockY() + offset.y();
+        int z = pasteOrigin.getBlockZ() + offset.z();
+        return new Location(world, x, y, z);
     }
 
     private ArenaBounds resolveArenaBounds(Location origin,
