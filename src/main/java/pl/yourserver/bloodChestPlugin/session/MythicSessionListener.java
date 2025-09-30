@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 public class MythicSessionListener implements Listener {
 
     private final SessionManager sessionManager;
+    private static final String PRIMARY_MYTHIC_ID = "blood_sludge";
 
     public MythicSessionListener(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
@@ -23,6 +24,9 @@ public class MythicSessionListener implements Listener {
         String internalName = event.getMobType() != null
                 ? event.getMobType().getInternalName()
                 : null;
+        if (internalName != null && internalName.equalsIgnoreCase(PRIMARY_MYTHIC_ID)) {
+            livingEntity.addScoreboardTag(BloodChestSession.PRIMARY_MOB_TAG);
+        }
         sessionManager.handleMythicMobSpawn(livingEntity, internalName);
     }
 
