@@ -614,6 +614,7 @@ public class BloodChestSession {
                                      String mythicId,
                                      SpawnType type,
                                      boolean applyOffset) {
+
         Location adjustedLocation = applyOffset ? applySpawnOffset(spawnLocation, mobSettings) : spawnLocation.clone();
         if (mobSettings.getSpawnMode() == SpawnMode.MYTHIC_COMMAND) {
             String normalizedId = normalizeMythicName(mythicId);
