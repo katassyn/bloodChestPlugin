@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class SessionManager {
 
@@ -149,6 +150,24 @@ public class SessionManager {
 
     public void clearPendingReturn(UUID playerId) {
         pendingReturns.remove(playerId);
+    }
+
+    public boolean dispatchSpawnCommand(Player player) {
+        if (player == null) {
+            return false;
+        }
+        String command = "spawn " + player.getName();
+        try {
+            boolean success = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            if (!success) {
+                plugin.getLogger().warning("[BloodChest] Failed to execute /" + command + " for player " + player.getName());
+            }
+            return success;
+        } catch (Exception ex) {
+            plugin.getLogger().log(Level.WARNING,
+                    "[BloodChest] Error executing /" + command + ": " + ex.getMessage(), ex);
+            return false;
+        }
     }
 
     public void shutdown() {

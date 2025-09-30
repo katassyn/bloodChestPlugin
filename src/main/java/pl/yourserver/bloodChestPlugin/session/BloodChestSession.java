@@ -17,6 +17,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.Particle;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -524,7 +525,7 @@ public class BloodChestSession {
                     mythicId,
                     formatLocation(spawnLocation),
                     formatLocation(markerLocation)));
-            spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL, false);
+            spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
         }
     }
 
@@ -968,13 +969,40 @@ public class BloodChestSession {
         if (world == null) {
             return;
         }
-        ThreadLocalRandom random = ThreadLocalRandom.current();
+        int index = 0;
         for (org.bukkit.inventory.ItemStack item : items) {
-            org.bukkit.entity.Item dropped = world.dropItem(dropLocation, item);
-            Vector velocity = new Vector(random.nextGaussian() * 0.08,
-                    0.35 + random.nextDouble(0.05),
-                    random.nextGaussian() * 0.08);
-            dropped.setVelocity(velocity);
+            org.bukkit.inventory.ItemStack stack = item.clone();
+            long delay = index * 3L;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                Player currentPlayer = player;
+                if (currentPlayer == null || !currentPlayer.isOnline()) {
+                    return;
+                }
+                ThreadLocalRandom random = ThreadLocalRandom.current();
+                org.bukkit.entity.Item dropped = world.dropItem(dropLocation, stack);
+                Location targetLocation = currentPlayer.getEyeLocation();
+                Vector direction = targetLocation.toVector().subtract(dropLocation.toVector());
+                if (direction.lengthSquared() < 1.0E-4) {
+                    direction = new Vector(0, 0.4, 0);
+                }
+                Vector jitter = new Vector(random.nextGaussian() * 0.05,
+                        random.nextGaussian() * 0.03,
+                        random.nextGaussian() * 0.05);
+                direction.add(jitter).normalize().multiply(0.45 + random.nextDouble(0.15));
+                direction.setY(Math.max(0.25, Math.min(0.7, direction.getY() + 0.15)));
+                dropped.setVelocity(direction);
+                dropped.setPickupDelay(10);
+
+                Location particleLocation = dropLocation.clone().add(direction.clone().multiply(0.4));
+                world.spawnParticle(Particle.CRIMSON_SPORE,
+                        particleLocation,
+                        18,
+                        0.2,
+                        0.25,
+                        0.2,
+                        0.02);
+            }, delay);
+            index++;
         }
     }
 
@@ -1292,7 +1320,10 @@ public class BloodChestSession {
         removeTrackedMobs();
         boolean canTeleportNow = teleportNow && player.isOnline() && !player.isDead();
         if (!teleportOnRespawn && canTeleportNow) {
-            player.teleport(returnLocation);
+            boolean dispatched = manager.dispatchSpawnCommand(player);
+            if (!dispatched) {
+                player.teleport(returnLocation);
+            }
         }
         clearArenaRegion();
         arenaBounds = null;

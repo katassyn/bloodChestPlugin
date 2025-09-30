@@ -1,5 +1,6 @@
 package pl.yourserver.bloodChestPlugin.session;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.LivingEntity;
@@ -61,7 +62,19 @@ public class SessionListener implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        sessionManager.consumePendingReturn(event.getPlayer().getUniqueId())
-                .ifPresent(event::setRespawnLocation);
+        Player player = event.getPlayer();
+        sessionManager.consumePendingReturn(player.getUniqueId())
+                .ifPresent(location -> {
+                    event.setRespawnLocation(location);
+                    Bukkit.getScheduler().runTask(sessionManager.getPlugin(), () -> {
+                        if (!player.isOnline()) {
+                            return;
+                        }
+                        boolean dispatched = sessionManager.dispatchSpawnCommand(player);
+                        if (!dispatched) {
+                            player.teleport(location);
+                        }
+                    });
+                });
     }
 }
