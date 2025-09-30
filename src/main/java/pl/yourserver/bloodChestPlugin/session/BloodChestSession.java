@@ -11,6 +11,8 @@ import org.bukkit.Material;
 import org.bukkit.Nameable;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Lidded;
 import org.bukkit.block.TileState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -238,12 +240,13 @@ public class BloodChestSession {
             mobSpawnLocations.add(spawnLocation);
         }
         for (SchematicHandler.BlockOffset offset : pasteResult.chestMarkerOffsets()) {
-            chestLocations.add(toWorldBlockLocation(offset));
+            Location blockLocation = toWorldBlockLocation(offset);
+            chestLocations.add(blockLocation.clone());
+            clearMarkerBlock(blockLocation);
         }
         for (SchematicHandler.BlockOffset offset : pasteResult.minorMobMarkerOffsets()) {
             Location blockLocation = toWorldBlockLocation(offset);
-            Location spawnLocation = blockLocation.add(0.5, 1.0, 0.5);
-            minorMobSpawnLocations.add(spawnLocation);
+            minorMobSpawnLocations.add(blockLocation.clone());
         }
 
         boolean spawnMarkerFound = false;
@@ -287,10 +290,12 @@ public class BloodChestSession {
                         Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
                         mobSpawnLocations.add(spawnLocation);
                     } else if (scanChestMarkers && block.getType() == arenaSettings.getChestMarkerMaterial()) {
-                        chestLocations.add(block.getLocation());
+                        Location markerLocation = block.getLocation();
+                        chestLocations.add(markerLocation.clone());
+                        clearMarkerBlock(markerLocation);
                     } else if (scanMinorMarkers && minorMobMarker != null && block.getType() == minorMobMarker) {
-                        Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
-                        minorMobSpawnLocations.add(spawnLocation);
+                        Location markerLocation = block.getLocation();
+                        minorMobSpawnLocations.add(markerLocation.clone());
                     } else if (scanPlayerMarker && block.getType() == Material.GOLD_BLOCK) {
                         Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
                         spawnLocation.setYaw(slotOrigin.getYaw());
@@ -306,6 +311,33 @@ public class BloodChestSession {
             }
         }
         return spawnMarkerFound;
+    }
+
+    private void clearMarkerBlock(Location location) {
+        if (location == null) {
+            return;
+        }
+        Block block = location.getBlock();
+        if (block.getType() == arenaSettings.getChestMarkerMaterial()) {
+            block.setType(Material.AIR, false);
+        }
+    }
+
+    private void openChest(Block block) {
+        if (block == null) {
+            return;
+        }
+        BlockState state = block.getState();
+        boolean opened = false;
+        if (state instanceof Lidded lidded) {
+            lidded.open();
+            opened = true;
+        }
+        if (state instanceof TileState tileState) {
+            tileState.update(true, false);
+        } else if (opened) {
+            state.update(true, false);
+        }
     }
 
     private Location toWorldBlockLocation(SchematicHandler.BlockOffset offset) {
@@ -423,11 +455,13 @@ public class BloodChestSession {
         if (totalCount <= 0) {
             return;
         }
+        Location baseCenter = resolveMinorMobCenter(markerLocation);
         int index = 0;
         for (MinorMobSpawn spawn : groupDefinitions) {
             for (int i = 0; i < spawn.getCount(); i++) {
-                Location spreadLocation = computeSpreadLocation(markerLocation, index, totalCount);
-                spawnMob(world, mobSettings, spreadLocation, spawn.getMythicMobId(), SpawnType.ADDITIONAL);
+                Location spreadLocation = computeSpreadLocation(baseCenter, index, totalCount);
+                Location resolvedSpawn = resolveMinorMobSpawnLocation(spreadLocation);
+                spawnMob(world, mobSettings, resolvedSpawn, spawn.getMythicMobId(), SpawnType.ADDITIONAL, false);
                 index++;
             }
         }
@@ -452,12 +486,59 @@ public class BloodChestSession {
         return new Location(center.getWorld(), x, center.getY(), z);
     }
 
+    private Location resolveMinorMobCenter(Location markerLocation) {
+        Location base = markerLocation.clone();
+        base.setX(markerLocation.getBlockX() + 0.5);
+        base.setZ(markerLocation.getBlockZ() + 0.5);
+        base.setY(markerLocation.getBlockY() + 1.0);
+        return resolveMinorMobSpawnLocation(base);
+    }
+
+    private Location resolveMinorMobSpawnLocation(Location approximate) {
+        Location candidate = approximate.clone();
+        World world = candidate.getWorld();
+        if (world == null) {
+            return candidate;
+        }
+        int x = (int) Math.floor(candidate.getX());
+        int z = (int) Math.floor(candidate.getZ());
+        int worldMin = world.getMinHeight();
+        int worldMax = world.getMaxHeight();
+        int startY = Math.max(worldMin + 1, candidate.getBlockY());
+        int limit = Math.min(worldMax, startY + 16);
+        for (int y = startY; y <= limit; y++) {
+            Block space = world.getBlockAt(x, y, z);
+            Block below = world.getBlockAt(x, y - 1, z);
+            if (isPassable(space) && !isPassable(below)) {
+                return new Location(world, x + 0.5, y, z + 0.5);
+            }
+        }
+        return new Location(world, x + 0.5, startY, z + 0.5);
+    }
+
+    private boolean isPassable(Block block) {
+        if (block == null) {
+            return true;
+        }
+        Material type = block.getType();
+        return type.isAir() || block.isPassable();
+    }
+
     private void spawnMob(World world,
                           MobSettings mobSettings,
                           Location spawnLocation,
                           String mythicId,
                           SpawnType type) {
-        Location adjustedLocation = applySpawnOffset(spawnLocation, mobSettings);
+        spawnMob(world, mobSettings, spawnLocation, mythicId, type, true);
+    }
+
+    private void spawnMob(World world,
+                          MobSettings mobSettings,
+                          Location spawnLocation,
+                          String mythicId,
+                          SpawnType type,
+                          boolean applyOffset) {
+        Location adjustedLocation = applyOffset ? applySpawnOffset(spawnLocation, mobSettings) : spawnLocation.clone();
         if (mobSettings.getSpawnMode() == SpawnMode.MYTHIC_COMMAND) {
             String normalizedId = normalizeMythicName(mythicId);
             pendingSpawnAssignments.add(new SpawnAssignment(adjustedLocation.clone(), type, normalizedId));
@@ -754,15 +835,18 @@ public class BloodChestSession {
         }
         Location location = block.getLocation();
         Boolean opened = spawnedChests.get(location);
-        if (opened == null || opened) {
+        if (opened == null) {
             return false;
+        }
+        if (opened) {
+            return true;
         }
         spawnedChests.put(location, Boolean.TRUE);
         List<Component> lore = chestLoreByLocation.remove(location);
         if (lore != null && !lore.isEmpty()) {
             lore.forEach(player::sendMessage);
         }
-        block.setType(Material.AIR, false);
+        openChest(block);
         LootResult result = lootService.generateLoot(player.getUniqueId(), rewardSettings.getRollsPerChest(), pityManager);
         dropItems(location, result);
         if (result.isPityGranted()) {
@@ -1071,7 +1155,7 @@ public class BloodChestSession {
         progressBar.setColor(BarColor.GREEN);
         progressBar.setProgress(1.0);
         String title = String.format(Locale.ROOT,
-                "&2Blood Chests &7| &c%d&7/&c%d &7Blood Sludges | &e%ds &7→ &6%d skrzynek",
+                "&2Blood Chests &7| &c%d&7/&c%d &7Blood Sludges | &e%ds &7→ &6%d chests",
                 defeatedPrimaryCount,
                 Math.max(requiredPrimaryCount, defeatedPrimaryCount),
                 Math.max(0L, elapsedSeconds),

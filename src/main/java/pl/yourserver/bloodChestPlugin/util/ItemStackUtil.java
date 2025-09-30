@@ -2,6 +2,7 @@ package pl.yourserver.bloodChestPlugin.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -56,6 +57,7 @@ public final class ItemStackUtil {
         if (input == null) {
             return Component.empty();
         }
-        return SERIALIZER.deserialize(input.replace("§", "&"));
+        Component component = SERIALIZER.deserialize(input.replace("§", "&"));
+        return component.decoration(TextDecoration.ITALIC, false);
     }
 }
