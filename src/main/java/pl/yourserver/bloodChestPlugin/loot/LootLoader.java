@@ -1,6 +1,9 @@
 package pl.yourserver.bloodChestPlugin.loot;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,8 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class LootLoader {
 
@@ -61,12 +66,93 @@ public class LootLoader {
                 int rolls = itemSection.getInt("rolls", defaultRolls);
                 double pityWeight = itemSection.getDouble("pity-weight", defaultPityWeight);
 
-                items.add(new LootItemDefinition(id, material, name, category, lore, min, max, weight, rolls, pityWeight));
+                ConfigurationSection optionsSection = itemSection.getConfigurationSection("options");
+                boolean hideFlags = readBooleanOption(optionsSection, "hideflags");
+                boolean hideAttributes = readBooleanOption(optionsSection, "hideattributes");
+                boolean unbreakable = readBooleanOption(optionsSection, "unbreakable");
+
+                Map<Enchantment, Integer> enchantments = parseEnchantments(itemSection.getStringList("enchantments"));
+
+                items.add(new LootItemDefinition(id,
+                        material,
+                        name,
+                        category,
+                        lore,
+                        min,
+                        max,
+                        weight,
+                        rolls,
+                        pityWeight,
+                        hideFlags,
+                        hideAttributes,
+                        unbreakable,
+                        enchantments));
             }
         }
 
         Collection<String> pityPool = configuration.getStringList("pity-pool");
 
         return new LootRegistry(items, pityPool);
+    }
+
+    private boolean readBooleanOption(ConfigurationSection section, String key) {
+        if (section == null) {
+            return false;
+        }
+        for (String optionKey : section.getKeys(false)) {
+            if (optionKey != null && optionKey.replace("-", "").equalsIgnoreCase(key)) {
+                return section.getBoolean(optionKey);
+            }
+        }
+        return false;
+    }
+
+    private Map<Enchantment, Integer> parseEnchantments(List<String> entries) {
+        if (entries == null || entries.isEmpty()) {
+            return Map.of();
+        }
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
+        for (String entry : entries) {
+            if (entry == null || entry.isBlank()) {
+                continue;
+            }
+            String[] parts = entry.split(":", 2);
+            String name = parts[0].trim();
+            if (name.isEmpty()) {
+                continue;
+            }
+            int level = 1;
+            if (parts.length > 1) {
+                String levelPart = parts[1].trim();
+                if (!levelPart.isEmpty()) {
+                    try {
+                        level = Math.max(1, Integer.parseInt(levelPart));
+                    } catch (NumberFormatException ex) {
+                        level = 1;
+                    }
+                }
+            }
+            Enchantment enchantment = resolveEnchantment(name);
+            if (enchantment == null) {
+                Bukkit.getLogger().warning(String.format(Locale.ROOT,
+                        "[BloodChest] Unknown enchantment '%s' in items.yml", name));
+                continue;
+            }
+            enchantments.put(enchantment, level);
+        }
+        return enchantments.isEmpty() ? Map.of() : Map.copyOf(enchantments);
+    }
+
+    private Enchantment resolveEnchantment(String key) {
+        if (key == null || key.isEmpty()) {
+            return null;
+        }
+        String normalized = key.toLowerCase(Locale.ROOT);
+        NamespacedKey namespacedKey = NamespacedKey.fromString(normalized);
+        Enchantment enchantment = namespacedKey != null ? Enchantment.getByKey(namespacedKey) : null;
+        if (enchantment != null) {
+            return enchantment;
+        }
+        return Enchantment.getByName(normalized.toUpperCase(Locale.ROOT));
     }
 }
