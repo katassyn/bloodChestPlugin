@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -70,6 +71,7 @@ public class BloodChestSession {
     private final Set<UUID> processedDeaths = new HashSet<>();
     private final List<SpawnAssignment> pendingSpawnAssignments = new ArrayList<>();
     private Location playerSpawnLocation;
+    private Vector activeRegionSize;
     private int defeatedPrimaryCount;
     private int requiredPrimaryCount;
     private long startTimeMillis;
@@ -118,9 +120,12 @@ public class BloodChestSession {
         }
 
         boolean setupComplete = false;
+        this.activeRegionSize = arenaSettings.getRegionSize();
         try {
-            schematicHandler.pasteSchematic(schematicFile, world, pasteOrigin);
-            scanMarkers(world);
+            SchematicHandler.PasteResult pasteResult = schematicHandler.pasteSchematic(schematicFile, world, pasteOrigin);
+            this.activeRegionSize = determineActiveRegionSize(arenaSettings.getRegionSize(),
+                    pasteResult != null ? pasteResult.regionSize() : null);
+            scanMarkers(world, activeRegionSize);
             teleportPlayerToArena();
             this.startTimeMillis = System.currentTimeMillis();
             this.defeatedPrimaryCount = 0;
@@ -152,7 +157,7 @@ public class BloodChestSession {
         }
     }
 
-    private void scanMarkers(World world) {
+    private void scanMarkers(World world, Vector regionSize) {
         mobSpawnLocations.clear();
         minorMobSpawnLocations.clear();
         chestLocations.clear();
@@ -161,14 +166,16 @@ public class BloodChestSession {
         playerSpawnLocation.setYaw(slotOrigin.getYaw());
         playerSpawnLocation.setPitch(slotOrigin.getPitch());
         boolean spawnMarkerFound = false;
-        Vector size = arenaSettings.getRegionSize();
+        int sizeX = Math.max(1, (int) Math.ceil(regionSize.getX()));
+        int sizeY = Math.max(1, (int) Math.ceil(regionSize.getY()));
+        int sizeZ = Math.max(1, (int) Math.ceil(regionSize.getZ()));
         int baseX = pasteOrigin.getBlockX();
         int baseY = pasteOrigin.getBlockY();
         int baseZ = pasteOrigin.getBlockZ();
         Material minorMobMarker = arenaSettings.getMinorMobMarkerMaterial().orElse(null);
-        for (int x = 0; x < (int) size.getX(); x++) {
-            for (int y = 0; y < (int) size.getY(); y++) {
-                for (int z = 0; z < (int) size.getZ(); z++) {
+        for (int x = 0; x < sizeX; x++) {
+            for (int y = 0; y < sizeY; y++) {
+                for (int z = 0; z < sizeZ; z++) {
                     Block block = world.getBlockAt(baseX + x, baseY + y, baseZ + z);
                     if (block.getType() == arenaSettings.getMobMarkerMaterial()) {
                         Location spawnLocation = block.getLocation().add(0.5, 1 + arenaSettings.getMobSettings().getSpawnYOffset(), 0.5);
@@ -203,6 +210,30 @@ public class BloodChestSession {
         if (chestLocations.isEmpty()) {
             throw new IllegalStateException("Schematic has no chest spawn markers");
         }
+    }
+
+    private Vector determineActiveRegionSize(Vector configSize, Vector schematicSize) {
+        int configX = configSize != null ? (int) Math.ceil(configSize.getX()) : 1;
+        int configY = configSize != null ? (int) Math.ceil(configSize.getY()) : 1;
+        int configZ = configSize != null ? (int) Math.ceil(configSize.getZ()) : 1;
+        int resolvedX = Math.max(1, configX);
+        int resolvedY = Math.max(1, configY);
+        int resolvedZ = Math.max(1, configZ);
+        if (schematicSize != null) {
+            int schematicX = Math.max(1, (int) Math.ceil(schematicSize.getX()));
+            int schematicY = Math.max(1, (int) Math.ceil(schematicSize.getY()));
+            int schematicZ = Math.max(1, (int) Math.ceil(schematicSize.getZ()));
+            boolean expanded = schematicX > resolvedX || schematicY > resolvedY || schematicZ > resolvedZ;
+            resolvedX = Math.max(resolvedX, schematicX);
+            resolvedY = Math.max(resolvedY, schematicY);
+            resolvedZ = Math.max(resolvedZ, schematicZ);
+            if (expanded) {
+                plugin.getLogger().info(String.format(Locale.ROOT,
+                        "[BloodChest] Expanding arena scan size to %dx%dx%d to fit schematic dimensions %dx%dx%d",
+                        resolvedX, resolvedY, resolvedZ, schematicX, schematicY, schematicZ));
+            }
+        }
+        return new Vector(resolvedX, resolvedY, resolvedZ);
     }
 
     private void teleportPlayerToArena() {
@@ -392,7 +423,7 @@ public class BloodChestSession {
         if (location.getWorld() == null || !location.getWorld().equals(pasteOrigin.getWorld())) {
             return false;
         }
-        Vector size = arenaSettings.getRegionSize();
+        Vector size = activeRegionSize != null ? activeRegionSize : arenaSettings.getRegionSize();
         double minX = pasteOrigin.getBlockX();
         double minY = pasteOrigin.getBlockY();
         double minZ = pasteOrigin.getBlockZ();
@@ -613,7 +644,8 @@ public class BloodChestSession {
             return;
         }
         try {
-            schematicHandler.clearRegion(world, pasteOrigin, arenaSettings.getRegionSize());
+            Vector size = activeRegionSize != null ? activeRegionSize : arenaSettings.getRegionSize();
+            schematicHandler.clearRegion(world, pasteOrigin, size);
         } catch (Exception ex) {
             plugin.getLogger().log(Level.WARNING,
                     "[BloodChest] Failed to clear arena region: " + ex.getMessage(), ex);
@@ -632,6 +664,7 @@ public class BloodChestSession {
             player.teleport(returnLocation);
         }
         clearArenaRegion();
+        activeRegionSize = null;
         UUID playerId = player.getUniqueId();
         if (teleportOnRespawn) {
             manager.markPendingReturn(playerId);

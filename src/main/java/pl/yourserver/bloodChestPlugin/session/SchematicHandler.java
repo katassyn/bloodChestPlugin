@@ -8,7 +8,21 @@ import java.io.File;
 
 public interface SchematicHandler {
 
-    void pasteSchematic(File schematicFile, World world, Location origin) throws Exception;
+    PasteResult pasteSchematic(File schematicFile, World world, Location origin) throws Exception;
 
     void clearRegion(World world, Location origin, Vector size);
+
+    record PasteResult(Vector regionSize) {
+
+        public PasteResult {
+            if (regionSize != null) {
+                regionSize = regionSize.clone();
+            }
+        }
+
+        @Override
+        public Vector regionSize() {
+            return regionSize == null ? null : regionSize.clone();
+        }
+    }
 }
