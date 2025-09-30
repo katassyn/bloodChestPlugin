@@ -59,6 +59,10 @@
             <id>enginehub-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
+        <repository>
+            <id>mythiccraft-repo</id>
+            <url>https://mvn.mythiccraft.io/artifactory/repository/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -78,6 +82,12 @@
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
             <version>7.2.15</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.lumine</groupId>
+            <artifactId>Mythic-Dist</artifactId>
+            <version>5.5.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
