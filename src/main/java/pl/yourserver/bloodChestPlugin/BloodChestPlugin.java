@@ -1,6 +1,7 @@
 package pl.yourserver.bloodChestPlugin;
 
 import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.yourserver.bloodChestPlugin.command.BloodChestCommand;
 import pl.yourserver.bloodChestPlugin.config.ConfigurationLoader;
@@ -14,6 +15,7 @@ import pl.yourserver.bloodChestPlugin.session.PityManager;
 import pl.yourserver.bloodChestPlugin.session.SessionListener;
 import pl.yourserver.bloodChestPlugin.session.SessionManager;
 import pl.yourserver.bloodChestPlugin.session.WorldEditSchematicHandler;
+import pl.yourserver.bloodChestPlugin.session.MythicSessionListener;
 
 import java.io.File;
 
@@ -54,6 +56,13 @@ public final class BloodChestPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(menuManager, this);
         getServer().getPluginManager().registerEvents(new SessionListener(sessionManager), this);
+
+        Plugin mythicMobs = getServer().getPluginManager().getPlugin("MythicMobs");
+        if (mythicMobs != null && mythicMobs.isEnabled()) {
+            getServer().getPluginManager().registerEvents(new MythicSessionListener(sessionManager), this);
+        } else {
+            getLogger().warning("MythicMobs plugin not found or disabled. Mythic mob support will be limited.");
+        }
 
         PluginCommand command = getCommand("blood_chest");
         if (command != null) {
