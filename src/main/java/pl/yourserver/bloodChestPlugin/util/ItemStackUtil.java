@@ -56,15 +56,13 @@ public final class ItemStackUtil {
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 meta.addEnchant(entry.getKey(), entry.getValue(), true);
             }
-            if (definition.isUnbreakable()) {
-                meta.setUnbreakable(true);
-            }
-            if (definition.isHideFlags()) {
-                meta.addItemFlags(ItemFlag.values());
-            }
-            if (definition.isHideAttributes()) {
-                meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            }
+
+            // Always enforce the default Blood Chest loot properties.
+            int durabilityLevel = Math.max(10, meta.getEnchantLevel(Enchantment.DURABILITY));
+            meta.addEnchant(Enchantment.DURABILITY, durabilityLevel, true);
+
+            meta.setUnbreakable(true);
+            meta.addItemFlags(ItemFlag.values());
             stack.setItemMeta(meta);
         }
         return stack;
