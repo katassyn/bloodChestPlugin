@@ -76,5 +76,6 @@ public final class ItemStackUtil {
         }
         Component component = SERIALIZER.deserialize(input.replace("§", "&"));
         return component.decorationIfAbsent(TextDecoration.ITALIC, State.FALSE);
+
     }
 }
