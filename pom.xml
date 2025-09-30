@@ -60,8 +60,9 @@
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
         <repository>
-            <id>mythiccraft-repo</id>
-            <url>https://mvn.mythiccraft.io/artifactory/repository/public/</url>
+            <id>nexus</id>
+            <name>Lumine Releases</name>
+            <url>https://mvn.lumine.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -87,7 +88,7 @@
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>Mythic-Dist</artifactId>
-            <version>5.5.1</version>
+            <version>5.6.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

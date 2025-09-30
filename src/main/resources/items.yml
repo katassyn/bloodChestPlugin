@@ -766,7 +766,7 @@ loot:
       material: REDSTONE_ORE
       display-name: "&4&lPigeon Blood Ruby"
       lore:
-        - "&7A rare and precious deep red gemstone with the coveted "pigeon blood" color."
+        - "&7A rare and precious deep red gemstone with the coveted \"pigeon blood\" color."
         - "&ePremium redstone gem"
       min-amount: 1
       max-amount: 1
@@ -777,7 +777,7 @@ loot:
       material: GOLD_ORE
       display-name: "&ePyrite"
       lore:
-        - "&7A common brassy-yellow mineral often called "Fool`s Gold"."
+        - "&7A common brassy-yellow mineral often called \"Fool`s Gold\"."
         - "&eGold-based mineral"
       min-amount: 1
       max-amount: 1
