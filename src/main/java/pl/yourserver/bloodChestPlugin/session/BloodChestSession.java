@@ -232,10 +232,9 @@ public class BloodChestSession {
         if (pasteResult == null) {
             return false;
         }
-        MobSettings mobSettings = arenaSettings.getMobSettings();
         for (SchematicHandler.BlockOffset offset : pasteResult.mobMarkerOffsets()) {
             Location blockLocation = toWorldBlockLocation(offset);
-            Location spawnLocation = blockLocation.add(0.5, 1 + mobSettings.getSpawnYOffset(), 0.5);
+            Location spawnLocation = blockLocation.add(0.5, 1.0, 0.5);
             mobSpawnLocations.add(spawnLocation);
         }
         for (SchematicHandler.BlockOffset offset : pasteResult.chestMarkerOffsets()) {
@@ -243,7 +242,7 @@ public class BloodChestSession {
         }
         for (SchematicHandler.BlockOffset offset : pasteResult.minorMobMarkerOffsets()) {
             Location blockLocation = toWorldBlockLocation(offset);
-            Location spawnLocation = blockLocation.add(0.5, 1 + mobSettings.getSpawnYOffset(), 0.5);
+            Location spawnLocation = blockLocation.add(0.5, 1.0, 0.5);
             minorMobSpawnLocations.add(spawnLocation);
         }
 
@@ -272,7 +271,6 @@ public class BloodChestSession {
                                        boolean scanMinorMarkers,
                                        boolean scanPlayerMarker,
                                        boolean spawnMarkerFound) {
-        MobSettings mobSettings = arenaSettings.getMobSettings();
         Material minorMobMarker = arenaSettings.getMinorMobMarkerMaterial().orElse(null);
         int minX = bounds.minX();
         int minY = bounds.minY();
@@ -286,12 +284,12 @@ public class BloodChestSession {
                 for (int z = minZ; z <= maxZ; z++) {
                     Block block = world.getBlockAt(x, y, z);
                     if (scanMobMarkers && block.getType() == arenaSettings.getMobMarkerMaterial()) {
-                        Location spawnLocation = block.getLocation().add(0.5, 1 + mobSettings.getSpawnYOffset(), 0.5);
+                        Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
                         mobSpawnLocations.add(spawnLocation);
                     } else if (scanChestMarkers && block.getType() == arenaSettings.getChestMarkerMaterial()) {
                         chestLocations.add(block.getLocation());
                     } else if (scanMinorMarkers && minorMobMarker != null && block.getType() == minorMobMarker) {
-                        Location spawnLocation = block.getLocation().add(0.5, 1 + mobSettings.getSpawnYOffset(), 0.5);
+                        Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
                         minorMobSpawnLocations.add(spawnLocation);
                     } else if (scanPlayerMarker && block.getType() == Material.GOLD_BLOCK) {
                         Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
@@ -647,7 +645,8 @@ public class BloodChestSession {
         if (finished) {
             return;
         }
-        if (pasteOrigin == null || !entity.getWorld().equals(pasteOrigin.getWorld())) {
+        Player killer = entity.getKiller();
+        if (killer == null || !killer.getUniqueId().equals(player.getUniqueId())) {
             return;
         }
         UUID uuid = entity.getUniqueId();
@@ -670,9 +669,6 @@ public class BloodChestSession {
             return;
         }
         if (processedDeaths.contains(uuid)) {
-            return;
-        }
-        if (!isWithinArena(entity.getLocation())) {
             return;
         }
         processedDeaths.add(uuid);
