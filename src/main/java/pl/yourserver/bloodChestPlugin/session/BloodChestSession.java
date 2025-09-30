@@ -13,6 +13,9 @@ import org.bukkit.block.TileState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -82,6 +85,8 @@ public class BloodChestSession {
     private boolean finished;
     private BukkitRunnable exitCountdownTask;
     private int exitCountdownSeconds;
+    private BossBar progressBar;
+    private BukkitRunnable bossBarTask;
 
     public BloodChestSession(Plugin plugin,
                              PluginConfiguration configuration,
@@ -147,6 +152,9 @@ public class BloodChestSession {
             this.processedDeaths.clear();
             this.pendingSpawnAssignments.clear();
             spawnMobs(world);
+            if (requiredPrimaryCount > 0) {
+                initializeBossBar();
+            }
             player.sendMessage(color("&7Defeat all &cBlood Sludges &7as quickly as possible!"));
             setupComplete = true;
         } finally {
@@ -161,6 +169,7 @@ public class BloodChestSession {
                 pendingSpawnAssignments.clear();
                 playerSpawnLocation = null;
                 arenaBounds = null;
+                clearBossBar();
             }
         }
     }
@@ -438,19 +447,26 @@ public class BloodChestSession {
                           Location spawnLocation,
                           String mythicId,
                           SpawnType type) {
+        Location adjustedLocation = applySpawnOffset(spawnLocation, mobSettings);
         if (mobSettings.getSpawnMode() == SpawnMode.MYTHIC_COMMAND) {
-            pendingSpawnAssignments.add(new SpawnAssignment(spawnLocation.clone(), type));
-            String command = buildSpawnCommand(mythicId, mobSettings, spawnLocation);
+            pendingSpawnAssignments.add(new SpawnAssignment(adjustedLocation.clone(), type));
+            String command = buildSpawnCommand(mythicId, mobSettings, adjustedLocation);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         } else {
             EntityType fallback = mobSettings.getFallbackEntityType();
-            Entity entity = world.spawnEntity(spawnLocation, fallback);
+            Entity entity = world.spawnEntity(adjustedLocation, fallback);
             entity.addScoreboardTag(MOB_TAG);
             if (type == SpawnType.PRIMARY) {
                 entity.addScoreboardTag(PRIMARY_MOB_TAG);
             }
             activeMobs.put(entity.getUniqueId(), type);
         }
+    }
+
+    private Location applySpawnOffset(Location location, MobSettings mobSettings) {
+        Location clone = location.clone();
+        clone.add(0.0, mobSettings.getSpawnYOffset(), 0.0);
+        return clone;
     }
 
     private String buildSpawnCommand(String mobId, MobSettings mobSettings, Location location) {
@@ -537,6 +553,7 @@ public class BloodChestSession {
             processedDeaths.add(uuid);
             if (type == SpawnType.PRIMARY) {
                 defeatedPrimaryCount++;
+                updateBossBar();
             }
             checkMobsDefeated();
             return;
@@ -555,6 +572,7 @@ public class BloodChestSession {
                 processedDeaths.add(uuid);
                 if (entity.getScoreboardTags().contains(PRIMARY_MOB_TAG)) {
                     defeatedPrimaryCount++;
+                    updateBossBar();
                 }
                 checkMobsDefeated();
             }
@@ -590,6 +608,7 @@ public class BloodChestSession {
         int chestCount = determineChestCount((int) elapsedSeconds);
         removeAdditionalMobs();
         player.sendMessage(color("&7All sludges were defeated in &e" + elapsedSeconds + "s&7!"));
+        showVictoryOnBossBar(elapsedSeconds, chestCount);
         spawnChests(chestCount);
     }
 
@@ -849,6 +868,110 @@ public class BloodChestSession {
         }
     }
 
+    private void initializeBossBar() {
+        clearBossBar();
+        progressBar = Bukkit.createBossBar(color("&4Blood Chests"), BarColor.RED, BarStyle.SOLID);
+        progressBar.setProgress(0.0);
+        progressBar.addPlayer(player);
+        bossBarTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                updateBossBar();
+            }
+        };
+        bossBarTask.runTaskTimer(plugin, 0L, 20L);
+        updateBossBar();
+    }
+
+    private void updateBossBar() {
+        if (progressBar == null || player == null || startTimeMillis <= 0L) {
+            return;
+        }
+        if (!player.isOnline()) {
+            return;
+        }
+        if (!progressBar.getPlayers().contains(player)) {
+            progressBar.addPlayer(player);
+        }
+        double elapsedSeconds = Math.max(0.0, (System.currentTimeMillis() - startTimeMillis) / 1000.0);
+        TimeStage stage = resolveCurrentStage(elapsedSeconds);
+        double stageDuration = stage.maxSeconds() == Integer.MAX_VALUE
+                ? 30.0
+                : Math.max(1.0, stage.durationSeconds());
+        double stageElapsed = Math.max(0.0, elapsedSeconds - stage.minSeconds());
+        double progress = Math.min(1.0, stageElapsed / stageDuration);
+        progressBar.setProgress(Math.max(0.0, Math.min(1.0, progress)));
+        String elapsedFormatted = formatSeconds(elapsedSeconds);
+        String stageLimit = stage.maxSeconds() == Integer.MAX_VALUE
+                ? "∞"
+                : stage.maxSeconds() + "s";
+        String title = String.format(Locale.ROOT,
+                "&4Blood Chests &7| &c%d&7/&c%d &7Blood Sludges | &e%ss &7→ &6%s",
+                defeatedPrimaryCount,
+                Math.max(requiredPrimaryCount, defeatedPrimaryCount),
+                elapsedFormatted,
+                stageLimit);
+        progressBar.setTitle(color(title));
+    }
+
+    private void showVictoryOnBossBar(long elapsedSeconds, int chestCount) {
+        if (progressBar == null) {
+            return;
+        }
+        stopBossBarTask();
+        progressBar.setColor(BarColor.GREEN);
+        progressBar.setProgress(1.0);
+        String title = String.format(Locale.ROOT,
+                "&2Blood Chests &7| &c%d&7/&c%d &7Blood Sludges | &e%ds &7→ &6%d skrzynek",
+                defeatedPrimaryCount,
+                Math.max(requiredPrimaryCount, defeatedPrimaryCount),
+                Math.max(0L, elapsedSeconds),
+                chestCount);
+        progressBar.setTitle(color(title));
+    }
+
+    private void stopBossBarTask() {
+        if (bossBarTask != null) {
+            bossBarTask.cancel();
+            bossBarTask = null;
+        }
+    }
+
+    private void clearBossBar() {
+        stopBossBarTask();
+        if (progressBar != null) {
+            progressBar.removeAll();
+            progressBar = null;
+        }
+    }
+
+    private TimeStage resolveCurrentStage(double elapsedSeconds) {
+        List<PluginConfiguration.TimeThreshold> thresholds = rewardSettings.getThresholds();
+        if (thresholds.isEmpty()) {
+            return new TimeStage(0.0, 30.0, 1);
+        }
+        double previousMax = 0.0;
+        PluginConfiguration.TimeThreshold lastThreshold = thresholds.get(thresholds.size() - 1);
+        for (PluginConfiguration.TimeThreshold threshold : thresholds) {
+            double maxSeconds = threshold.getMaxSeconds();
+            if (elapsedSeconds <= maxSeconds) {
+                return new TimeStage(previousMax, maxSeconds, threshold.getChestCount());
+            }
+            previousMax = maxSeconds;
+        }
+        return new TimeStage(previousMax, lastThreshold.getMaxSeconds(), lastThreshold.getChestCount());
+    }
+
+    private String formatSeconds(double seconds) {
+        return String.format(Locale.ROOT, "%.1f", seconds);
+    }
+
+    private record TimeStage(double minSeconds, double maxSeconds, int chestCount) {
+        double durationSeconds() {
+            return Math.max(1.0, maxSeconds - minSeconds);
+        }
+    }
+
     private void clearArenaRegion() {
         if (pasteOrigin == null || arenaBounds == null) {
             return;
@@ -871,6 +994,7 @@ public class BloodChestSession {
         }
         finished = true;
         cancelExitCountdown();
+        clearBossBar();
         removeTrackedMobs();
         boolean canTeleportNow = teleportNow && player.isOnline() && !player.isDead();
         if (!teleportOnRespawn && canTeleportNow) {
