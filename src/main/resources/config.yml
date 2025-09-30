@@ -97,7 +97,7 @@ arena:
   mob:
     spawn-mode: MYTHIC_COMMAND
     mythic-id: blood_sludge
-    spawn-command: "mm mobs spawn {id} {location}"
+    spawn-command: "mm m spawn {id} {amount} {location}"
     metadata-key: MythicMob
     fallback-entity: HUSK
     y-offset: 1
