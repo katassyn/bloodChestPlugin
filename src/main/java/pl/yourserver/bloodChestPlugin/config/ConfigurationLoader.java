@@ -145,7 +145,8 @@ public class ConfigurationLoader {
         SchematicSettings schematicSettings = readSchematicSettings(section.getConfigurationSection("schematic"));
 
         return new ArenaSettings(worldName, returnLocation, playerSpawnOffset, pasteOffset, regionSize,
-                mobMarker, chestMarker, minorMobMarker, slots, mobSettings, chestSettings, schematicSettings);
+                mobMarker, chestMarker, minorMobMarker, slots, mobSettings,
+                chestSettings, schematicSettings);
     }
 
     private SpawnLocation readSpawnLocation(ConfigurationSection section, String defaultWorld) {

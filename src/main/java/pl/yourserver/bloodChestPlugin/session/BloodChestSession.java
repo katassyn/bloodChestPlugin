@@ -180,15 +180,12 @@ public class BloodChestSession {
                     if (block.getType() == arenaSettings.getMobMarkerMaterial()) {
                         Location spawnLocation = block.getLocation().add(0.5, 1 + arenaSettings.getMobSettings().getSpawnYOffset(), 0.5);
                         mobSpawnLocations.add(spawnLocation);
-                        block.setType(Material.AIR, false);
                     } else if (block.getType() == arenaSettings.getChestMarkerMaterial()) {
                         chestLocations.add(block.getLocation());
-                        block.setType(Material.AIR, false);
                     } else if (minorMobMarker != null && block.getType() == minorMobMarker) {
                         Location spawnLocation = block.getLocation().add(0.5,
                                 1 + arenaSettings.getMobSettings().getSpawnYOffset(), 0.5);
                         minorMobSpawnLocations.add(spawnLocation);
-                        block.setType(Material.AIR, false);
                     } else if (block.getType() == Material.GOLD_BLOCK) {
                         Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
                         spawnLocation.setYaw(slotOrigin.getYaw());
@@ -198,7 +195,6 @@ public class BloodChestSession {
                         }
                         spawnMarkerFound = true;
                         playerSpawnLocation = spawnLocation;
-                        block.setType(Material.AIR, false);
                     }
                 }
             }
