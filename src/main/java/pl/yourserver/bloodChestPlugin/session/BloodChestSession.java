@@ -3,7 +3,6 @@ package pl.yourserver.bloodChestPlugin.session;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -11,6 +10,8 @@ import org.bukkit.Material;
 import org.bukkit.Nameable;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Lidded;
 import org.bukkit.block.TileState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -36,7 +37,6 @@ import pl.yourserver.bloodChestPlugin.session.PityManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -91,7 +91,7 @@ public class BloodChestSession {
     private boolean mobsDefeated;
     private boolean finished;
     private BukkitRunnable exitCountdownTask;
-    private int exitCountdownSeconds;
+    private int exitCountdownTotalSeconds;
     private BossBar progressBar;
     private BukkitRunnable bossBarTask;
 
@@ -238,12 +238,13 @@ public class BloodChestSession {
             mobSpawnLocations.add(spawnLocation);
         }
         for (SchematicHandler.BlockOffset offset : pasteResult.chestMarkerOffsets()) {
-            chestLocations.add(toWorldBlockLocation(offset));
+            Location blockLocation = toWorldBlockLocation(offset);
+            chestLocations.add(blockLocation.clone());
+            clearMarkerBlock(blockLocation);
         }
         for (SchematicHandler.BlockOffset offset : pasteResult.minorMobMarkerOffsets()) {
             Location blockLocation = toWorldBlockLocation(offset);
-            Location spawnLocation = blockLocation.add(0.5, 1.0, 0.5);
-            minorMobSpawnLocations.add(spawnLocation);
+            minorMobSpawnLocations.add(blockLocation.clone());
         }
 
         boolean spawnMarkerFound = false;
@@ -287,10 +288,12 @@ public class BloodChestSession {
                         Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
                         mobSpawnLocations.add(spawnLocation);
                     } else if (scanChestMarkers && block.getType() == arenaSettings.getChestMarkerMaterial()) {
-                        chestLocations.add(block.getLocation());
+                        Location markerLocation = block.getLocation();
+                        chestLocations.add(markerLocation.clone());
+                        clearMarkerBlock(markerLocation);
                     } else if (scanMinorMarkers && minorMobMarker != null && block.getType() == minorMobMarker) {
-                        Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
-                        minorMobSpawnLocations.add(spawnLocation);
+                        Location markerLocation = block.getLocation();
+                        minorMobSpawnLocations.add(markerLocation.clone());
                     } else if (scanPlayerMarker && block.getType() == Material.GOLD_BLOCK) {
                         Location spawnLocation = block.getLocation().add(0.5, 1.0, 0.5);
                         spawnLocation.setYaw(slotOrigin.getYaw());
@@ -306,6 +309,33 @@ public class BloodChestSession {
             }
         }
         return spawnMarkerFound;
+    }
+
+    private void clearMarkerBlock(Location location) {
+        if (location == null) {
+            return;
+        }
+        Block block = location.getBlock();
+        if (block.getType() == arenaSettings.getChestMarkerMaterial()) {
+            block.setType(Material.AIR, false);
+        }
+    }
+
+    private void openChest(Block block) {
+        if (block == null) {
+            return;
+        }
+        BlockState state = block.getState();
+        boolean opened = false;
+        if (state instanceof Lidded lidded) {
+            lidded.open();
+            opened = true;
+        }
+        if (state instanceof TileState tileState) {
+            tileState.update(true, false);
+        } else if (opened) {
+            state.update(true, false);
+        }
     }
 
     private Location toWorldBlockLocation(SchematicHandler.BlockOffset offset) {
@@ -423,11 +453,16 @@ public class BloodChestSession {
         if (totalCount <= 0) {
             return;
         }
+        Location baseCenter = resolveMinorMobCenter(markerLocation);
         int index = 0;
         for (MinorMobSpawn spawn : groupDefinitions) {
             for (int i = 0; i < spawn.getCount(); i++) {
-                Location spreadLocation = computeSpreadLocation(markerLocation, index, totalCount);
-                spawnMob(world, mobSettings, spreadLocation, spawn.getMythicMobId(), SpawnType.ADDITIONAL);
+                Location spreadLocation = computeSpreadLocation(baseCenter, index, totalCount);
+                Location resolvedSpawn = resolveMinorMobSpawnLocation(spreadLocation);
+                logMinorMobSpawn(spawn.getMythicMobId(), markerLocation, spreadLocation, resolvedSpawn);
+                SpawnAssignment assignment = spawnMob(world, mobSettings, resolvedSpawn, spawn.getMythicMobId(),
+                        SpawnType.ADDITIONAL, false);
+                scheduleMinorSpawnCheck(assignment, spawn.getMythicMobId(), resolvedSpawn);
                 index++;
             }
         }
@@ -452,23 +487,148 @@ public class BloodChestSession {
         return new Location(center.getWorld(), x, center.getY(), z);
     }
 
-    private void spawnMob(World world,
-                          MobSettings mobSettings,
-                          Location spawnLocation,
-                          String mythicId,
-                          SpawnType type) {
-        Location adjustedLocation = applySpawnOffset(spawnLocation, mobSettings);
+    private Location resolveMinorMobCenter(Location markerLocation) {
+        Location base = markerLocation.clone();
+        base.setX(markerLocation.getBlockX() + 0.5);
+        base.setZ(markerLocation.getBlockZ() + 0.5);
+        base.setY(markerLocation.getBlockY() + 1.0);
+        return resolveMinorMobSpawnLocation(base);
+    }
+
+    private Location resolveMinorMobSpawnLocation(Location approximate) {
+        Location candidate = approximate.clone();
+        World world = candidate.getWorld();
+        if (world == null) {
+            return candidate;
+        }
+        int x = (int) Math.floor(candidate.getX());
+        int z = (int) Math.floor(candidate.getZ());
+        int worldMin = world.getMinHeight();
+        int worldMax = world.getMaxHeight();
+        int baseY = Math.max(worldMin + 1, Math.min(worldMax - 1, candidate.getBlockY()));
+        int upwardLimit = Math.min(worldMax - 1, baseY + 6);
+        for (int y = baseY; y <= upwardLimit; y++) {
+            if (isValidMinorMobColumn(world, x, y, z)) {
+                Location resolved = new Location(world, x + 0.5, y, z + 0.5);
+                if (y != baseY) {
+                    plugin.getLogger().info(String.format(Locale.ROOT,
+                            "Adjusted minor mob spawn upwards from %s to %s", formatLocation(candidate),
+                            formatLocation(resolved)));
+                }
+                return resolved;
+            }
+        }
+        int downwardLimit = Math.max(worldMin + 1, baseY - 6);
+        for (int y = baseY - 1; y >= downwardLimit; y--) {
+            if (isValidMinorMobColumn(world, x, y, z)) {
+                Location resolved = new Location(world, x + 0.5, y, z + 0.5);
+                plugin.getLogger().info(String.format(Locale.ROOT,
+                        "Adjusted minor mob spawn downwards from %s to %s", formatLocation(candidate),
+                        formatLocation(resolved)));
+                return resolved;
+            }
+        }
+        Location fallback = new Location(world, x + 0.5, baseY, z + 0.5);
+        plugin.getLogger().warning(String.format(Locale.ROOT,
+                "Falling back to blocked minor mob spawn location %s", formatLocation(fallback)));
+        return fallback;
+    }
+
+    private void logMinorMobSpawn(String mythicId,
+                                  Location markerLocation,
+                                  Location requestedLocation,
+                                  Location resolvedLocation) {
+        String id = mythicId != null ? mythicId : "<unknown>";
+        StringBuilder message = new StringBuilder(String.format(Locale.ROOT,
+                "Spawning minor mob %s at %s (marker %s)",
+                id,
+                formatLocation(resolvedLocation),
+                formatLocation(markerLocation)));
+        if (resolvedLocation.distanceSquared(requestedLocation) > 0.01) {
+            message.append(String.format(Locale.ROOT,
+                    " after adjusting from %s",
+                    formatLocation(requestedLocation)));
+        }
+        plugin.getLogger().info(message.toString());
+    }
+
+    private void scheduleMinorSpawnCheck(SpawnAssignment assignment, String mythicId, Location targetLocation) {
+        if (assignment == null) {
+            return;
+        }
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (finished) {
+                return;
+            }
+            if (pendingSpawnAssignments.contains(assignment)) {
+                String id = mythicId != null ? mythicId : "<unknown>";
+                String message = String.format(Locale.ROOT,
+                        "Minor mob %s did not spawn at %s within expected time. Pending assignments: %d",
+                        id,
+                        formatLocation(targetLocation),
+                        pendingSpawnAssignments.size());
+                plugin.getLogger().warning(message);
+            }
+        }, 40L);
+    }
+
+    private String formatLocation(Location location) {
+        if (location == null) {
+            return "<null>";
+        }
+        World world = location.getWorld();
+        String worldName = world != null ? world.getName() : "<world>";
+        return String.format(Locale.ROOT, "%s[%.2f, %.2f, %.2f]",
+                worldName,
+                location.getX(),
+                location.getY(),
+                location.getZ());
+    }
+
+    private boolean isPassable(Block block) {
+        if (block == null) {
+            return true;
+        }
+        Material type = block.getType();
+        return type.isAir() || block.isPassable();
+    }
+
+    private boolean isValidMinorMobColumn(World world, int x, int y, int z) {
+        Block feet = world.getBlockAt(x, y, z);
+        Block head = world.getBlockAt(x, y + 1, z);
+        Block below = world.getBlockAt(x, y - 1, z);
+        return isPassable(feet) && isPassable(head) && !isPassable(below);
+    }
+
+    private SpawnAssignment spawnMob(World world,
+                                     MobSettings mobSettings,
+                                     Location spawnLocation,
+                                     String mythicId,
+                                     SpawnType type) {
+        return spawnMob(world, mobSettings, spawnLocation, mythicId, type, true);
+    }
+
+    private SpawnAssignment spawnMob(World world,
+                                     MobSettings mobSettings,
+                                     Location spawnLocation,
+                                     String mythicId,
+                                     SpawnType type,
+                                     boolean applyOffset) {
+        Location adjustedLocation = applyOffset ? applySpawnOffset(spawnLocation, mobSettings) : spawnLocation.clone();
         if (mobSettings.getSpawnMode() == SpawnMode.MYTHIC_COMMAND) {
             String normalizedId = normalizeMythicName(mythicId);
-            pendingSpawnAssignments.add(new SpawnAssignment(adjustedLocation.clone(), type, normalizedId));
+            SpawnAssignment assignment = new SpawnAssignment(adjustedLocation.clone(), type, normalizedId);
+            pendingSpawnAssignments.add(assignment);
             String command = buildSpawnCommand(mythicId, mobSettings, adjustedLocation);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            return assignment;
         } else {
             EntityType fallback = mobSettings.getFallbackEntityType();
             Entity entity = world.spawnEntity(adjustedLocation, fallback);
             if (entity instanceof LivingEntity livingEntity) {
                 trackSpawnedEntity(livingEntity, type);
             }
+            return null;
         }
     }
 
@@ -754,15 +914,18 @@ public class BloodChestSession {
         }
         Location location = block.getLocation();
         Boolean opened = spawnedChests.get(location);
-        if (opened == null || opened) {
+        if (opened == null) {
             return false;
+        }
+        if (opened) {
+            return true;
         }
         spawnedChests.put(location, Boolean.TRUE);
         List<Component> lore = chestLoreByLocation.remove(location);
         if (lore != null && !lore.isEmpty()) {
             lore.forEach(player::sendMessage);
         }
-        block.setType(Material.AIR, false);
+        openChest(block);
         LootResult result = lootService.generateLoot(player.getUniqueId(), rewardSettings.getRollsPerChest(), pityManager);
         dropItems(location, result);
         if (result.isPityGranted()) {
@@ -859,27 +1022,25 @@ public class BloodChestSession {
         if (exitCountdownTask != null) {
             return;
         }
-        exitCountdownSeconds = rewardSettings.getExitCountdownSeconds();
+        exitCountdownTotalSeconds = Math.max(1, rewardSettings.getExitCountdownSeconds());
+        updateExitCountdownBossBar(exitCountdownTotalSeconds, exitCountdownTotalSeconds);
         exitCountdownTask = new BukkitRunnable() {
-            int remaining = exitCountdownSeconds;
+            int remaining = exitCountdownTotalSeconds;
 
             @Override
             public void run() {
+                remaining--;
                 if (remaining <= 0) {
                     cancel();
                     exitCountdownTask = null;
                     finishSession();
                     return;
                 }
-                Title title = Title.title(Component.text(ChatColor.RED + "Returning in"),
-                        Component.text(ChatColor.GOLD + String.valueOf(remaining) + ChatColor.GRAY + " s"),
-                        Title.Times.times(Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO));
-                player.showTitle(title);
-                remaining--;
+                updateExitCountdownBossBar(remaining, exitCountdownTotalSeconds);
             }
         };
-        exitCountdownTask.runTaskTimer(plugin, 0L, 20L);
-        player.sendMessage(color("&7You will be teleported in &e" + exitCountdownSeconds + "s"));
+        exitCountdownTask.runTaskTimer(plugin, 20L, 20L);
+        player.sendMessage(color("&7You will be teleported in &e" + exitCountdownTotalSeconds + "s"));
     }
 
     private void finishSession() {
@@ -1015,6 +1176,7 @@ public class BloodChestSession {
             exitCountdownTask.cancel();
             exitCountdownTask = null;
         }
+        exitCountdownTotalSeconds = 0;
     }
 
     private void initializeBossBar() {
@@ -1063,6 +1225,28 @@ public class BloodChestSession {
         progressBar.setTitle(color(title));
     }
 
+    private void updateExitCountdownBossBar(int remainingSeconds, int totalSeconds) {
+        if (player == null) {
+            return;
+        }
+        if (progressBar == null) {
+            progressBar = Bukkit.createBossBar(color("&6Blood Chests"), BarColor.YELLOW, BarStyle.SOLID);
+        }
+        if (!player.isOnline()) {
+            return;
+        }
+        if (!progressBar.getPlayers().contains(player)) {
+            progressBar.addPlayer(player);
+        }
+        progressBar.setColor(BarColor.YELLOW);
+        double progress = totalSeconds <= 0 ? 0.0 : Math.max(0.0, Math.min(1.0, remainingSeconds / (double) totalSeconds));
+        progressBar.setProgress(progress);
+        String title = String.format(Locale.ROOT,
+                "&6Blood Chests &7| &aRewards collected &7| &eTeleporting in %ds",
+                Math.max(0, remainingSeconds));
+        progressBar.setTitle(color(title));
+    }
+
     private void showVictoryOnBossBar(long elapsedSeconds, int chestCount) {
         if (progressBar == null) {
             return;
@@ -1071,7 +1255,7 @@ public class BloodChestSession {
         progressBar.setColor(BarColor.GREEN);
         progressBar.setProgress(1.0);
         String title = String.format(Locale.ROOT,
-                "&2Blood Chests &7| &c%d&7/&c%d &7Blood Sludges | &e%ds &7→ &6%d skrzynek",
+                "&2Blood Chests &7| &c%d&7/&c%d &7Blood Sludges | &e%ds &7→ &6%d chests",
                 defeatedPrimaryCount,
                 Math.max(requiredPrimaryCount, defeatedPrimaryCount),
                 Math.max(0L, elapsedSeconds),
