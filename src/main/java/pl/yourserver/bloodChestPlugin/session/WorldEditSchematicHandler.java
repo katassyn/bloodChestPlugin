@@ -1,9 +1,9 @@
 package pl.yourserver.bloodChestPlugin.session;
 
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
@@ -43,12 +43,18 @@ public class WorldEditSchematicHandler implements SchematicHandler {
                     .ignoreAirBlocks(false)
                     .build();
             Operations.complete(operation);
+            flushEditSession(editSession);
         } catch (WorldEditException ex) {
             throw new IOException("Failed to paste schematic: " + ex.getMessage(), ex);
         }
+        BlockVector3 clipboardOrigin = clipboard.getOrigin();
+        BlockVector3 min = clipboard.getMinimumPoint();
+        BlockVector3 max = clipboard.getMaximumPoint();
+        Vector minimumOffset = toBukkitVector(min.subtract(clipboardOrigin));
+        Vector maximumOffset = toBukkitVector(max.subtract(clipboardOrigin));
         BlockVector3 dimensions = clipboard.getDimensions();
         Vector regionSize = new Vector(dimensions.getBlockX(), dimensions.getBlockY(), dimensions.getBlockZ());
-        return new PasteResult(regionSize);
+        return new PasteResult(minimumOffset, maximumOffset, regionSize);
     }
 
     @Override
@@ -61,8 +67,30 @@ public class WorldEditSchematicHandler implements SchematicHandler {
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
             CuboidRegion region = new CuboidRegion(min, max);
             editSession.setBlocks(region, BlockTypes.AIR.getDefaultState());
+            flushEditSession(editSession);
         } catch (WorldEditException ex) {
             throw new IllegalStateException("Failed to clear region: " + ex.getMessage(), ex);
+        }
+    }
+
+    private Vector toBukkitVector(BlockVector3 vector) {
+        return new Vector(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+    }
+
+    private void flushEditSession(EditSession editSession) {
+        if (editSession == null) {
+            return;
+        }
+        try {
+            editSession.getClass().getMethod("flushQueue").invoke(editSession);
+            return;
+        } catch (ReflectiveOperationException ignored) {
+            // Fall through and try alternative methods.
+        }
+        try {
+            editSession.getClass().getMethod("flushSession").invoke(editSession);
+        } catch (ReflectiveOperationException ignored) {
+            // No-op when the method is unavailable (vanilla WorldEdit).
         }
     }
 }

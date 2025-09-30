@@ -12,12 +12,28 @@ public interface SchematicHandler {
 
     void clearRegion(World world, Location origin, Vector size);
 
-    record PasteResult(Vector regionSize) {
+    record PasteResult(Vector minimumOffset, Vector maximumOffset, Vector regionSize) {
 
         public PasteResult {
+            if (minimumOffset != null) {
+                minimumOffset = minimumOffset.clone();
+            }
+            if (maximumOffset != null) {
+                maximumOffset = maximumOffset.clone();
+            }
             if (regionSize != null) {
                 regionSize = regionSize.clone();
             }
+        }
+
+        @Override
+        public Vector minimumOffset() {
+            return minimumOffset == null ? null : minimumOffset.clone();
+        }
+
+        @Override
+        public Vector maximumOffset() {
+            return maximumOffset == null ? null : maximumOffset.clone();
         }
 
         @Override
