@@ -109,13 +109,13 @@ arena:
   slot-area:
     world: world
     min:
-      x: -96
-      y: 80
-      z: -96
+      x: 138
+      y: -38
+      z: -3682
     max:
-      x: 96
-      y: 80
-      z: 96
+      x: 947
+      y: 74
+      z: -2930
     structure-size:
       x: 32
       y: 0
