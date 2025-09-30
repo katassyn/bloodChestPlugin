@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,6 +60,7 @@ public class BloodChestSession {
     public static final String PRIMARY_MOB_TAG = "blood_chest_primary";
     private static final Pattern LEGACY_LOCATION_PATTERN =
             Pattern.compile("\\{world\\}\\s*,\\s*\\{x\\}\\s*,\\s*\\{y\\}\\s*,\\s*\\{z\\}");
+    private static final List<String> DEFAULT_MINOR_MYTHIC_IDS = List.of("blood_sludgeling", "blood_leech");
 
     private final Plugin plugin;
     private final PluginConfiguration configuration;
@@ -500,141 +502,45 @@ public class BloodChestSession {
             spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
         }
 
-        List<MinorMobSpawn> minorMobSpawns = mobSettings.getMinorMobSpawns();
-        if (!minorMobSpawns.isEmpty() && !minorMobSpawnLocations.isEmpty()) {
-            for (Location spawnLocation : minorMobSpawnLocations) {
-                spawnMinorMobGroup(world, mobSettings, spawnLocation, minorMobSpawns);
+        List<String> minorMobIds = determineMinorMobIds(mobSettings);
+        if (!minorMobIds.isEmpty() && !minorMobSpawnLocations.isEmpty()) {
+            for (Location markerLocation : minorMobSpawnLocations) {
+                spawnMinorMobsAtMarker(world, mobSettings, markerLocation, minorMobIds);
             }
         }
     }
 
-    private void spawnMinorMobGroup(World world,
-                                    MobSettings mobSettings,
-                                    Location markerLocation,
-                                    List<MinorMobSpawn> groupDefinitions) {
-        int totalCount = groupDefinitions.stream()
-                .mapToInt(MinorMobSpawn::getCount)
-                .sum();
-        if (totalCount <= 0) {
-            return;
-        }
-        Location baseCenter = resolveMinorMobCenter(markerLocation);
-        int index = 0;
-        for (MinorMobSpawn spawn : groupDefinitions) {
-            for (int i = 0; i < spawn.getCount(); i++) {
-                Location spreadLocation = computeSpreadLocation(baseCenter, index, totalCount);
-                Location resolvedSpawn = resolveMinorMobSpawnLocation(spreadLocation);
-                logMinorMobSpawn(spawn.getMythicMobId(), markerLocation, spreadLocation, resolvedSpawn);
-                SpawnAssignment assignment = spawnMob(world, mobSettings, resolvedSpawn, spawn.getMythicMobId(),
-                        SpawnType.ADDITIONAL, false);
-                scheduleMinorSpawnCheck(assignment, spawn.getMythicMobId(), resolvedSpawn);
-                index++;
+    private void spawnMinorMobsAtMarker(World world,
+                                        MobSettings mobSettings,
+                                        Location markerLocation,
+                                        List<String> minorMobIds) {
+        Location spawnLocation = markerLocation.clone().add(0.5, 1.0, 0.5);
+        for (String mythicId : minorMobIds) {
+            if (mythicId == null || mythicId.isBlank()) {
+                continue;
             }
+            plugin.getLogger().info(String.format(Locale.ROOT,
+                    "Spawning minor mob %s at %s (marker %s)",
+                    mythicId,
+                    formatLocation(spawnLocation),
+                    formatLocation(markerLocation)));
+            spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL, false);
         }
     }
 
-    private Location computeSpreadLocation(Location center, int index, int total) {
-        if (total <= 1) {
-            return center.clone();
-        }
-        int ringCapacity = 8;
-        int ring = index / ringCapacity;
-        int remaining = Math.max(1, total - (ring * ringCapacity));
-        int slotsInRing = Math.min(ringCapacity, remaining);
-        int positionInRing = index - (ring * ringCapacity);
-        if (positionInRing >= slotsInRing) {
-            positionInRing %= slotsInRing;
-        }
-        double angle = (Math.PI * 2.0 / slotsInRing) * positionInRing;
-        double radius = 1.25 + (ring * 1.5);
-        double x = center.getX() + Math.cos(angle) * radius;
-        double z = center.getZ() + Math.sin(angle) * radius;
-        return new Location(center.getWorld(), x, center.getY(), z);
-    }
-
-    private Location resolveMinorMobCenter(Location markerLocation) {
-        Location base = markerLocation.clone();
-        base.setX(markerLocation.getBlockX() + 0.5);
-        base.setZ(markerLocation.getBlockZ() + 0.5);
-        base.setY(markerLocation.getBlockY() + 1.0);
-        return resolveMinorMobSpawnLocation(base);
-    }
-
-    private Location resolveMinorMobSpawnLocation(Location approximate) {
-        Location candidate = approximate.clone();
-        World world = candidate.getWorld();
-        if (world == null) {
-            return candidate;
-        }
-        int x = (int) Math.floor(candidate.getX());
-        int z = (int) Math.floor(candidate.getZ());
-        int worldMin = world.getMinHeight();
-        int worldMax = world.getMaxHeight();
-        int baseY = Math.max(worldMin + 1, Math.min(worldMax - 1, candidate.getBlockY()));
-        int upwardLimit = Math.min(worldMax - 1, baseY + 6);
-        for (int y = baseY; y <= upwardLimit; y++) {
-            if (isValidMinorMobColumn(world, x, y, z)) {
-                Location resolved = new Location(world, x + 0.5, y, z + 0.5);
-                if (y != baseY) {
-                    plugin.getLogger().info(String.format(Locale.ROOT,
-                            "Adjusted minor mob spawn upwards from %s to %s", formatLocation(candidate),
-                            formatLocation(resolved)));
-                }
-                return resolved;
+    private List<String> determineMinorMobIds(MobSettings mobSettings) {
+        LinkedHashSet<String> ids = new LinkedHashSet<>(DEFAULT_MINOR_MYTHIC_IDS);
+        for (MinorMobSpawn spawn : mobSettings.getMinorMobSpawns()) {
+            String mythicId = spawn.getMythicMobId();
+            if (mythicId == null) {
+                continue;
+            }
+            String trimmed = mythicId.trim();
+            if (!trimmed.isEmpty()) {
+                ids.add(trimmed);
             }
         }
-        int downwardLimit = Math.max(worldMin + 1, baseY - 6);
-        for (int y = baseY - 1; y >= downwardLimit; y--) {
-            if (isValidMinorMobColumn(world, x, y, z)) {
-                Location resolved = new Location(world, x + 0.5, y, z + 0.5);
-                plugin.getLogger().info(String.format(Locale.ROOT,
-                        "Adjusted minor mob spawn downwards from %s to %s", formatLocation(candidate),
-                        formatLocation(resolved)));
-                return resolved;
-            }
-        }
-        Location fallback = new Location(world, x + 0.5, baseY, z + 0.5);
-        plugin.getLogger().warning(String.format(Locale.ROOT,
-                "Falling back to blocked minor mob spawn location %s", formatLocation(fallback)));
-        return fallback;
-    }
-
-    private void logMinorMobSpawn(String mythicId,
-                                  Location markerLocation,
-                                  Location requestedLocation,
-                                  Location resolvedLocation) {
-        String id = mythicId != null ? mythicId : "<unknown>";
-        StringBuilder message = new StringBuilder(String.format(Locale.ROOT,
-                "Spawning minor mob %s at %s (marker %s)",
-                id,
-                formatLocation(resolvedLocation),
-                formatLocation(markerLocation)));
-        if (resolvedLocation.distanceSquared(requestedLocation) > 0.01) {
-            message.append(String.format(Locale.ROOT,
-                    " after adjusting from %s",
-                    formatLocation(requestedLocation)));
-        }
-        plugin.getLogger().info(message.toString());
-    }
-
-    private void scheduleMinorSpawnCheck(SpawnAssignment assignment, String mythicId, Location targetLocation) {
-        if (assignment == null) {
-            return;
-        }
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (finished) {
-                return;
-            }
-            if (pendingSpawnAssignments.contains(assignment)) {
-                String id = mythicId != null ? mythicId : "<unknown>";
-                String message = String.format(Locale.ROOT,
-                        "Minor mob %s did not spawn at %s within expected time. Pending assignments: %d",
-                        id,
-                        formatLocation(targetLocation),
-                        pendingSpawnAssignments.size());
-                plugin.getLogger().warning(message);
-            }
-        }, 40L);
+        return ids.isEmpty() ? List.of() : List.copyOf(ids);
     }
 
     private String formatLocation(Location location) {
@@ -648,21 +554,6 @@ public class BloodChestSession {
                 location.getX(),
                 location.getY(),
                 location.getZ());
-    }
-
-    private boolean isPassable(Block block) {
-        if (block == null) {
-            return true;
-        }
-        Material type = block.getType();
-        return type.isAir() || block.isPassable();
-    }
-
-    private boolean isValidMinorMobColumn(World world, int x, int y, int z) {
-        Block feet = world.getBlockAt(x, y, z);
-        Block head = world.getBlockAt(x, y + 1, z);
-        Block below = world.getBlockAt(x, y - 1, z);
-        return isPassable(feet) && isPassable(head) && !isPassable(below);
     }
 
     private SpawnAssignment spawnMob(World world,
@@ -812,14 +703,16 @@ public class BloodChestSession {
         String locationSpaceToken = String.join(" ", worldName, x, y, z);
         String locationCommaToken = String.join(",", worldName, x, y, z);
         String locationWithAnglesToken = String.join(" ", worldName, x, y, z, yaw, pitch);
+        String locationCommaAnglesToken = String.join(",", worldName, x, y, z, yaw, pitch);
         command = LEGACY_LOCATION_PATTERN.matcher(command).replaceAll("{location}");
         return command
                 .replace("{location_with_yaw_pitch}", locationWithAnglesToken)
+                .replace("{location_commas_with_yaw_pitch}", locationCommaAnglesToken)
                 .replace("{location_space}", locationSpaceToken)
                 .replace("{location_commas}", locationCommaToken)
                 .replace("{location_comma}", locationCommaToken)
                 .replace("{location_csv}", locationCommaToken)
-                .replace("{location}", locationSpaceToken)
+                .replace("{location}", locationCommaAnglesToken)
                 .replace("{amount}", amount)
                 .replace("{id}", id)
                 .replace("{world}", worldName)
@@ -1042,8 +935,8 @@ public class BloodChestSession {
                 names.add(normalized);
             }
         }
-        for (MinorMobSpawn spawn : mobSettings.getMinorMobSpawns()) {
-            String normalized = normalizeMythicName(spawn.getMythicMobId());
+        for (String id : determineMinorMobIds(mobSettings)) {
+            String normalized = normalizeMythicName(id);
             if (normalized != null) {
                 names.add(normalized);
             }
