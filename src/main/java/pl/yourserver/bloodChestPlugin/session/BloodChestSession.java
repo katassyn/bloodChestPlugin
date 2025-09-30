@@ -294,6 +294,7 @@ public class BloodChestSession {
                         mobSpawnLocations.add(spawnLocation);
                     } else if (scanChestMarkers && block.getType() == arenaSettings.getChestMarkerMaterial()) {
                         Location markerLocation = block.getLocation().toBlockLocation();
+
                         chestLocations.add(markerLocation.clone());
                         clearMarkerBlock(markerLocation);
                     } else if (scanMinorMarkers && minorMobMarker != null && block.getType() == minorMobMarker) {
