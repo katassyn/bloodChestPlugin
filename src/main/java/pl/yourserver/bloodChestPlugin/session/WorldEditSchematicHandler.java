@@ -25,7 +25,7 @@ import java.io.IOException;
 public class WorldEditSchematicHandler implements SchematicHandler {
 
     @Override
-    public void pasteSchematic(File schematicFile, World world, Location origin) throws IOException {
+    public PasteResult pasteSchematic(File schematicFile, World world, Location origin) throws IOException {
         ClipboardFormat format = ClipboardFormats.findByFile(schematicFile);
         if (format == null) {
             throw new IOException("Unsupported schematic format for file " + schematicFile.getAbsolutePath());
@@ -46,12 +46,18 @@ public class WorldEditSchematicHandler implements SchematicHandler {
         } catch (WorldEditException ex) {
             throw new IOException("Failed to paste schematic: " + ex.getMessage(), ex);
         }
+        BlockVector3 dimensions = clipboard.getDimensions();
+        Vector regionSize = new Vector(dimensions.getBlockX(), dimensions.getBlockY(), dimensions.getBlockZ());
+        return new PasteResult(regionSize);
     }
 
     @Override
     public void clearRegion(World world, Location origin, Vector size) {
         BlockVector3 min = BlockVector3.at(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ());
-        BlockVector3 max = min.add((int) size.getX() - 1, (int) size.getY() - 1, (int) size.getZ() - 1);
+        int width = Math.max(1, (int) Math.ceil(size.getX()));
+        int height = Math.max(1, (int) Math.ceil(size.getY()));
+        int depth = Math.max(1, (int) Math.ceil(size.getZ()));
+        BlockVector3 max = min.add(width - 1, height - 1, depth - 1);
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
             CuboidRegion region = new CuboidRegion(min, max);
             editSession.setBlocks(region, BlockTypes.AIR.getDefaultState());
