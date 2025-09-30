@@ -1,5 +1,7 @@
 package pl.yourserver.bloodChestPlugin.session;
 
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.core.mobs.ActiveMob;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
@@ -12,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.TileState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -19,6 +22,7 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.bukkit.metadata.MetadataValue;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.ArenaSettings;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.ChestSettings;
@@ -40,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -76,6 +81,8 @@ public class BloodChestSession {
     private final Map<UUID, SpawnType> activeMobs = new HashMap<>();
     private final Set<UUID> processedDeaths = new HashSet<>();
     private final List<SpawnAssignment> pendingSpawnAssignments = new ArrayList<>();
+    private String primaryMythicMobName;
+    private Set<String> additionalMythicMobNames = Set.of();
     private Location playerSpawnLocation;
     private ArenaBounds arenaBounds;
     private int defeatedPrimaryCount;
@@ -151,6 +158,9 @@ public class BloodChestSession {
             this.activeMobs.clear();
             this.processedDeaths.clear();
             this.pendingSpawnAssignments.clear();
+            MobSettings mobSettings = arenaSettings.getMobSettings();
+            this.primaryMythicMobName = normalizeMythicName(mobSettings.getMythicMobId());
+            this.additionalMythicMobNames = computeAdditionalMythicMobNames(mobSettings, primaryMythicMobName);
             spawnMobs(world);
             if (requiredPrimaryCount > 0) {
                 initializeBossBar();
@@ -167,6 +177,8 @@ public class BloodChestSession {
                 chestLoreByLocation.clear();
                 activeMobs.clear();
                 pendingSpawnAssignments.clear();
+                primaryMythicMobName = null;
+                additionalMythicMobNames = Set.of();
                 playerSpawnLocation = null;
                 arenaBounds = null;
                 clearBossBar();
@@ -449,18 +461,96 @@ public class BloodChestSession {
                           SpawnType type) {
         Location adjustedLocation = applySpawnOffset(spawnLocation, mobSettings);
         if (mobSettings.getSpawnMode() == SpawnMode.MYTHIC_COMMAND) {
-            pendingSpawnAssignments.add(new SpawnAssignment(adjustedLocation.clone(), type));
+            String normalizedId = normalizeMythicName(mythicId);
+            pendingSpawnAssignments.add(new SpawnAssignment(adjustedLocation.clone(), type, normalizedId));
             String command = buildSpawnCommand(mythicId, mobSettings, adjustedLocation);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         } else {
             EntityType fallback = mobSettings.getFallbackEntityType();
             Entity entity = world.spawnEntity(adjustedLocation, fallback);
-            entity.addScoreboardTag(MOB_TAG);
-            if (type == SpawnType.PRIMARY) {
-                entity.addScoreboardTag(PRIMARY_MOB_TAG);
+            if (entity instanceof LivingEntity livingEntity) {
+                trackSpawnedEntity(livingEntity, type);
             }
-            activeMobs.put(entity.getUniqueId(), type);
         }
+    }
+
+    private void trackSpawnedEntity(LivingEntity entity, SpawnType type) {
+        entity.addScoreboardTag(MOB_TAG);
+        if (type == SpawnType.PRIMARY) {
+            entity.addScoreboardTag(PRIMARY_MOB_TAG);
+        }
+        activeMobs.put(entity.getUniqueId(), type);
+    }
+
+    private boolean hasRequiredMetadata(LivingEntity entity, MobSettings mobSettings) {
+        String metadataKey = mobSettings.getMetadataKey();
+        return metadataKey == null || metadataKey.isEmpty() || entity.hasMetadata(metadataKey);
+    }
+
+    private String resolveMythicMobName(LivingEntity entity,
+                                        MobSettings mobSettings,
+                                        String providedName) {
+        String normalized = normalizeMythicName(providedName);
+        if (normalized != null) {
+            return normalized;
+        }
+        try {
+            Optional<ActiveMob> activeMobOptional = MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId());
+            if (activeMobOptional.isPresent()) {
+                ActiveMob activeMob = activeMobOptional.get();
+                normalized = normalizeMythicName(activeMob.getType().getInternalName());
+                if (normalized != null) {
+                    return normalized;
+                }
+            }
+        } catch (Exception ignored) {
+            // MythicMobs may not be available in edge cases; ignore and fall back to metadata
+        }
+        String metadataKey = mobSettings.getMetadataKey();
+        if (metadataKey == null || metadataKey.isEmpty() || !entity.hasMetadata(metadataKey)) {
+            return null;
+        }
+        List<MetadataValue> metadataValues = entity.getMetadata(metadataKey);
+        for (MetadataValue metadataValue : metadataValues) {
+            if (metadataValue == null) {
+                continue;
+            }
+            normalized = normalizeMythicName(metadataValue.asString());
+            if (normalized != null) {
+                return normalized;
+            }
+            Object rawValue = metadataValue.value();
+            if (rawValue instanceof String rawString) {
+                normalized = normalizeMythicName(rawString);
+                if (normalized != null) {
+                    return normalized;
+                }
+            } else if (rawValue instanceof ActiveMob activeMob) {
+                normalized = normalizeMythicName(activeMob.getType().getInternalName());
+                if (normalized != null) {
+                    return normalized;
+                }
+            }
+        }
+        return null;
+    }
+
+    private SpawnType resolveSpawnType(LivingEntity entity, String normalizedMobName) {
+        if (entity.getScoreboardTags().contains(PRIMARY_MOB_TAG) || isPrimaryMythicMob(normalizedMobName)) {
+            return SpawnType.PRIMARY;
+        }
+        if (entity.getScoreboardTags().contains(MOB_TAG) || isAdditionalMythicMob(normalizedMobName)) {
+            return SpawnType.ADDITIONAL;
+        }
+        return null;
+    }
+
+    private boolean isPrimaryMythicMob(String normalizedMobName) {
+        return normalizedMobName != null && normalizedMobName.equals(primaryMythicMobName);
+    }
+
+    private boolean isAdditionalMythicMob(String normalizedMobName) {
+        return normalizedMobName != null && additionalMythicMobNames.contains(normalizedMobName);
     }
 
     private Location applySpawnOffset(Location location, MobSettings mobSettings) {
@@ -508,7 +598,7 @@ public class BloodChestSession {
         return String.format(Locale.ROOT, "%.2f", value);
     }
 
-    public void handleEntitySpawn(Entity entity) {
+    public void handleEntitySpawn(LivingEntity entity, String mythicMobName) {
         if (finished) {
             return;
         }
@@ -519,32 +609,27 @@ public class BloodChestSession {
         if (pendingSpawnAssignments.isEmpty()) {
             return;
         }
-        if (mobSettings.getMetadataKey() != null && !mobSettings.getMetadataKey().isEmpty()) {
-            if (!entity.hasMetadata(mobSettings.getMetadataKey())) {
-                return;
-            }
+        if (!hasRequiredMetadata(entity, mobSettings)) {
+            return;
         }
+        String normalizedName = resolveMythicMobName(entity, mobSettings, mythicMobName);
+        Location actualLocation = entity.getLocation();
         Iterator<SpawnAssignment> iterator = pendingSpawnAssignments.iterator();
         while (iterator.hasNext()) {
             SpawnAssignment assignment = iterator.next();
-            Location expected = assignment.location();
-            if (expected.getWorld() == entity.getWorld() && expected.distanceSquared(entity.getLocation()) <= 4.0) {
+            if (assignment.matches(actualLocation, normalizedName)) {
                 iterator.remove();
-                activeMobs.put(entity.getUniqueId(), assignment.type());
-                entity.addScoreboardTag(MOB_TAG);
-                if (assignment.type() == SpawnType.PRIMARY) {
-                    entity.addScoreboardTag(PRIMARY_MOB_TAG);
-                }
+                trackSpawnedEntity(entity, assignment.type());
                 break;
             }
         }
     }
 
-    public void handleEntityDeath(Entity entity) {
+    public void handleEntityDeath(LivingEntity entity, String mythicMobName) {
         if (finished) {
             return;
         }
-        if (!entity.getWorld().equals(pasteOrigin.getWorld())) {
+        if (pasteOrigin == null || !entity.getWorld().equals(pasteOrigin.getWorld())) {
             return;
         }
         UUID uuid = entity.getUniqueId();
@@ -559,23 +644,27 @@ public class BloodChestSession {
             return;
         }
         MobSettings mobSettings = arenaSettings.getMobSettings();
-        if (mobSettings.getSpawnMode() == SpawnMode.MYTHIC_COMMAND) {
-            if (mobSettings.getMetadataKey() != null && !mobSettings.getMetadataKey().isEmpty()) {
-                if (!entity.hasMetadata(mobSettings.getMetadataKey())) {
-                    return;
-                }
-            }
-            if (processedDeaths.contains(uuid)) {
-                return;
-            }
-            if (isWithinArena(entity.getLocation())) {
-                processedDeaths.add(uuid);
-                if (entity.getScoreboardTags().contains(PRIMARY_MOB_TAG)) {
-                    defeatedPrimaryCount++;
-                    updateBossBar();
-                }
-                checkMobsDefeated();
-            }
+        if (mobSettings.getSpawnMode() != SpawnMode.MYTHIC_COMMAND) {
+            return;
+        }
+        if (!hasRequiredMetadata(entity, mobSettings)) {
+            return;
+        }
+        if (processedDeaths.contains(uuid)) {
+            return;
+        }
+        if (!isWithinArena(entity.getLocation())) {
+            return;
+        }
+        processedDeaths.add(uuid);
+        String normalizedName = resolveMythicMobName(entity, mobSettings, mythicMobName);
+        SpawnType resolvedType = resolveSpawnType(entity, normalizedName);
+        if (resolvedType == SpawnType.PRIMARY) {
+            defeatedPrimaryCount++;
+            updateBossBar();
+        }
+        if (resolvedType != null) {
+            checkMobsDefeated();
         }
     }
 
@@ -695,6 +784,37 @@ public class BloodChestSession {
             }
             iterator.remove();
         }
+    }
+
+    private Set<String> computeAdditionalMythicMobNames(MobSettings mobSettings, String primaryName) {
+        Set<String> names = new HashSet<>();
+        for (String id : mobSettings.getAdditionalMythicMobIds()) {
+            String normalized = normalizeMythicName(id);
+            if (normalized != null) {
+                names.add(normalized);
+            }
+        }
+        for (MinorMobSpawn spawn : mobSettings.getMinorMobSpawns()) {
+            String normalized = normalizeMythicName(spawn.getMythicMobId());
+            if (normalized != null) {
+                names.add(normalized);
+            }
+        }
+        if (primaryName != null) {
+            names.remove(primaryName);
+        }
+        return names.isEmpty() ? Set.of() : Set.copyOf(names);
+    }
+
+    private String normalizeMythicName(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        return trimmed.toLowerCase(Locale.ROOT);
     }
 
     private void dropItems(Location location, LootResult result) {
@@ -854,7 +974,22 @@ public class BloodChestSession {
         ADDITIONAL
     }
 
-    private record SpawnAssignment(Location location, SpawnType type) {
+    private record SpawnAssignment(Location location, SpawnType type, String mythicMobName) {
+        boolean matches(Location actualLocation, String actualMobName) {
+            if (location.getWorld() == null || actualLocation.getWorld() == null) {
+                return false;
+            }
+            if (!location.getWorld().equals(actualLocation.getWorld())) {
+                return false;
+            }
+            if (location.distanceSquared(actualLocation) > 4.0) {
+                return false;
+            }
+            if (mythicMobName != null && actualMobName != null && !mythicMobName.equals(actualMobName)) {
+                return false;
+            }
+            return true;
+        }
     }
 
     private String color(String message) {
