@@ -44,7 +44,17 @@ public class WorldEditSchematicHandler implements SchematicHandler {
         try (ClipboardReader reader = format.getReader(new FileInputStream(schematicFile))) {
             clipboard = reader.read();
         }
-        BlockVector3 to = BlockVector3.at(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ());
+        BlockVector3 clipboardOrigin = clipboard.getOrigin();
+        BlockVector3 min = clipboard.getMinimumPoint();
+        BlockVector3 max = clipboard.getMaximumPoint();
+        Vector minimumOffset = toBukkitVector(min.subtract(clipboardOrigin));
+        Vector maximumOffset = toBukkitVector(max.subtract(clipboardOrigin));
+        Vector appliedOffset = computeAppliedOffset(world, origin, minimumOffset, maximumOffset);
+
+        BlockVector3 to = BlockVector3.at(
+                origin.getBlockX() + (int) Math.floor(appliedOffset.getX()),
+                origin.getBlockY() + (int) Math.floor(appliedOffset.getY()),
+                origin.getBlockZ() + (int) Math.floor(appliedOffset.getZ()));
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
             ClipboardHolder holder = new ClipboardHolder(clipboard);
             Operation operation = holder
@@ -57,17 +67,13 @@ public class WorldEditSchematicHandler implements SchematicHandler {
         } catch (WorldEditException ex) {
             throw new IOException("Failed to paste schematic: " + ex.getMessage(), ex);
         }
-        BlockVector3 clipboardOrigin = clipboard.getOrigin();
-        BlockVector3 min = clipboard.getMinimumPoint();
-        BlockVector3 max = clipboard.getMaximumPoint();
-        Vector minimumOffset = toBukkitVector(min.subtract(clipboardOrigin));
-        Vector maximumOffset = toBukkitVector(max.subtract(clipboardOrigin));
         BlockVector3 dimensions = clipboard.getDimensions();
         Vector regionSize = new Vector(dimensions.getBlockX(), dimensions.getBlockY(), dimensions.getBlockZ());
         MarkerScan scan = scanMarkers(clipboard, markerConfiguration);
         return new PasteResult(minimumOffset,
                 maximumOffset,
                 regionSize,
+                appliedOffset,
                 scan.mobMarkerOffsets(),
                 scan.chestMarkerOffsets(),
                 scan.minorMobMarkerOffsets(),
@@ -88,6 +94,48 @@ public class WorldEditSchematicHandler implements SchematicHandler {
         } catch (WorldEditException ex) {
             throw new IllegalStateException("Failed to clear region: " + ex.getMessage(), ex);
         }
+    }
+
+    private Vector computeAppliedOffset(World world,
+                                        Location origin,
+                                        Vector minimumOffset,
+                                        Vector maximumOffset) {
+        int adjustY = 0;
+        if (minimumOffset != null) {
+            adjustY = computeAxisAdjustment(minimumOffset.getY());
+        }
+        int originY = origin.getBlockY();
+        int minY = minimumOffset == null ? 0 : (int) Math.floor(minimumOffset.getY());
+        int maxY = maximumOffset == null ? minY : (int) Math.floor(maximumOffset.getY());
+        int worldMin = world.getMinHeight();
+        int worldMax = world.getMaxHeight() - 1;
+
+        adjustY = Math.max(adjustY, 0);
+
+        int bottomY = originY + adjustY + minY;
+        if (bottomY < worldMin) {
+            adjustY += worldMin - bottomY;
+        }
+
+        int topY = originY + adjustY + maxY;
+        if (topY > worldMax) {
+            adjustY -= topY - worldMax;
+            if (adjustY < 0) {
+                adjustY = 0;
+            }
+        }
+
+        bottomY = originY + adjustY + minY;
+        if (bottomY < worldMin) {
+            adjustY += worldMin - bottomY;
+        }
+
+        return new Vector(0, adjustY, 0);
+    }
+
+    private int computeAxisAdjustment(double minimumOffset) {
+        int offset = (int) Math.floor(minimumOffset);
+        return offset < 0 ? -offset : 0;
     }
 
     private Vector toBukkitVector(BlockVector3 vector) {

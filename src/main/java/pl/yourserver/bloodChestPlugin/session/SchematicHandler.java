@@ -40,6 +40,7 @@ public interface SchematicHandler {
     record PasteResult(Vector minimumOffset,
                        Vector maximumOffset,
                        Vector regionSize,
+                       Vector appliedOffset,
                        List<BlockOffset> mobMarkerOffsets,
                        List<BlockOffset> chestMarkerOffsets,
                        List<BlockOffset> minorMobMarkerOffsets,
@@ -54,6 +55,9 @@ public interface SchematicHandler {
             }
             if (regionSize != null) {
                 regionSize = regionSize.clone();
+            }
+            if (appliedOffset != null) {
+                appliedOffset = appliedOffset.clone();
             }
             mobMarkerOffsets = mobMarkerOffsets == null
                     ? List.of()
@@ -82,6 +86,11 @@ public interface SchematicHandler {
         @Override
         public Vector regionSize() {
             return regionSize == null ? null : regionSize.clone();
+        }
+
+        @Override
+        public Vector appliedOffset() {
+            return appliedOffset == null ? null : appliedOffset.clone();
         }
 
         @Override
