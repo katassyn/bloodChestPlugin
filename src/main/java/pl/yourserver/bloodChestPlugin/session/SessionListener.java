@@ -1,8 +1,8 @@
 package pl.yourserver.bloodChestPlugin.session;
 
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -39,12 +39,14 @@ public class SessionListener implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        sessionManager.handleEntityDeath(event.getEntity());
+        LivingEntity entity = event.getEntity();
+        sessionManager.handleEntityDeath(entity);
     }
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
-        sessionManager.handleEntitySpawn(event.getEntity());
+        LivingEntity entity = event.getEntity();
+        sessionManager.handleEntitySpawn(entity);
     }
 
     @EventHandler

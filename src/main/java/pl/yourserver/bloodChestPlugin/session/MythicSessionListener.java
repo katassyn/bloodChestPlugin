@@ -16,17 +16,24 @@ public class MythicSessionListener implements Listener {
 
     @EventHandler
     public void onMythicMobSpawn(MythicMobSpawnEvent event) {
-        LivingEntity entity = event.getEntity();
-        if (entity != null) {
-            sessionManager.handleEntitySpawn(entity);
+        LivingEntity livingEntity = event.getLivingEntity();
+        if (livingEntity == null) {
+            return;
         }
+        String internalName = event.getMobType() != null
+                ? event.getMobType().getInternalName()
+                : null;
+        sessionManager.handleMythicMobSpawn(livingEntity, internalName);
     }
 
     @EventHandler
     public void onMythicMobDeath(MythicMobDeathEvent event) {
-        LivingEntity entity = event.getEntity();
-        if (entity != null) {
-            sessionManager.handleEntityDeath(entity);
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
+            return;
         }
+        String internalName = event.getMobType() != null
+                ? event.getMobType().getInternalName()
+                : null;
+        sessionManager.handleMythicMobDeath(livingEntity, internalName);
     }
 }

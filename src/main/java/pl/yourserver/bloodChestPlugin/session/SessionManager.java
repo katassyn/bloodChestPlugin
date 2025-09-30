@@ -3,8 +3,8 @@ package pl.yourserver.bloodChestPlugin.session;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.Plugin;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.ArenaSettings;
@@ -100,15 +100,27 @@ public class SessionManager {
         return false;
     }
 
-    public void handleEntityDeath(Entity entity) {
+    public void handleEntityDeath(LivingEntity entity) {
         for (BloodChestSession session : sessions.values()) {
-            session.handleEntityDeath(entity);
+            session.handleEntityDeath(entity, null);
         }
     }
 
-    public void handleEntitySpawn(Entity entity) {
+    public void handleEntitySpawn(LivingEntity entity) {
         for (BloodChestSession session : sessions.values()) {
-            session.handleEntitySpawn(entity);
+            session.handleEntitySpawn(entity, null);
+        }
+    }
+
+    public void handleMythicMobSpawn(LivingEntity entity, String mythicMobName) {
+        for (BloodChestSession session : sessions.values()) {
+            session.handleEntitySpawn(entity, mythicMobName);
+        }
+    }
+
+    public void handleMythicMobDeath(LivingEntity entity, String mythicMobName) {
+        for (BloodChestSession session : sessions.values()) {
+            session.handleEntityDeath(entity, mythicMobName);
         }
     }
 
