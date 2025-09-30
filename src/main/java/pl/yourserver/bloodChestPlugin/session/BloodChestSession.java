@@ -456,7 +456,7 @@ public class BloodChestSession {
     private String buildSpawnCommand(String mobId, MobSettings mobSettings, Location location) {
         String command = mobSettings.getSpawnCommand();
         if (command == null || command.isBlank()) {
-            command = "mm mobs spawn {id} {location}";
+            command = "mm m spawn {id} {amount} {location}";
         }
         World world = location.getWorld();
         if (world == null) {
@@ -469,10 +469,16 @@ public class BloodChestSession {
         String z = formatCoordinate(location.getZ());
         String yaw = formatCoordinate(location.getYaw());
         String pitch = formatCoordinate(location.getPitch());
-        String locationToken = String.join(",", worldName, x, y, z, yaw, pitch);
+        String amount = "1";
+        String locationToken = String.join(",", worldName, x, y, z);
+        String locationSpaceToken = String.join(" ", worldName, x, y, z);
+        String locationWithAnglesToken = String.join(" ", worldName, x, y, z, yaw, pitch);
         command = LEGACY_LOCATION_PATTERN.matcher(command).replaceAll("{location}");
         return command
+                .replace("{location_with_yaw_pitch}", locationWithAnglesToken)
+                .replace("{location_space}", locationSpaceToken)
                 .replace("{location}", locationToken)
+                .replace("{amount}", amount)
                 .replace("{id}", id)
                 .replace("{world}", worldName)
                 .replace("{x}", x)

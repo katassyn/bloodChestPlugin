@@ -176,7 +176,7 @@ public class ConfigurationLoader {
         }
 
         String mythicId = section.getString("mythic-id");
-        String command = section.getString("spawn-command", "mm mobs spawn {id} {location}");
+        String command = section.getString("spawn-command", "mm m spawn {id} {amount} {location}");
         String metadataKey = section.getString("metadata-key", "MythicMob");
         EntityType fallbackEntity = ConfigUtil.readEntityType(section.getString("fallback-entity"), EntityType.HUSK);
         int spawnYOffset = section.getInt("y-offset", 1);
