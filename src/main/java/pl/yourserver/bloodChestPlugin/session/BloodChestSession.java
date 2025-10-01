@@ -67,6 +67,7 @@ public class BloodChestSession {
             MINOR_SPAWN_MAX_HORIZONTAL_DISTANCE * MINOR_SPAWN_MAX_HORIZONTAL_DISTANCE;
     private static final int MAX_MINOR_SPAWN_LOCATIONS = 120;
     private static final List<String> DEFAULT_MINOR_MYTHIC_IDS = List.of("blood_sludgeling", "blood_leech");
+    private static final long SESSION_TIMEOUT_TICKS = 20L * 60L * 10L;
 
     private final Plugin plugin;
     private final PluginConfiguration configuration;
@@ -104,6 +105,7 @@ public class BloodChestSession {
     private int exitCountdownTotalSeconds;
     private BossBar progressBar;
     private BukkitRunnable bossBarTask;
+    private BukkitTask sessionTimeoutTask;
 
     public BloodChestSession(Plugin plugin,
                              PluginConfiguration configuration,
@@ -177,6 +179,7 @@ public class BloodChestSession {
                 initializeBossBar();
             }
             player.sendMessage(color("&7Defeat all &cBlood Sludges &7as quickly as possible!"));
+            scheduleSessionTimeout();
             setupComplete = true;
         } finally {
             if (!setupComplete) {
@@ -186,6 +189,7 @@ public class BloodChestSession {
                 chestLocations.clear();
                 spawnedChests.clear();
                 stopChestOpenTasks();
+                cancelSessionTimeout();
                 chestLoreByLocation.clear();
                 activeMobs.clear();
                 pendingSpawnAssignments.clear();
@@ -1044,6 +1048,27 @@ public class BloodChestSession {
         return true;
     }
 
+    private void scheduleSessionTimeout() {
+        cancelSessionTimeout();
+        sessionTimeoutTask = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            sessionTimeoutTask = null;
+            if (finished) {
+                return;
+            }
+            if (player != null && player.isOnline() && !player.isDead()) {
+                player.sendMessage(color("&cYour time inside the Blood Chest arena has expired."));
+            }
+            stopSession(true, false);
+        }, SESSION_TIMEOUT_TICKS);
+    }
+
+    private void cancelSessionTimeout() {
+        if (sessionTimeoutTask != null) {
+            sessionTimeoutTask.cancel();
+            sessionTimeoutTask = null;
+        }
+    }
+
     private void removeAdditionalMobs() {
         Iterator<Map.Entry<UUID, SpawnType>> iterator = activeMobs.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -1463,6 +1488,7 @@ public class BloodChestSession {
             return;
         }
         finished = true;
+        cancelSessionTimeout();
         cancelExitCountdown();
         clearBossBar();
         stopChestOpenTasks();
