@@ -1,4 +1,4 @@
-﻿package pl.yourserver.bloodChestPlugin.session;
+package pl.yourserver.bloodChestPlugin.session;
 
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
@@ -39,8 +39,8 @@ import pl.yourserver.bloodChestPlugin.session.PityManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;\r
-import java.util.Collections;\r
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -321,6 +321,21 @@ public class BloodChestSession {
         return worldName + ':' + location.getBlockX() + ':' + location.getBlockY() + ':' + location.getBlockZ();
     }
 
+    private boolean isWithinMinorSpawnRange(Location center, Location candidate) {
+        if (center == null || candidate == null) {
+            return false;
+        }
+        World centerWorld = center.getWorld();
+        World candidateWorld = candidate.getWorld();
+        if (centerWorld == null || candidateWorld == null || !centerWorld.equals(candidateWorld)) {
+            return false;
+        }
+        double deltaX = (candidate.getX() + 0.5) - center.getX();
+        double deltaZ = (candidate.getZ() + 0.5) - center.getZ();
+        double horizontalDistanceSquared = (deltaX * deltaX) + (deltaZ * deltaZ);
+        return horizontalDistanceSquared <= MINOR_SPAWN_MAX_HORIZONTAL_DISTANCE_SQUARED;
+    }
+
     private boolean scanMarkersInWorld(World world,
                                        ArenaBounds bounds,
                                        Location slotOrigin,
@@ -563,15 +578,14 @@ public class BloodChestSession {
         }
 
         List<String> additionalIds = mobSettings.getAdditionalMythicMobIds();
-        if (additionalIds.isEmpty()) {
-            return;
-        }
-        int additionalIndex = 0;
-        for (; index < mobSpawnLocations.size(); index++) {
-            Location spawnLocation = mobSpawnLocations.get(index);
-            String mythicId = additionalIds.get(additionalIndex % additionalIds.size());
-            additionalIndex++;
-            spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
+        if (!additionalIds.isEmpty()) {
+            int additionalIndex = 0;
+            for (; index < mobSpawnLocations.size(); index++) {
+                Location spawnLocation = mobSpawnLocations.get(index);
+                String mythicId = additionalIds.get(additionalIndex % additionalIds.size());
+                additionalIndex++;
+                spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
+            }
         }
 
         List<String> minorMobPool = buildMinorMobPool(mobSettings);
@@ -1010,6 +1024,12 @@ public class BloodChestSession {
         }
         for (MinorMobSpawn spawn : mobSettings.getMinorMobSpawns()) {
             String normalized = normalizeMythicName(spawn.getMythicMobId());
+            if (normalized != null) {
+                names.add(normalized);
+            }
+        }
+        for (String defaultMinorId : DEFAULT_MINOR_MYTHIC_IDS) {
+            String normalized = normalizeMythicName(defaultMinorId);
             if (normalized != null) {
                 names.add(normalized);
             }
