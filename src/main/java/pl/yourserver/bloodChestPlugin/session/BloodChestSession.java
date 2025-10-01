@@ -1,4 +1,4 @@
-﻿package pl.yourserver.bloodChestPlugin.session;
+package pl.yourserver.bloodChestPlugin.session;
 
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
@@ -39,8 +39,8 @@ import pl.yourserver.bloodChestPlugin.session.PityManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;\r
-import java.util.Collections;\r
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -284,15 +284,20 @@ public class BloodChestSession {
             return;
         }
         Set<String> seen = new LinkedHashSet<>();
+        Location center = playerSpawnLocation;
+        double maxDistanceSquared = computeMinorSpawnRangeLimitSquared(center, bounds);
         List<Location> collected = new ArrayList<>(minorMobSpawnLocations.size());
+        int scannedCount = 0;
         for (Location location : minorMobSpawnLocations) {
             Location blockLocation = location.clone().toBlockLocation();
+            scannedCount++;
+            if (!hasMinorSpawnClearance(blockLocation)) {
+                continue;
+            }
             addMinorSpawnCandidate(blockLocation, seen, collected);
         }
-        int scannedCount = collected.size();
-        Location center = playerSpawnLocation;
         if (center != null) {
-            collected.removeIf(candidate -> !isWithinMinorSpawnRange(center, candidate));
+            collected.removeIf(candidate -> !isWithinMinorSpawnRange(center, candidate, maxDistanceSquared));
         }
         if (collected.size() > MAX_MINOR_SPAWN_LOCATIONS) {
             Collections.shuffle(collected, ThreadLocalRandom.current());
@@ -319,6 +324,68 @@ public class BloodChestSession {
         World world = location.getWorld();
         String worldName = world != null ? world.getName() : "<world>";
         return worldName + ':' + location.getBlockX() + ':' + location.getBlockY() + ':' + location.getBlockZ();
+    }
+
+    private boolean isWithinMinorSpawnRange(Location center,
+                                            Location candidate,
+                                            double maxDistanceSquared) {
+        if (center == null || candidate == null) {
+            return false;
+        }
+        World centerWorld = center.getWorld();
+        World candidateWorld = candidate.getWorld();
+        if (centerWorld == null || candidateWorld == null || !centerWorld.equals(candidateWorld)) {
+            return false;
+        }
+        double deltaX = (candidate.getX() + 0.5) - center.getX();
+        double deltaZ = (candidate.getZ() + 0.5) - center.getZ();
+        double horizontalDistanceSquared = (deltaX * deltaX) + (deltaZ * deltaZ);
+        return horizontalDistanceSquared <= maxDistanceSquared;
+    }
+
+    private double computeMinorSpawnRangeLimitSquared(Location center, ArenaBounds bounds) {
+        double baseline = MINOR_SPAWN_MAX_HORIZONTAL_DISTANCE_SQUARED;
+        if (bounds != null) {
+            double width = Math.max(1, (bounds.maxX() - bounds.minX()) + 1);
+            double depth = Math.max(1, (bounds.maxZ() - bounds.minZ()) + 1);
+            double diagonalSquared = (width * width) + (depth * depth);
+            baseline = Math.max(baseline, diagonalSquared);
+        }
+        if (center == null || bounds == null) {
+            return baseline;
+        }
+        double centerX = center.getX();
+        double centerZ = center.getZ();
+        double maxDistanceSquared = 0.0;
+        double[] xs = {bounds.minX() + 0.5, bounds.maxX() + 0.5};
+        double[] zs = {bounds.minZ() + 0.5, bounds.maxZ() + 0.5};
+        for (double x : xs) {
+            for (double z : zs) {
+                double deltaX = x - centerX;
+                double deltaZ = z - centerZ;
+                double distanceSquared = (deltaX * deltaX) + (deltaZ * deltaZ);
+                if (distanceSquared > maxDistanceSquared) {
+                    maxDistanceSquared = distanceSquared;
+                }
+            }
+        }
+        return Math.max(maxDistanceSquared, baseline);
+    }
+
+    private boolean hasMinorSpawnClearance(Location markerLocation) {
+        if (markerLocation == null) {
+            return false;
+        }
+        World world = markerLocation.getWorld();
+        if (world == null) {
+            return false;
+        }
+        int blockX = markerLocation.getBlockX();
+        int blockY = markerLocation.getBlockY();
+        int blockZ = markerLocation.getBlockZ();
+        Block spawnBlock = world.getBlockAt(blockX, blockY + 1, blockZ);
+        Block headSpaceBlock = world.getBlockAt(blockX, blockY + 2, blockZ);
+        return spawnBlock.isPassable() && headSpaceBlock.isPassable();
     }
 
     private boolean scanMarkersInWorld(World world,
@@ -563,21 +630,23 @@ public class BloodChestSession {
         }
 
         List<String> additionalIds = mobSettings.getAdditionalMythicMobIds();
-        if (additionalIds.isEmpty()) {
-            return;
-        }
-        int additionalIndex = 0;
-        for (; index < mobSpawnLocations.size(); index++) {
-            Location spawnLocation = mobSpawnLocations.get(index);
-            String mythicId = additionalIds.get(additionalIndex % additionalIds.size());
-            additionalIndex++;
-            spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
+        if (!additionalIds.isEmpty()) {
+            int additionalIndex = 0;
+            for (; index < mobSpawnLocations.size(); index++) {
+                Location spawnLocation = mobSpawnLocations.get(index);
+                String mythicId = additionalIds.get(additionalIndex % additionalIds.size());
+                additionalIndex++;
+                spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
+            }
         }
 
         List<String> minorMobPool = buildMinorMobPool(mobSettings);
         if (!minorMobPool.isEmpty() && !minorMobSpawnLocations.isEmpty()) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
             for (Location markerLocation : minorMobSpawnLocations) {
+                if (!hasMinorSpawnClearance(markerLocation)) {
+                    continue;
+                }
                 Location spawnLocation = markerLocation.clone().add(0.5, 1.0, 0.5);
                 String mythicId = minorMobPool.get(random.nextInt(minorMobPool.size()));
                 if (mythicId == null || mythicId.isBlank()) {
@@ -1010,6 +1079,12 @@ public class BloodChestSession {
         }
         for (MinorMobSpawn spawn : mobSettings.getMinorMobSpawns()) {
             String normalized = normalizeMythicName(spawn.getMythicMobId());
+            if (normalized != null) {
+                names.add(normalized);
+            }
+        }
+        for (String defaultMinorId : DEFAULT_MINOR_MYTHIC_IDS) {
+            String normalized = normalizeMythicName(defaultMinorId);
             if (normalized != null) {
                 names.add(normalized);
             }
