@@ -329,6 +329,7 @@ public class BloodChestSession {
     private boolean isWithinMinorSpawnRange(Location center,
                                             Location candidate,
                                             double maxDistanceSquared) {
+
         if (center == null || candidate == null) {
             return false;
         }
