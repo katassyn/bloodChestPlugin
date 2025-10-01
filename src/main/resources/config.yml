@@ -15,10 +15,10 @@ gui:
       - "&7Cost: &c25 Fragment of Infernal Passage"
   close-button:
     slot: 15
-    material: BARRIER
-    name: "&cClose"
+    material: EXPERIENCE_BOTTLE
+    name: "&6Pity Progress"
     lore:
-      - "&7Close this menu."
+      - "&7Check your pity progress."
 
 key:
   material: IRON_NUGGET

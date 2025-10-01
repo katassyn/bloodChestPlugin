@@ -9,6 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration;
 import pl.yourserver.bloodChestPlugin.integration.IngredientPouchBridge;
+import pl.yourserver.bloodChestPlugin.session.PityManager;
 import pl.yourserver.bloodChestPlugin.session.SessionManager;
 
 import java.util.HashMap;
@@ -22,20 +23,23 @@ public class MenuManager implements Listener {
     private final PluginConfiguration configuration;
     private final SessionManager sessionManager;
     private final IngredientPouchBridge pouchBridge;
+    private final PityManager pityManager;
     private final Map<UUID, MenuView> menus = new HashMap<>();
 
     public MenuManager(Plugin plugin,
                        PluginConfiguration configuration,
                        SessionManager sessionManager,
-                       IngredientPouchBridge pouchBridge) {
+                       IngredientPouchBridge pouchBridge,
+                       PityManager pityManager) {
         this.plugin = plugin;
         this.configuration = configuration;
         this.sessionManager = sessionManager;
         this.pouchBridge = pouchBridge;
+        this.pityManager = pityManager;
     }
 
     public void openMainMenu(Player player) {
-        MenuView menu = new MainMenuView(configuration, sessionManager, pouchBridge, player);
+        MenuView menu = new MainMenuView(configuration, sessionManager, pouchBridge, pityManager, player);
         openMenu(player, menu);
     }
 

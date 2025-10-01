@@ -1,4 +1,4 @@
-package pl.yourserver.bloodChestPlugin.session;
+﻿package pl.yourserver.bloodChestPlugin.session;
 
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
@@ -39,7 +39,8 @@ import pl.yourserver.bloodChestPlugin.session.PityManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.ArrayList;\r
+import java.util.Collections;\r
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,6 +62,10 @@ public class BloodChestSession {
     public static final String PRIMARY_MOB_TAG = "blood_chest_primary";
     private static final Pattern LEGACY_LOCATION_PATTERN =
             Pattern.compile("\\{world\\}\\s*,\\s*\\{x\\}\\s*,\\s*\\{y\\}\\s*,\\s*\\{z\\}");
+    private static final double MINOR_SPAWN_MAX_HORIZONTAL_DISTANCE = 32.0;
+    private static final double MINOR_SPAWN_MAX_HORIZONTAL_DISTANCE_SQUARED =
+            MINOR_SPAWN_MAX_HORIZONTAL_DISTANCE * MINOR_SPAWN_MAX_HORIZONTAL_DISTANCE;
+    private static final int MAX_MINOR_SPAWN_LOCATIONS = 120;
     private static final List<String> DEFAULT_MINOR_MYTHIC_IDS = List.of("blood_sludgeling", "blood_leech");
 
     private final Plugin plugin;
@@ -142,6 +147,7 @@ public class BloodChestSession {
         boolean setupComplete = false;
         this.arenaBounds = null;
         try {
+            MobSettings mobSettings = arenaSettings.getMobSettings();
             SchematicHandler.PasteResult pasteResult = schematicHandler.pasteSchematic(
                     schematicFile,
                     world,
@@ -155,6 +161,7 @@ public class BloodChestSession {
                 pasteOrigin.add(appliedOffset);
             }
             this.arenaBounds = resolveArenaBounds(pasteOrigin, arenaSettings.getRegionSize(), pasteResult);
+            this.arenaBounds = expandArenaBoundsForSpawns(arenaBounds, mobSettings);
             scanMarkers(world, arenaBounds, pasteResult);
             teleportPlayerToArena();
             this.startTimeMillis = System.currentTimeMillis();
@@ -163,7 +170,6 @@ public class BloodChestSession {
             this.activeMobs.clear();
             this.processedDeaths.clear();
             this.pendingSpawnAssignments.clear();
-            MobSettings mobSettings = arenaSettings.getMobSettings();
             this.primaryMythicMobName = normalizeMythicName(mobSettings.getMythicMobId());
             this.additionalMythicMobNames = computeAdditionalMythicMobNames(mobSettings, primaryMythicMobName);
             spawnMobs(world);
@@ -226,6 +232,8 @@ public class BloodChestSession {
                     spawnMarkerFound);
         }
 
+        collectMinorMobSpawnLocations(world, bounds);
+
         if (!spawnMarkerFound) {
             plugin.getLogger().warning("Schematic is missing a gold block player spawn marker. Using configured offset instead.");
         }
@@ -249,8 +257,8 @@ public class BloodChestSession {
             clearMarkerBlock(blockLocation);
         }
         for (SchematicHandler.BlockOffset offset : pasteResult.minorMobMarkerOffsets()) {
-            Location blockLocation = toWorldBlockLocation(offset);
-            minorMobSpawnLocations.add(blockLocation.clone());
+            Location blockLocation = toWorldBlockLocation(offset).toBlockLocation();
+            minorMobSpawnLocations.add(blockLocation);
         }
 
         boolean spawnMarkerFound = false;
@@ -268,6 +276,49 @@ public class BloodChestSession {
             }
         }
         return spawnMarkerFound;
+    }
+
+    private void collectMinorMobSpawnLocations(World world, ArenaBounds bounds) {
+        Material markerMaterial = arenaSettings.getMinorMobMarkerMaterial().orElse(null);
+        if (markerMaterial == null || world == null || bounds == null) {
+            return;
+        }
+        Set<String> seen = new LinkedHashSet<>();
+        List<Location> collected = new ArrayList<>(minorMobSpawnLocations.size());
+        for (Location location : minorMobSpawnLocations) {
+            Location blockLocation = location.clone().toBlockLocation();
+            addMinorSpawnCandidate(blockLocation, seen, collected);
+        }
+        int scannedCount = collected.size();
+        Location center = playerSpawnLocation;
+        if (center != null) {
+            collected.removeIf(candidate -> !isWithinMinorSpawnRange(center, candidate));
+        }
+        if (collected.size() > MAX_MINOR_SPAWN_LOCATIONS) {
+            Collections.shuffle(collected, ThreadLocalRandom.current());
+            collected = new ArrayList<>(collected.subList(0, MAX_MINOR_SPAWN_LOCATIONS));
+        }
+        minorMobSpawnLocations.clear();
+        minorMobSpawnLocations.addAll(collected);
+        plugin.getLogger().info(String.format(Locale.ROOT,
+                "[BloodChest] Found %d minor spawn positions (scanned %d)",
+                minorMobSpawnLocations.size(),
+                scannedCount));
+    }
+
+    private void addMinorSpawnCandidate(Location blockLocation,
+                                        Set<String> seen,
+                                        List<Location> collected) {
+        String key = encodeBlockKey(blockLocation);
+        if (seen.add(key)) {
+            collected.add(blockLocation);
+        }
+    }
+
+    private String encodeBlockKey(Location location) {
+        World world = location.getWorld();
+        String worldName = world != null ? world.getName() : "<world>";
+        return worldName + ':' + location.getBlockX() + ':' + location.getBlockY() + ':' + location.getBlockZ();
     }
 
     private boolean scanMarkersInWorld(World world,
@@ -317,6 +368,7 @@ public class BloodChestSession {
         }
         return spawnMarkerFound;
     }
+
 
     private void clearMarkerBlock(Location location) {
         if (location == null) {
@@ -420,6 +472,25 @@ public class BloodChestSession {
         return new Location(world, x, y, z);
     }
 
+    private ArenaBounds expandArenaBoundsForSpawns(ArenaBounds bounds, MobSettings mobSettings) {
+        if (bounds == null || mobSettings == null) {
+            return bounds;
+        }
+        int spawnYOffset = mobSettings.getSpawnYOffset();
+        int upwardMargin = Math.max(0, 1 + spawnYOffset);
+        int downwardMargin = Math.max(0, -spawnYOffset);
+        if (upwardMargin == 0 && downwardMargin == 0) {
+            return bounds;
+        }
+        return new ArenaBounds(
+                bounds.minX(),
+                bounds.minY() - downwardMargin,
+                bounds.minZ(),
+                bounds.maxX(),
+                bounds.maxY() + upwardMargin,
+                bounds.maxZ());
+    }
+
     private ArenaBounds resolveArenaBounds(Location origin,
                                            Vector configSize,
                                            SchematicHandler.PasteResult pasteResult) {
@@ -503,45 +574,46 @@ public class BloodChestSession {
             spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
         }
 
-        List<String> minorMobIds = determineMinorMobIds(mobSettings);
-        if (!minorMobIds.isEmpty() && !minorMobSpawnLocations.isEmpty()) {
+        List<String> minorMobPool = buildMinorMobPool(mobSettings);
+        if (!minorMobPool.isEmpty() && !minorMobSpawnLocations.isEmpty()) {
+            ThreadLocalRandom random = ThreadLocalRandom.current();
             for (Location markerLocation : minorMobSpawnLocations) {
-                spawnMinorMobsAtMarker(world, mobSettings, markerLocation, minorMobIds);
+                Location spawnLocation = markerLocation.clone().add(0.5, 1.0, 0.5);
+                String mythicId = minorMobPool.get(random.nextInt(minorMobPool.size()));
+                if (mythicId == null || mythicId.isBlank()) {
+                    continue;
+                }
+                plugin.getLogger().info(String.format(Locale.ROOT,
+                        "Spawning minor mob %s at %s (marker %s)",
+                        mythicId,
+                        formatLocation(spawnLocation),
+                        formatLocation(markerLocation)));
+                spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
             }
         }
     }
 
-    private void spawnMinorMobsAtMarker(World world,
-                                        MobSettings mobSettings,
-                                        Location markerLocation,
-                                        List<String> minorMobIds) {
-        Location spawnLocation = markerLocation.clone().add(0.5, 1.0, 0.5);
-        for (String mythicId : minorMobIds) {
-            if (mythicId == null || mythicId.isBlank()) {
-                continue;
-            }
-            plugin.getLogger().info(String.format(Locale.ROOT,
-                    "Spawning minor mob %s at %s (marker %s)",
-                    mythicId,
-                    formatLocation(spawnLocation),
-                    formatLocation(markerLocation)));
-            spawnMob(world, mobSettings, spawnLocation, mythicId, SpawnType.ADDITIONAL);
+    private List<String> buildMinorMobPool(MobSettings mobSettings) {
+        List<MinorMobSpawn> minorMobSpawns = mobSettings.getMinorMobSpawns();
+        if (minorMobSpawns.isEmpty()) {
+            return DEFAULT_MINOR_MYTHIC_IDS;
         }
-    }
-
-    private List<String> determineMinorMobIds(MobSettings mobSettings) {
-        LinkedHashSet<String> ids = new LinkedHashSet<>(DEFAULT_MINOR_MYTHIC_IDS);
-        for (MinorMobSpawn spawn : mobSettings.getMinorMobSpawns()) {
+        List<String> pool = new ArrayList<>();
+        for (MinorMobSpawn spawn : minorMobSpawns) {
             String mythicId = spawn.getMythicMobId();
             if (mythicId == null) {
                 continue;
             }
             String trimmed = mythicId.trim();
-            if (!trimmed.isEmpty()) {
-                ids.add(trimmed);
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            int count = Math.max(1, spawn.getCount());
+            for (int i = 0; i < count; i++) {
+                pool.add(trimmed);
             }
         }
-        return ids.isEmpty() ? List.of() : List.copyOf(ids);
+        return pool.isEmpty() ? DEFAULT_MINOR_MYTHIC_IDS : List.copyOf(pool);
     }
 
     private String formatLocation(Location location) {
@@ -936,8 +1008,8 @@ public class BloodChestSession {
                 names.add(normalized);
             }
         }
-        for (String id : determineMinorMobIds(mobSettings)) {
-            String normalized = normalizeMythicName(id);
+        for (MinorMobSpawn spawn : mobSettings.getMinorMobSpawns()) {
+            String normalized = normalizeMythicName(spawn.getMythicMobId());
             if (normalized != null) {
                 names.add(normalized);
             }
@@ -947,6 +1019,7 @@ public class BloodChestSession {
         }
         return names.isEmpty() ? Set.of() : Set.copyOf(names);
     }
+
 
     private String normalizeMythicName(String value) {
         if (value == null) {
@@ -1205,7 +1278,7 @@ public class BloodChestSession {
                 ? "∞"
                 : stage.maxSeconds() + "s";
         String title = String.format(Locale.ROOT,
-                "&4Blood Chests &7| &c%d&7/&c%d &7Blood Sludges | &e%ss &7→ &6%s",
+                "&4Blood Chests &7| &c%d&7/&c%d &7Blood Sludges | &e%ss &7| &6%s",
                 defeatedPrimaryCount,
                 Math.max(requiredPrimaryCount, defeatedPrimaryCount),
                 elapsedFormatted,
@@ -1243,7 +1316,7 @@ public class BloodChestSession {
         progressBar.setColor(BarColor.GREEN);
         progressBar.setProgress(1.0);
         String title = String.format(Locale.ROOT,
-                "&2Blood Chests &7| &c%d&7/&c%d &7Blood Sludges | &e%ds &7→ &6%d chests",
+                "&2Blood Chests &7| &c%d&7/&c%d &7Blood Sludges | &e%ds &7| &6%d chests",
                 defeatedPrimaryCount,
                 Math.max(requiredPrimaryCount, defeatedPrimaryCount),
                 Math.max(0L, elapsedSeconds),
@@ -1336,3 +1409,7 @@ public class BloodChestSession {
         manager.endSession(this);
     }
 }
+
+
+
+

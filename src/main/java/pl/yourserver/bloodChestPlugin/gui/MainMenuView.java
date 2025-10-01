@@ -14,6 +14,7 @@ import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.GuiSettings;
 import pl.yourserver.bloodChestPlugin.config.PluginConfiguration.KeyRequirement;
 import pl.yourserver.bloodChestPlugin.integration.IngredientPouchBridge;
 import pl.yourserver.bloodChestPlugin.session.SessionManager;
+import pl.yourserver.bloodChestPlugin.session.PityManager;
 import pl.yourserver.bloodChestPlugin.util.ItemStackUtil;
 
 import java.util.ArrayList;
@@ -26,16 +27,19 @@ public class MainMenuView implements MenuView {
     private final PluginConfiguration configuration;
     private final SessionManager sessionManager;
     private final IngredientPouchBridge pouchBridge;
+    private final PityManager pityManager;
     private final Inventory inventory;
     private final Player player;
 
     public MainMenuView(PluginConfiguration configuration,
                         SessionManager sessionManager,
                         IngredientPouchBridge pouchBridge,
+                        PityManager pityManager,
                         Player player) {
         this.configuration = configuration;
         this.sessionManager = sessionManager;
         this.pouchBridge = pouchBridge;
+        this.pityManager = pityManager;
         this.player = player;
         this.inventory = Bukkit.createInventory(null, 27, LEGACY.deserialize(configuration.getGuiSettings().getTitle()));
         build();
@@ -51,8 +55,23 @@ public class MainMenuView implements MenuView {
         inventory.setItem(11, instructions);
         inventory.setItem(gui.getStartButton().getSlot(), ItemStackUtil.createMenuItem(
                 gui.getStartButton().getMaterial(), gui.getStartButton().getDisplayName(), gui.getStartButton().getLore()));
-        inventory.setItem(gui.getCloseButton().getSlot(), ItemStackUtil.createMenuItem(
-                gui.getCloseButton().getMaterial(), gui.getCloseButton().getDisplayName(), gui.getCloseButton().getLore()));
+        inventory.setItem(gui.getCloseButton().getSlot(), createPityIndicatorItem());
+    }
+
+    private ItemStack createPityIndicatorItem() {
+        GuiSettings gui = configuration.getGuiSettings();
+        PluginConfiguration.MenuButton indicator = gui.getCloseButton();
+        List<String> lore = new ArrayList<>(indicator.getLore());
+        int threshold = configuration.getPitySettings().getThreshold();
+        if (threshold <= 0) {
+            lore.add("&7Pity is currently &cdisabled&7.");
+            return ItemStackUtil.createMenuItem(indicator.getMaterial(), indicator.getDisplayName(), lore);
+        }
+        int progress = Math.max(0, pityManager.get(player.getUniqueId()));
+        int remaining = Math.max(0, threshold - progress);
+        lore.add("&7Pity progress: &c" + progress + "&7/&c" + threshold);
+        lore.add(remaining > 0 ? "&7Next pity in: &e" + remaining : "&aPity guaranteed on the next open!");
+        return ItemStackUtil.createMenuItem(indicator.getMaterial(), indicator.getDisplayName(), lore);
     }
 
     @Override
@@ -66,8 +85,6 @@ public class MainMenuView implements MenuView {
         int slot = event.getRawSlot();
         if (slot == gui.getStartButton().getSlot()) {
             attemptStart();
-        } else if (slot == gui.getCloseButton().getSlot()) {
-            event.getWhoClicked().closeInventory();
         }
     }
 

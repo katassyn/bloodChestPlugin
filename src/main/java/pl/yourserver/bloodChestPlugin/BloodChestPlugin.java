@@ -46,7 +46,7 @@ public final class BloodChestPlugin extends JavaPlugin {
             lootService = new LootService(lootRegistry, configuration.getPitySettings());
             sessionManager = new SessionManager(this, configuration, new WorldEditSchematicHandler(), lootService, pityManager);
             pouchBridge = new IngredientPouchBridge(getLogger());
-            menuManager = new MenuManager(this, configuration, sessionManager, pouchBridge);
+            menuManager = new MenuManager(this, configuration, sessionManager, pouchBridge, pityManager);
         } catch (Exception ex) {
             getLogger().severe("Failed to load BloodChestPlugin configuration: " + ex.getMessage());
             ex.printStackTrace();
