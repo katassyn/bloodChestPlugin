@@ -981,6 +981,25 @@ public class BloodChestSession {
         player.sendMessage(color("&7All sludges were defeated in &e" + elapsedSeconds + "s&7!"));
         showVictoryOnBossBar(elapsedSeconds, chestCount);
         spawnChests(chestCount);
+
+        // Fire BloodChestCompleteEvent for QuestSystem integration
+        try {
+            Class<?> listenerClass = Class.forName("org.maks.questsystem.listeners.BloodChestListener");
+            Class<?> eventClass = null;
+            for (Class<?> innerClass : listenerClass.getDeclaredClasses()) {
+                if (innerClass.getSimpleName().equals("BloodChestCompleteEvent")) {
+                    eventClass = innerClass;
+                    break;
+                }
+            }
+            if (eventClass != null) {
+                Object event = eventClass.getConstructor(Player.class, int.class)
+                        .newInstance(player, (int) elapsedSeconds);
+                Bukkit.getPluginManager().callEvent((org.bukkit.event.Event) event);
+            }
+        } catch (Exception ignored) {
+            // QuestSystem might not be loaded
+        }
     }
 
     private int determineChestCount(int elapsedSeconds) {
@@ -1042,6 +1061,26 @@ public class BloodChestSession {
         if (result.isPityGranted()) {
             player.sendMessage(color("&6A pity drop has been granted!"));
         }
+
+        // Fire BloodChestOpenEvent for QuestSystem integration
+        try {
+            Class<?> listenerClass = Class.forName("org.maks.questsystem.listeners.BloodChestListener");
+            Class<?> eventClass = null;
+            for (Class<?> innerClass : listenerClass.getDeclaredClasses()) {
+                if (innerClass.getSimpleName().equals("BloodChestOpenEvent")) {
+                    eventClass = innerClass;
+                    break;
+                }
+            }
+            if (eventClass != null) {
+                Object event = eventClass.getConstructor(Player.class)
+                        .newInstance(player);
+                Bukkit.getPluginManager().callEvent((org.bukkit.event.Event) event);
+            }
+        } catch (Exception ignored) {
+            // QuestSystem might not be loaded
+        }
+
         if (spawnedChests.values().stream().allMatch(Boolean::booleanValue)) {
             startExitCountdown();
         }

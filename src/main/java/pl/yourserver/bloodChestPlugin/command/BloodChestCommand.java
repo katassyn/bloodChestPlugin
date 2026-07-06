@@ -30,7 +30,7 @@ public class BloodChestCommand implements CommandExecutor {
             return true;
         }
         if (player.getLevel() < 55) {
-            player.sendMessage(ChatColor.RED + "You must be at least level 55 to use this command.");
+            player.sendMessage(ChatColor.RED + "You must be at least level 55!");
             return true;
         }
         menuManager.openMainMenu(player);

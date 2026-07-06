@@ -79,9 +79,9 @@ arena:
     y: 0
     z: 0
   region-size:
-    x: 64
+    x: 170
     y: 32
-    z: 64
+    z: 170
   markers:
     mob: OBSIDIAN
     chest: BARREL
@@ -117,9 +117,9 @@ arena:
       y: 74
       z: -2930
     structure-size:
-      x: 32
+      x: 170
       y: 0
-      z: 32
+      z: 170
     spacing:
       x: 8
       y: 0
